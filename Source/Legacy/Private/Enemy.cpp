@@ -2,6 +2,7 @@
 
 
 #include "Enemy.h"
+#include "EnemyFSM.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -9,6 +10,7 @@ AEnemy::AEnemy()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	enemyFSM = CreateDefaultSubobject<UEnemyFSM>(TEXT("FSM"));
 }
 
 // Called when the game starts or when spawned
