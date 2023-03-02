@@ -39,14 +39,21 @@ public:
 	class AEnemy* me;
 	UPROPERTY()
 	class AAIController* ai;
+	UPROPERTY()
+	class ALegacyPlayer* player;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float maxIdleTime = 3.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float radiusForIdleRandomLoc = 200.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float distanceForReturnOrigin = 500.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float startChasingDistance = 800.f;
 
 	FVector idleRandomLoc;
-	FVector startLoc;
+	FVector originLoc;
 	float idleTimer;
+	bool bIsReturning;
 
 	void TickIdle();
 	void TickChase();
