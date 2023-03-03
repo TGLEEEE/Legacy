@@ -7,6 +7,7 @@
 #include "AIController.h"
 #include "EngineUtils.h"
 #include "LegacyPlayer.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values for this component's properties
 UEnemyFSM::UEnemyFSM()
@@ -43,6 +44,14 @@ void UEnemyFSM::BeginPlay()
 void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// 어떠한 상태더라도 bisintheair가 켜지면 intheair 상태로 전환한다
+	if (bIsInTheAir && !bDoOnce)
+	{
+		SetState(EEnemyState::INTHEAIR);
+		bDoOnce = true;
+	}
+	// bisintheair가 꺼지면 idle로 돌아간다
 
 	switch (state)
 	{
@@ -134,16 +143,28 @@ void UEnemyFSM::TickChase()
 
 void UEnemyFSM::TickAttack()
 {
+	attackTimer += GetWorld()->GetDeltaSeconds();
 	// 공격
-	UE_LOG(LogTemp, Error, TEXT("is attacking"));
+	if (attackTimer >= attackDelay)
+	{
+		UE_LOG(LogTemp, Error, TEXT("is attacking"));
+		attackTimer = 0;
+	}
+
+	if (FVector::Dist(me->GetActorLocation(), player->GetActorLocation()) > attackableDistance)
+	{
+		SetState(EEnemyState::CHASE);
+	}
 }
 
 void UEnemyFSM::TickInTheAir()
 {
-	// 공중에 떠서 이동 불가한 상태
-
-	// 허우적 허우적
-
+	// 공중에 떠서 이동 불가한 상태 (플레이어에게 Grab당한 상태 통제권x)
+	if (!bIsInTheAir)
+	{
+		bDoOnce = false;
+		SetState(EEnemyState::IDLE);
+	}
 }
 
 void UEnemyFSM::TickDamage()
@@ -163,11 +184,6 @@ void UEnemyFSM::SetState(EEnemyState nextState)
 	state = nextState;
 }
 
-void UEnemyFSM::OnDamageProcess(int Amount)
-{
-	// 데미지 들어왔을때 죽을지 계산
-}
-
 void UEnemyFSM::UpdateRandomLoc(float radius, FVector& randomLoc)
 {
 	UNavigationSystemV1* navSys = UNavigationSystemV1::GetNavigationSystem(GetWorld());
@@ -178,4 +194,3 @@ void UEnemyFSM::UpdateRandomLoc(float radius, FVector& randomLoc)
 		randomLoc = navLoc.Location;
 	}
 }
-

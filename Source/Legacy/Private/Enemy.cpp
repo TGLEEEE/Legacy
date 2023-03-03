@@ -3,6 +3,8 @@
 
 #include "Enemy.h"
 #include "EnemyFSM.h"
+#include "EnemyState.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -11,6 +13,7 @@ AEnemy::AEnemy()
 	PrimaryActorTick.bCanEverTick = true;
 
 	enemyFSM = CreateDefaultSubobject<UEnemyFSM>(TEXT("FSM"));
+	enemyState = CreateDefaultSubobject<UEnemyState>(TEXT("Enemy State Comp"));
 }
 
 // Called when the game starts or when spawned
@@ -34,3 +37,9 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+void AEnemy::Throw(FVector force, int Amount)
+{
+	enemyState->OnDamageProcess(Amount);
+	//GetCapsuleComponent()->AddForce(force);
+	GetMesh()->AddForce(force);
+}

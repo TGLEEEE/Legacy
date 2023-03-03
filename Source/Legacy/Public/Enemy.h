@@ -26,6 +26,12 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	class UEnemyFSM* enemyFSM;
+	UPROPERTY(EditAnywhere)
+	class UEnemyState* enemyState;
+
+	UFUNCTION(BlueprintCallable)
+	void Throw(FVector force, int Amount);
+
 };
