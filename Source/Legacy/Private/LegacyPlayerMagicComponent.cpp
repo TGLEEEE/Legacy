@@ -4,6 +4,11 @@
 #include "LegacyPlayerMagicComponent.h"
 #include "EnhancedInputComponent.h"
 #include "LegacyPlayer.h"
+#include "Kismet/KismetSystemLibrary.h"
+
+#include "Camera/CameraComponent.h"
+#include "Enemy.h"
+#include "MotionControllerComponent.h"
 
 
 void ULegacyPlayerMagicComponent::BeginPlay()
@@ -32,14 +37,16 @@ void ULegacyPlayerMagicComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	DetectTarget();
 	UpdateSpellState();
+
 }
 
 #pragma region Input Action
 void ULegacyPlayerMagicComponent::OnActionCastSpell()
 {
 	isSpellCast = true;
-	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - isSpellCast"));
+	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - isSpellCast"));
 }
 
 void ULegacyPlayerMagicComponent::OnActionGrabPressed()
@@ -143,10 +150,60 @@ void ULegacyPlayerMagicComponent::CastGrab()
 {
 	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::Cast Grab"));
 
+	if(detectedComponent){
+		grabbedComponent = detectedComponent;
+
+		// since updated grabbedComponent component, dereference detectedComponent for the next detection
+		detectedComponent = nullptr;
+	}
+
 	//Grab
 	if(!isGrab){
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastGrab Done"));
 		spellstate = SpellState::Rest;
+
+		//dereference grabbedComponent
+		grabbedComponent = nullptr;
+	}
+}
+
+void ULegacyPlayerMagicComponent::DetectTarget()
+{
+	//if the player casts a spell on a detected component, return
+	if (grabbedComponent) { return; }
+
+	FVector wandHandPosition = me->rightHand->GetComponentLocation();
+	FVector traceStartLocation = wandHandPosition + me->rightHand->GetForwardVector() * detectionRadius;				//add with detection radius so that the trace doesn't start from the back of the camera
+	FVector traceEndLocation = traceStartLocation + me->rightHand->GetForwardVector() * 100000;
+
+	TEnumAsByte<ECollisionChannel> traceChannel;
+	traceChannel = ECollisionChannel::ECC_Visibility;
+	TArray<AActor*> actorsToIgnore;
+
+	FHitResult hitResult;
+
+	//do a sphere trace
+	bool isHit = UKismetSystemLibrary::SphereTraceSingle(this, traceStartLocation, traceEndLocation, detectionRadius, UEngineTypes::ConvertToTraceType(traceChannel), true, actorsToIgnore, EDrawDebugTrace::ForOneFrame, hitResult, true);
+
+	//if it hits something
+	if (isHit) {
+		enemy = Cast<AEnemy>(hitResult.GetActor());
+		if(enemy){
+			#pragma region Debug
+			//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::DetectTarget - found enemy"));
+			#pragma endregion 
+			detectedComponent = hitResult.GetComponent();
+			if(detectedComponent){
+				#pragma region Debug
+				UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::DetectTarget - grabbedComponent"));
+				#pragma endregion 
+			}
+		}
+		#pragma region Debug
+		else{
+			//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::DetectTarget - can't find enemy"));
+		}
+		#pragma endregion
 	}
 }
 

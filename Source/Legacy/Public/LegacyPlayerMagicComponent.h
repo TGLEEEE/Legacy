@@ -65,4 +65,17 @@ public:
 	bool isDepulso;
 #pragma endregion Magic
 
+#pragma region
+	void DetectTarget();
+
+	class AEnemy* enemy;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Magic Settings | Object Detection")
+	UPrimitiveComponent* detectedComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Magic Settings | Object Detection")
+	UPrimitiveComponent* grabbedComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Magic Settings | Object Detection")
+	float detectionRadius = 10;
+
 };
