@@ -9,6 +9,7 @@
 #include "Camera/CameraComponent.h"
 #include "Enemy.h"
 #include "MotionControllerComponent.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 
 
 void ULegacyPlayerMagicComponent::BeginPlay()
@@ -150,18 +151,33 @@ void ULegacyPlayerMagicComponent::CastGrab()
 {
 	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::Cast Grab"));
 
-	if(detectedComponent){
-		grabbedComponent = detectedComponent;
+	//bug:: need to reset grabbed object in rest state?
 
+	if(detectedComponent && !grabbedComponent){
+		//make detected component the grabbed component
+		grabbedComponent = detectedComponent;
 		// since updated grabbedComponent component, dereference detectedComponent for the next detection
 		detectedComponent = nullptr;
+
+		//cache object's initial height
+		objectInitialHeight = grabbedComponent->GetComponentLocation();
+
+		//grab the component with physics handle
+		me->physicsHandleComp->GrabComponentAtLocation(grabbedComponent, NAME_None, grabbedComponent->GetComponentLocation());
+		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::Cast Grab - Make detected component the grabbed component"));
+	}
+	else if(grabbedComponent){
+		me->physicsHandleComp->SetTargetLocation(objectInitialHeight + objectOffsetHeight);
+		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::Cast Grab - Lifting object"));
 	}
 
 	//Grab
 	if(!isGrab){
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastGrab Done"));
-		spellstate = SpellState::Rest;
+		//Bug: might need to take this to rest
+		me->physicsHandleComp->ReleaseComponent();
 
+		spellstate = SpellState::Rest;
 		//dereference grabbedComponent
 		grabbedComponent = nullptr;
 	}
@@ -188,16 +204,21 @@ void ULegacyPlayerMagicComponent::DetectTarget()
 	//if it hits something
 	if (isHit) {
 		enemy = Cast<AEnemy>(hitResult.GetActor());
+
+		//bug temporary
+		detectedComponent = hitResult.GetComponent();
+
 		if(enemy){
 			#pragma region Debug
 			//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::DetectTarget - found enemy"));
 			#pragma endregion 
 			detectedComponent = hitResult.GetComponent();
-			if(detectedComponent){
-				#pragma region Debug
+			#pragma region Debug
+			if (detectedComponent) {
 				UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::DetectTarget - grabbedComponent"));
-				#pragma endregion 
 			}
+			#pragma endregion
+
 		}
 		#pragma region Debug
 		else{

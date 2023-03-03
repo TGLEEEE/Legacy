@@ -65,7 +65,7 @@ public:
 	bool isDepulso;
 #pragma endregion Magic
 
-#pragma region
+#pragma region Detect Target
 	void DetectTarget();
 
 	class AEnemy* enemy;
@@ -76,6 +76,19 @@ public:
 	UPrimitiveComponent* grabbedComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Magic Settings | Object Detection")
-	float detectionRadius = 10;
+	float detectionRadius = 25;
+
+#pragma endregion
+
+	void LiftTarget();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector objectInitialHeight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector objectOffsetHeight = FVector(0, 0, 100);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float errorTolerance = 2;
 
 };
