@@ -4,7 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "InputActionValue.h"
+#include "InputMappingContext.h"
 #include "LegacyPlayer.generated.h"
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FSetupPlayerInputDelegate, class UInputComponent*)
 
 UCLASS()
 class LEGACY_API ALegacyPlayer : public ACharacter
@@ -25,5 +29,53 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+#pragma region Input
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Movement")
+	class UInputMappingContext* iMC_VRInput;
+
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Movement")
+	class UInputAction* iA_VRMove;
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Movement")
+	class UInputAction* iA_Mouse;
+
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
+	class UInputAction* iA_CastSpell;
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
+	class UInputAction* iA_Grab;
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
+	class UInputAction* iA_Spell1;
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
+	class UInputAction* iA_Spell2;
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
+	class UInputAction* iA_Spell3;
+#pragma endregion 
+
+#pragma region Components
+	UPROPERTY(EditAnywhere)
+	class ULegacyPlayerMoveComponent* moveComponent;
+	UPROPERTY(EditAnywhere)
+	class ULegacyPlayerMagicComponent* magicComponent;
+
+	FSetupPlayerInputDelegate setupPlayerInputDelegate;
+#pragma endregion Components
+
+
+protected:
+
+#pragma region VR
+	UPROPERTY(EditAnywhere, Category = "Player Settings | VR Settings")
+	class UCameraComponent* vRCamera;
+
+	UPROPERTY(EditAnywhere, Category = "Player Settings | VR Settings")
+	class UMotionControllerComponent* leftHand;
+	UPROPERTY(EditAnywhere, Category = "Player Settings | VR Settings")
+	class UMotionControllerComponent* rightHand;
+
+	UPROPERTY(EditAnywhere, Category = "Player Settings | VR Settings")
+	class USkeletalMeshComponent* leftHandMesh;
+	UPROPERTY(EditAnywhere, Category = "Player Settings | VR Settings")
+	class USkeletalMeshComponent* rightHandMesh;
+#pragma endregion 
 
 };
