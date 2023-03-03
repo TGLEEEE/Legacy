@@ -5,6 +5,8 @@
 #include "Enemy.h"
 #include "NavigationSystem.h"
 #include "AIController.h"
+#include "EngineUtils.h"
+#include "LegacyPlayer.h"
 
 // Sets default values for this component's properties
 UEnemyFSM::UEnemyFSM()
@@ -31,7 +33,9 @@ void UEnemyFSM::BeginPlay()
 	// Idle에 필요한 Random위치 갱신
 	UpdateRandomLoc(radiusForIdleRandomLoc, idleRandomLoc);
 	// 시작원점 저장
-	startLoc = me->GetActorLocation();
+	originLoc = me->GetActorLocation();
+	// player 캐스팅
+	player = Cast<ALegacyPlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter());
 }
 
 
@@ -67,8 +71,9 @@ void UEnemyFSM::TickIdle()
 {
 	// 일정 시간동안 멍때림
 	idleTimer += GetWorld()->GetDeltaSeconds();
+
 	// 일정 시간후 주변의 랜덤 포인트로 이동
-	if (idleTimer >= maxIdleTime)
+	if (idleTimer >= maxIdleTime && !bIsReturning)
 	{
 		auto result = ai->MoveToLocation(idleRandomLoc);
 		// 도착했다면 다시 멍때림
@@ -78,10 +83,30 @@ void UEnemyFSM::TickIdle()
 			idleTimer = 0;
 		}
 	}
+
+
 	// 원점과 일정거리 이상 멀어지면 원점으로 복귀
+	if (FVector::Dist(originLoc, me->GetActorLocation()) >= distanceForReturnOrigin && !bIsReturning)
+	{
+		bIsReturning = true;
+		ai->MoveToLocation(originLoc);
 
-	// 플레이어 감지하면 추격
+		FTimerHandle hd;
+		GetWorld()->GetTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]()
+			{
+				// 처음 상태로 리셋
+				//UE_LOG(LogTemp, Error, TEXT("Reset"));
+				UpdateRandomLoc(radiusForIdleRandomLoc, idleRandomLoc);
+				idleTimer = 0;
+				bIsReturning = false;
+			}), 5.f, false);
+	}
 
+	// 플레이어 감지하면 추격상태로 전환
+	if (FVector::Dist(me->GetActorLocation(), player->GetActorLocation()) < startChasingDistance)
+	{
+		SetState(EEnemyState::CHASE);
+	}
 	// for debug
 	//UE_LOG(LogTemp, Warning, TEXT("timer : %f"), idleTimer);
 	//UE_LOG(LogTemp, Warning, TEXT("%f"), idleRandomLoc.X);
@@ -97,6 +122,7 @@ void UEnemyFSM::TickChase()
 
 	// 너무 멀어지면 Idle로 전환
 
+	UE_LOG(LogTemp, Warning, TEXT("is chasing"));
 }
 
 void UEnemyFSM::TickAttack()
