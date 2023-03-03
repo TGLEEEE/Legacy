@@ -54,6 +54,7 @@ public:
 	FVector originLoc;
 	float idleTimer;
 	bool bIsReturning;
+	bool bIsInTheAir;
 
 	void TickIdle();
 	void TickChase();
