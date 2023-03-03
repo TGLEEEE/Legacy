@@ -60,6 +60,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Components")
 	class ULegacyPlayerMagicComponent* magicComponent;
 
+	UPROPERTY(EditAnywhere)
+	class UPhysicsHandleComponent* physicsHandleComp;
+
+
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Components")
 	class UMotionControllerComponent* leftHand;
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Components")

@@ -12,6 +12,7 @@
 
 //update
 #include "HeadMountedDisplayFunctionLibrary.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 
 
 // Sets default values
@@ -22,6 +23,8 @@ ALegacyPlayer::ALegacyPlayer()
 
 	moveComponent = CreateDefaultSubobject<ULegacyPlayerMoveComponent>(TEXT("Move Component"));
 	magicComponent = CreateDefaultSubobject<ULegacyPlayerMagicComponent>(TEXT("Magic Component"));
+
+	physicsHandleComp = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("Physics Handle Component"));
 
 #pragma region VR
 	cameraComp = CreateDefaultSubobject<UCameraComponent>("Camera Component");
@@ -77,8 +80,6 @@ void ALegacyPlayer::BeginPlay()
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMoveComponent::SetupPlayerInput - can't find player controller"));
 	}
-
-
 }
 
 // Called every frame
