@@ -2,7 +2,6 @@
 
 
 #include "LegacyPlayerMagicComponent.h"
-
 #include "EnhancedInputComponent.h"
 #include "LegacyPlayer.h"
 
@@ -15,6 +14,7 @@ void ULegacyPlayerMagicComponent::BeginPlay()
 void ULegacyPlayerMagicComponent::SetupPlayerInput(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInput(PlayerInputComponent);
+
 	auto inputSystem = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 	if (inputSystem) {
 		inputSystem->BindAction(me->iA_CastSpell, ETriggerEvent::Triggered, this, &ULegacyPlayerMagicComponent::OnActionCastSpell);
@@ -39,40 +39,37 @@ void ULegacyPlayerMagicComponent::TickComponent(float DeltaTime, ELevelTick Tick
 void ULegacyPlayerMagicComponent::OnActionCastSpell()
 {
 	isSpellCast = true;
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - isSpellCast"));
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - isSpellCast"));
 }
 
 void ULegacyPlayerMagicComponent::OnActionGrabPressed()
 {
 	isGrab = true;
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - isGrab"));
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - isGrab"));
 }
 
 void ULegacyPlayerMagicComponent::OnActionGrabReleased()
 {
 	isGrab = false;
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - !isGrab"));
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - !isGrab"));
 }
 
 void ULegacyPlayerMagicComponent::OnActionSpell1()
 {
 	isLevioso = true;
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - isLevioso"));
-
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - isLevioso"));
 }
 
 void ULegacyPlayerMagicComponent::OnActionSpell2()
 {
 	isAccio = true;
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - isAccio"));
-
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - isAccio"));
 }
 
 void ULegacyPlayerMagicComponent::OnActionSpell3()
 {
 	isDepulso = true;
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - isDepulso"));
-
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - isDepulso"));
 }
 #pragma endregion Input Action
 
@@ -147,7 +144,6 @@ void ULegacyPlayerMagicComponent::CastGrab()
 	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::Cast Grab"));
 
 	//Grab
-
 	if(!isGrab){
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastGrab Done"));
 		spellstate = SpellState::Rest;
