@@ -52,10 +52,22 @@ public:
 #pragma endregion 
 
 #pragma region Components
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Components")
+	class UCameraComponent* cameraComp;
+
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Components")
 	class ULegacyPlayerMoveComponent* moveComponent;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Components")
 	class ULegacyPlayerMagicComponent* magicComponent;
+
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Components")
+	class UMotionControllerComponent* leftHand;
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Components")
+	class UMotionControllerComponent* rightHand;
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Components")
+	class USkeletalMeshComponent* leftHandMesh;
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Components")
+	class USkeletalMeshComponent* rightHandMesh;
 
 	FSetupPlayerInputDelegate setupPlayerInputDelegate;
 #pragma endregion Components
@@ -64,18 +76,7 @@ public:
 protected:
 
 #pragma region VR
-	UPROPERTY(EditAnywhere, Category = "Player Settings | VR Settings")
-	class UCameraComponent* vRCamera;
 
-	UPROPERTY(EditAnywhere, Category = "Player Settings | VR Settings")
-	class UMotionControllerComponent* leftHand;
-	UPROPERTY(EditAnywhere, Category = "Player Settings | VR Settings")
-	class UMotionControllerComponent* rightHand;
-
-	UPROPERTY(EditAnywhere, Category = "Player Settings | VR Settings")
-	class USkeletalMeshComponent* leftHandMesh;
-	UPROPERTY(EditAnywhere, Category = "Player Settings | VR Settings")
-	class USkeletalMeshComponent* rightHandMesh;
 #pragma endregion 
 
 };

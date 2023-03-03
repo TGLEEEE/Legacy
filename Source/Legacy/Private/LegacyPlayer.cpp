@@ -10,6 +10,10 @@
 #include "LegacyPlayerMoveComponent.h"
 #include "LegacyPlayerMagicComponent.h"
 
+//update
+#include "HeadMountedDisplayFunctionLibrary.h"
+
+
 // Sets default values
 ALegacyPlayer::ALegacyPlayer()
 {
@@ -20,11 +24,11 @@ ALegacyPlayer::ALegacyPlayer()
 	magicComponent = CreateDefaultSubobject<ULegacyPlayerMagicComponent>(TEXT("Magic Component"));
 
 #pragma region VR
-	vRCamera = CreateDefaultSubobject<UCameraComponent>("Camera Component");
-	vRCamera->SetupAttachment(GetRootComponent());
+	cameraComp = CreateDefaultSubobject<UCameraComponent>("Camera Component");
+	cameraComp->SetupAttachment(GetRootComponent());
 
 	//the pawn rotation will be controlled by the camera's rotation
-	vRCamera->bUsePawnControlRotation = true;
+	cameraComp->bUsePawnControlRotation = true;
 
 	leftHand = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("Left Hand"));
 	rightHand = CreateDefaultSubobject<UMotionControllerComponent>(TEXT("Right Hand"));
@@ -46,14 +50,13 @@ ALegacyPlayer::ALegacyPlayer()
 		leftHandMesh->SetSkeletalMesh(tempMesh.Object);
 		leftHandMesh->SetRelativeLocationAndRotation(FVector(-2.981260, -3.500000, 4.561753), FRotator(-25.000000, -179.999999, 89.999998));
 	}
-
+	
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh2(TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/MannequinsXR/Meshes/SKM_MannyXR_right.SKM_MannyXR_right'"));
 	if (tempMesh2.Succeeded()) {
 		rightHandMesh->SetSkeletalMesh(tempMesh2.Object);
-		rightHandMesh->SetRelativeLocationAndRotation(FVector(-2.981260, 3.500000, 4.561753), FRotator(25.000000, 0.000000, 89.999999));
+		rightHandMesh->SetRelativeLocationAndRotation(FVector(129.392310, 43.054073, 40.000000), FRotator(0.000000, -10.000000, 0.000000));
 	}
 #pragma endregion VR
-
 }
 
 // Called when the game starts or when spawned
@@ -75,6 +78,7 @@ void ALegacyPlayer::BeginPlay()
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMoveComponent::SetupPlayerInput - can't find player controller"));
 	}
 
+
 }
 
 // Called every frame
@@ -82,6 +86,10 @@ void ALegacyPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//update
+	if (!UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled()) {
+		rightHand->SetRelativeRotation(cameraComp->GetRelativeRotation());
+	}
 }
 
 // Called to bind functionality to input
