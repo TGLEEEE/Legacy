@@ -49,6 +49,10 @@ public:
 	float distanceForReturnOrigin = 500.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float startChasingDistance = 800.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float attackableDistance = 200.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float stopChaseDistance = 1200.f;
 
 	FVector idleRandomLoc;
 	FVector originLoc;

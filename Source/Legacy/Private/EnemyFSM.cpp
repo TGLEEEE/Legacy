@@ -117,18 +117,25 @@ void UEnemyFSM::TickIdle()
 void UEnemyFSM::TickChase()
 {
 	// 플레이어 위치를 향해 이동
-
+	ai->MoveToLocation(player->GetActorLocation());
 	// 공격 가능 거리가 되면 공격으로 전환
-
+	if (FVector::Dist(me->GetActorLocation(), player->GetActorLocation()) < attackableDistance)
+	{
+		SetState(EEnemyState::ATTACK);
+	}
 	// 너무 멀어지면 Idle로 전환
-
-	UE_LOG(LogTemp, Warning, TEXT("is chasing"));
+	if (FVector::Dist(me->GetActorLocation(), player->GetActorLocation()) > stopChaseDistance)
+	{
+		SetState(EEnemyState::IDLE);
+		UE_LOG(LogTemp, Error, TEXT("go idle"));
+	}
+	//UE_LOG(LogTemp, Error, TEXT("is chasing"));
 }
 
 void UEnemyFSM::TickAttack()
 {
 	// 공격
-
+	UE_LOG(LogTemp, Error, TEXT("is attacking"));
 }
 
 void UEnemyFSM::TickInTheAir()
