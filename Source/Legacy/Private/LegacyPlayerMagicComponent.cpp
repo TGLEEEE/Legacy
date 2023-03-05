@@ -10,6 +10,7 @@
 #include "Enemy.h"
 #include "MotionControllerComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "Components/ArrowComponent.h"
 
 
 void ULegacyPlayerMagicComponent::BeginPlay()
@@ -28,9 +29,12 @@ void ULegacyPlayerMagicComponent::SetupPlayerInput(UInputComponent* PlayerInputC
 		inputSystem->BindAction(me->iA_Grab, ETriggerEvent::Triggered, this, &ULegacyPlayerMagicComponent::OnActionGrabPressed);
 		inputSystem->BindAction(me->iA_Grab, ETriggerEvent::Completed, this, &ULegacyPlayerMagicComponent::OnActionGrabReleased);
 
-		inputSystem->BindAction(me->iA_Spell1, ETriggerEvent::Completed, this, &ULegacyPlayerMagicComponent::OnActionSpell1);
-		inputSystem->BindAction(me->iA_Spell2, ETriggerEvent::Completed, this, &ULegacyPlayerMagicComponent::OnActionSpell2);
-		inputSystem->BindAction(me->iA_Spell3, ETriggerEvent::Completed, this, &ULegacyPlayerMagicComponent::OnActionSpell3);
+		inputSystem->BindAction(me->iA_Spell1, ETriggerEvent::Triggered, this, &ULegacyPlayerMagicComponent::OnActionSpell1Pressed);
+		inputSystem->BindAction(me->iA_Spell1, ETriggerEvent::Completed, this, &ULegacyPlayerMagicComponent::OnActionSpell1Released);
+		inputSystem->BindAction(me->iA_Spell2, ETriggerEvent::Triggered, this, &ULegacyPlayerMagicComponent::OnActionSpell2Pressed);
+		inputSystem->BindAction(me->iA_Spell2, ETriggerEvent::Completed, this, &ULegacyPlayerMagicComponent::OnActionSpell2Released);
+		inputSystem->BindAction(me->iA_Spell3, ETriggerEvent::Triggered, this, &ULegacyPlayerMagicComponent::OnActionSpell3Pressed);
+		inputSystem->BindAction(me->iA_Spell3, ETriggerEvent::Completed, this, &ULegacyPlayerMagicComponent::OnActionSpell3Released);
 	}
 }
 
@@ -62,22 +66,41 @@ void ULegacyPlayerMagicComponent::OnActionGrabReleased()
 	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - !isGrab"));
 }
 
-void ULegacyPlayerMagicComponent::OnActionSpell1()
+void ULegacyPlayerMagicComponent::OnActionSpell1Pressed()
 {
 	isLevioso = true;
-	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - isLevioso"));
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionSpell1Pressed - isLevioso"));
 }
 
-void ULegacyPlayerMagicComponent::OnActionSpell2()
+void ULegacyPlayerMagicComponent::OnActionSpell1Released()
+{
+	isLevioso = false;
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCasOnActionSpell1ReleasedtSpell - !isLevioso"));
+
+}
+
+void ULegacyPlayerMagicComponent::OnActionSpell2Pressed()
 {
 	isAccio = true;
-	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - isAccio"));
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionSpell2Pressed - isAccio"));
 }
 
-void ULegacyPlayerMagicComponent::OnActionSpell3()
+void ULegacyPlayerMagicComponent::OnActionSpell2Released()
+{
+	isAccio = false;
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionSpell2Released - !isAccio"));
+}
+
+void ULegacyPlayerMagicComponent::OnActionSpell3Pressed()
 {
 	isDepulso = true;
-	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - isDepulso"));
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionOnActionSpell3PressedCastSpell - isDepulso"));
+}
+
+void ULegacyPlayerMagicComponent::OnActionSpell3Released()
+{
+	isDepulso = false;
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionSpell3Released - !isDepulso"));
 }
 #pragma endregion Input Action
 
@@ -109,7 +132,7 @@ void ULegacyPlayerMagicComponent::UpdateSpellState()
 
 void ULegacyPlayerMagicComponent::CheckSpellState()
 {
-	if (!isSpellCast) { return; }
+	if (!isSpellCast) { return; }								//have to press spell cast to activate other spells
 
 	if (isLevioso) { spellstate = SpellState::Levioso; }
 	else if (isAccio) { spellstate = SpellState::Accio; }
@@ -119,37 +142,65 @@ void ULegacyPlayerMagicComponent::CheckSpellState()
 
 void ULegacyPlayerMagicComponent::CastLevioso()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastLevioso"));
+	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::Cast Levioso"));
 
-	isLevioso = false;
+	me->physicsHandleComp->SetLinearDamping(5);
+	me->physicsHandleComp->SetLinearStiffness(50);
+	me->physicsHandleComp->SetInterpolationSpeed(60);
 
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastLevioso - CastLevioso Done"));
-	spellstate = SpellState::Rest;
+	if (detectedComponent && !grabbedComponent)
+	{
+		//make detected component the grabbed component
+		grabbedComponent = detectedComponent;
+		// since updated grabbedComponent component, dereference detectedComponent for the next detection
+		detectedComponent = nullptr;
+
+		//cache object's initial height
+		objectInitialHeight = grabbedComponent->GetComponentLocation();				//should be at wand's offset?
+
+		//grab the component with physics handle
+		me->physicsHandleComp->GrabComponentAtLocation(grabbedComponent, NAME_None, grabbedComponent->GetComponentLocation());
+		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::Cast Levioso - Make detected component the grabbed component"));
+	}
+	else if (grabbedComponent)
+	{
+		me->physicsHandleComp->SetTargetLocation(objectInitialHeight + objectOffsetHeight);
+		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::Cast Levioso - Lifting object"));
+	}
+
+
+	if(!isLevioso){ spellstate = SpellState::Rest; }
 }
 
 void ULegacyPlayerMagicComponent::CastAccio()
 {
 	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAccio"));
 
-	isAccio= false;
+	me->physicsHandleComp->SetLinearDamping(10);
+	me->physicsHandleComp->SetLinearStiffness(50);
+	me->physicsHandleComp->SetInterpolationSpeed(20);
 
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAccio Done"));
-	spellstate = SpellState::Rest;
+	me->physicsHandleComp->SetTargetLocation(me->accioHoverRegionArrowComponent->GetComponentLocation());
+
+
+	if(!isAccio){ spellstate = SpellState::Rest; }
 }
 
 void ULegacyPlayerMagicComponent::CastDepulso()
 {
 	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastDepulso"));
 
-	isDepulso = false;
-
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastDepulso Done"));
-	spellstate = SpellState::Rest;
+	if(!isDepulso){ spellstate = SpellState::Rest; }
+		
 }
 
 void ULegacyPlayerMagicComponent::CastGrab()
 {
 	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::Cast Grab"));
+
+	me->physicsHandleComp->SetLinearDamping(5);
+	me->physicsHandleComp->SetLinearStiffness(50);
+	me->physicsHandleComp->SetInterpolationSpeed(60);
 
 	//bug:: need to reset grabbed object in rest state?
 
@@ -160,14 +211,15 @@ void ULegacyPlayerMagicComponent::CastGrab()
 		detectedComponent = nullptr;
 
 		//cache object's initial height
-		objectInitialHeight = grabbedComponent->GetComponentLocation();
+		objectInitialHeight = grabbedComponent->GetComponentLocation();				//should be at wand's offset?
 
 		//grab the component with physics handle
 		me->physicsHandleComp->GrabComponentAtLocation(grabbedComponent, NAME_None, grabbedComponent->GetComponentLocation());
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::Cast Grab - Make detected component the grabbed component"));
 	}
 	else if(grabbedComponent){
-		me->physicsHandleComp->SetTargetLocation(objectInitialHeight + objectOffsetHeight);
+		//me->physicsHandleComp->SetTargetLocation(objectInitialHeight + objectOffsetHeight);
+		me->physicsHandleComp->SetTargetLocation(me->grabHoverRegionArrowComponent->GetComponentLocation());
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::Cast Grab - Lifting object"));
 	}
 
@@ -218,7 +270,6 @@ void ULegacyPlayerMagicComponent::DetectTarget()
 				UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::DetectTarget - grabbedComponent"));
 			}
 			#pragma endregion
-
 		}
 		#pragma region Debug
 		else{
@@ -227,4 +278,5 @@ void ULegacyPlayerMagicComponent::DetectTarget()
 		#pragma endregion
 	}
 }
+
 
