@@ -12,6 +12,7 @@
 
 //update
 #include "HeadMountedDisplayFunctionLibrary.h"
+#include "Components/ArrowComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 
 
@@ -25,6 +26,14 @@ ALegacyPlayer::ALegacyPlayer()
 	magicComponent = CreateDefaultSubobject<ULegacyPlayerMagicComponent>(TEXT("Magic Component"));
 
 	physicsHandleComp = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("Physics Handle Component"));
+
+
+	//update
+	accioHoverRegionArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("Accio Arrow Component"));
+	accioHoverRegionArrowComponent->SetRelativeLocation(FVector(10, 10, 10));
+
+	grabHoverRegionArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("Grab Arrow Component"));
+	accioHoverRegionArrowComponent->SetRelativeLocation(FVector(30, 10, 10));
 
 #pragma region VR
 	cameraComp = CreateDefaultSubobject<UCameraComponent>("Camera Component");

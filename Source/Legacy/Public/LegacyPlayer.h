@@ -63,6 +63,11 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UPhysicsHandleComponent* physicsHandleComp;
 
+	UPROPERTY(EditAnywhere)
+	class UArrowComponent* accioHoverRegionArrowComponent;
+	UPROPERTY(EditAnywhere)
+	class UArrowComponent* grabHoverRegionArrowComponent;
+
 
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Components")
 	class UMotionControllerComponent* leftHand;
