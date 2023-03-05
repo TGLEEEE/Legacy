@@ -5,6 +5,8 @@
 #include "EnemyFSM.h"
 #include "EnemyState.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "AIController.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -39,7 +41,31 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AEnemy::Throw(FVector force, int Amount)
 {
+	// 데미지 계산
 	enemyState->OnDamageProcess(Amount);
-	//GetCapsuleComponent()->AddForce(force);
-	GetMesh()->AddForce(force);
+	// 상태 변경
+	enemyFSM->bIsInTheAir = true;
+	// 피직스 설정
+	//GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
+	//GetMesh()->SetSimulatePhysics(true);
+	//GetCapsuleComponent()->SetSimulatePhysics(true);
+	// 날려버리자
+	enemyFSM->ai->StopMovement();
+	enemyFSM->SetState(EEnemyState::INTHEAIR);
+	GetCharacterMovement()->Launch((force + (FVector::UpVector * force.Length() / 6)) / enemyState->mass);
+	int p = FMath::RandRange(0, 360);
+	int y = FMath::RandRange(0, 360);
+	int r = FMath::RandRange(0, 360);
+	SetActorRotation(FRotator(p, y, r));
+	//GetMesh()->AddImpulseToAllBodiesBelow(force);
+	//GetCapsuleComponent()->AddImpulse(force);
+	
+	// 날린후?
+	FTimerHandle hd;
+	GetWorldTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]() {
+		SetActorRotation(FRotator::ZeroRotator);
+		enemyFSM->SetState(EEnemyState::IDLE);
+		}), 1.5f, false);
+	
+	// 벽 부딫힐때 데미지?
 }

@@ -44,7 +44,7 @@ void UEnemyFSM::BeginPlay()
 void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	/*
 	// 어떠한 상태더라도 bisintheair가 켜지면 intheair 상태로 전환한다
 	if (bIsInTheAir && !bDoOnce)
 	{
@@ -52,7 +52,7 @@ void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 		bDoOnce = true;
 	}
 	// bisintheair가 꺼지면 idle로 돌아간다
-
+	*/
 	switch (state)
 	{
 	case EEnemyState::IDLE:
@@ -160,11 +160,7 @@ void UEnemyFSM::TickAttack()
 void UEnemyFSM::TickInTheAir()
 {
 	// 공중에 떠서 이동 불가한 상태 (플레이어에게 Grab당한 상태 통제권x)
-	if (!bIsInTheAir)
-	{
-		bDoOnce = false;
-		SetState(EEnemyState::IDLE);
-	}
+		UE_LOG(LogTemp, Error, TEXT("is intheair"));
 }
 
 void UEnemyFSM::TickDamage()
