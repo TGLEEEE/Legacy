@@ -28,7 +28,7 @@ public:
 
 	virtual void BeginPlay() override;
 
-#pragma region Input Action
+#pragma region
 	UFUNCTION()
 	void OnActionCastSpell();
 	UFUNCTION()
@@ -37,12 +37,14 @@ public:
 	void OnActionGrabReleased();
 
 	UFUNCTION()
-	void OnActionSpell1();
+	void OnActionSpell1Pressed();
+	void OnActionSpell1Released();
 	UFUNCTION()
-	void OnActionSpell2();
+	void OnActionSpell2Pressed();
+	void OnActionSpell2Released();
 	UFUNCTION()
-	void OnActionSpell3();
-
+	void OnActionSpell3Pressed();
+	void OnActionSpell3Released();
 #pragma endregion Input Action
 
 #pragma region Magic
@@ -63,7 +65,7 @@ public:
 	bool isLevioso;
 	bool isAccio;
 	bool isDepulso;
-#pragma endregion Magic
+#pragma endregion 
 
 #pragma region Detect Target
 	void DetectTarget();
@@ -77,9 +79,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Magic Settings | Object Detection")
 	float detectionRadius = 25;
-
 #pragma endregion
 
+#pragma region Lift
 	void LiftTarget();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -90,5 +92,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float errorTolerance = 2;
+#pragma endregion 
+
+
 
 };
