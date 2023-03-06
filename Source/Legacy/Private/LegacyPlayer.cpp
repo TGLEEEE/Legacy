@@ -28,13 +28,6 @@ ALegacyPlayer::ALegacyPlayer()
 	physicsHandleComp = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("Physics Handle Component"));
 
 
-	//update
-	accioHoverRegionArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("Accio Arrow Component"));
-	accioHoverRegionArrowComponent->SetRelativeLocation(FVector(10, 10, 10));
-
-	grabHoverRegionArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("Grab Arrow Component"));
-	accioHoverRegionArrowComponent->SetRelativeLocation(FVector(30, 10, 10));
-
 #pragma region VR
 	cameraComp = CreateDefaultSubobject<UCameraComponent>("Camera Component");
 	cameraComp->SetupAttachment(GetRootComponent());
@@ -66,9 +59,18 @@ ALegacyPlayer::ALegacyPlayer()
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh2(TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/MannequinsXR/Meshes/SKM_MannyXR_right.SKM_MannyXR_right'"));
 	if (tempMesh2.Succeeded()) {
 		rightHandMesh->SetSkeletalMesh(tempMesh2.Object);
-		rightHandMesh->SetRelativeLocationAndRotation(FVector(129.392310, 43.054073, 40.000000), FRotator(0.000000, -10.000000, 0.000000));
+		rightHandMesh->SetRelativeLocationAndRotation(FVector((120, 60 ,80)), FRotator(0, -10.000000, -119.999999));
 	}
 #pragma endregion VR
+
+	//update
+	accioHoverRegionArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("Accio Arrow Component"));
+	accioHoverRegionArrowComponent->SetupAttachment(GetRootComponent());
+	accioHoverRegionArrowComponent->SetRelativeLocation(FVector(10, 10, 10));
+
+	grabHoverRegionArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("Grab Arrow Component"));
+	grabHoverRegionArrowComponent->SetupAttachment(rightHand);
+	grabHoverRegionArrowComponent->SetRelativeLocation(FVector(30, 10, 10));
 }
 
 // Called when the game starts or when spawned

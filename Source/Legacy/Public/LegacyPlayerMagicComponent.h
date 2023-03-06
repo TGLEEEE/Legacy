@@ -12,7 +12,8 @@ enum class SpellState : uint8 {
 	Levioso,
 	Accio,
 	Depulso,
-	Grab
+	Grab,
+	Cancel
 };
 
 UCLASS()
@@ -38,13 +39,24 @@ public:
 
 	UFUNCTION()
 	void OnActionSpell1Pressed();
+	UFUNCTION()
 	void OnActionSpell1Released();
 	UFUNCTION()
+
 	void OnActionSpell2Pressed();
+	UFUNCTION()
 	void OnActionSpell2Released();
+
 	UFUNCTION()
 	void OnActionSpell3Pressed();
+	UFUNCTION()
 	void OnActionSpell3Released();
+
+	UFUNCTION()
+	void OnActionSpellComboPressed();
+
+	UFUNCTION()
+	void OnActionSpellCancelPressed();
 #pragma endregion Input Action
 
 #pragma region Magic
@@ -58,9 +70,12 @@ public:
 	void CastDepulso();
 	void CastGrab();
 
+	void SpellCancel();
 
 	bool isSpellCast;
 	bool isGrab;
+	bool isSpellCombo;
+	bool isSpellCancel;
 
 	bool isLevioso;
 	bool isAccio;
@@ -94,6 +109,6 @@ public:
 	float errorTolerance = 2;
 #pragma endregion 
 
-
+	void DereferenceVariables();
 
 };
