@@ -41,20 +41,28 @@ public:
 	class AAIController* ai;
 	UPROPERTY()
 	class ALegacyPlayer* player;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 	float maxIdleTime = 3.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 	float radiusForIdleRandomLoc = 200.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 	float distanceForReturnOrigin = 500.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 	float startChasingDistance = 800.f;
+	UPROPERTY(EditAnywhere)
+	float attackableDistance = 200.f;
+	UPROPERTY(EditAnywhere)
+	float stopChaseDistance = 1200.f;
+	UPROPERTY(EditAnywhere)
+	float attackDelay = 3.f;
 
 	FVector idleRandomLoc;
 	FVector originLoc;
 	float idleTimer;
+	float attackTimer;
 	bool bIsReturning;
 	bool bIsInTheAir;
+	bool bDoOnce;
 
 	void TickIdle();
 	void TickChase();
@@ -63,7 +71,6 @@ public:
 	void TickDamage();
 	void TickDie();
 	void SetState(EEnemyState nextState);
-	void OnDamageProcess(int Amount);
 	void UpdateRandomLoc(float radius, FVector& randomLoc);
 
 };

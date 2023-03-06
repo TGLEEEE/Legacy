@@ -7,6 +7,7 @@
 #include "AIController.h"
 #include "EngineUtils.h"
 #include "LegacyPlayer.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values for this component's properties
 UEnemyFSM::UEnemyFSM()
@@ -43,7 +44,15 @@ void UEnemyFSM::BeginPlay()
 void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	/*
+	// 어떠한 상태더라도 bisintheair가 켜지면 intheair 상태로 전환한다
+	if (bIsInTheAir && !bDoOnce)
+	{
+		SetState(EEnemyState::INTHEAIR);
+		bDoOnce = true;
+	}
+	// bisintheair가 꺼지면 idle로 돌아간다
+	*/
 	switch (state)
 	{
 	case EEnemyState::IDLE:
@@ -117,26 +126,41 @@ void UEnemyFSM::TickIdle()
 void UEnemyFSM::TickChase()
 {
 	// 플레이어 위치를 향해 이동
-
+	ai->MoveToLocation(player->GetActorLocation());
 	// 공격 가능 거리가 되면 공격으로 전환
-
+	if (FVector::Dist(me->GetActorLocation(), player->GetActorLocation()) < attackableDistance)
+	{
+		SetState(EEnemyState::ATTACK);
+	}
 	// 너무 멀어지면 Idle로 전환
-
-	UE_LOG(LogTemp, Warning, TEXT("is chasing"));
+	if (FVector::Dist(me->GetActorLocation(), player->GetActorLocation()) > stopChaseDistance)
+	{
+		SetState(EEnemyState::IDLE);
+		UE_LOG(LogTemp, Error, TEXT("go idle"));
+	}
+	//UE_LOG(LogTemp, Error, TEXT("is chasing"));
 }
 
 void UEnemyFSM::TickAttack()
 {
+	attackTimer += GetWorld()->GetDeltaSeconds();
 	// 공격
+	if (attackTimer >= attackDelay)
+	{
+		UE_LOG(LogTemp, Error, TEXT("is attacking"));
+		attackTimer = 0;
+	}
 
+	if (FVector::Dist(me->GetActorLocation(), player->GetActorLocation()) > attackableDistance)
+	{
+		SetState(EEnemyState::CHASE);
+	}
 }
 
 void UEnemyFSM::TickInTheAir()
 {
-	// 공중에 떠서 이동 불가한 상태
-
-	// 허우적 허우적
-
+	// 공중에 떠서 이동 불가한 상태 (플레이어에게 Grab당한 상태 통제권x)
+		UE_LOG(LogTemp, Error, TEXT("is intheair"));
 }
 
 void UEnemyFSM::TickDamage()
@@ -156,11 +180,6 @@ void UEnemyFSM::SetState(EEnemyState nextState)
 	state = nextState;
 }
 
-void UEnemyFSM::OnDamageProcess(int Amount)
-{
-	// 데미지 들어왔을때 죽을지 계산
-}
-
 void UEnemyFSM::UpdateRandomLoc(float radius, FVector& randomLoc)
 {
 	UNavigationSystemV1* navSys = UNavigationSystemV1::GetNavigationSystem(GetWorld());
@@ -171,4 +190,3 @@ void UEnemyFSM::UpdateRandomLoc(float radius, FVector& randomLoc)
 		randomLoc = navLoc.Location;
 	}
 }
-
