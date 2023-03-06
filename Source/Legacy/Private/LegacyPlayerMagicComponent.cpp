@@ -246,7 +246,7 @@ void ULegacyPlayerMagicComponent::CastDepulso()
 
 		enemy->GetCapsuleComponent()->SetSimulatePhysics(false);
 
-		FVector throwDirection = me->GetActorForwardVector() - enemy->GetActorLocation();
+		FVector throwDirection = me->GetActorForwardVector();// - enemy->GetActorLocation();
 		throwDirection.Normalize();
 		enemy->Throw(throwDirection * 300000, 1);
 
