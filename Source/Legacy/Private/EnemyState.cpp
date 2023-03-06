@@ -4,6 +4,7 @@
 #include "EnemyState.h"
 
 #include "Enemy.h"
+#include "EnemyFSM.h"
 #include "LegacyPlayer.h"
 
 // Sets default values for this component's properties
@@ -38,9 +39,11 @@ void UEnemyState::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 	// ...
 }
 
-void UEnemyState::OnDamageProcess(int Amount)
+void UEnemyState::OnDamageProcess(int amount)
 {
-	// 데미지 입었을때 계산
-
+	// 데미지 빼고
+	hp = hp - amount;
+	// damage state (애님 재생 등)
+	me->enemyFSM->SetState(EEnemyState::DAMAGE);
 }
 

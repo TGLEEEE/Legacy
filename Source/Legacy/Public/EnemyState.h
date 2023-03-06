@@ -35,5 +35,5 @@ public:
 	UPROPERTY(EditAnywhere)
 	float mass = 100;
 
-	void OnDamageProcess(int Amount);
+	void OnDamageProcess(int amount);
 };
