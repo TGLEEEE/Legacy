@@ -13,6 +13,7 @@ enum class SpellState : uint8 {
 	Accio,
 	Depulso,
 	Grab,
+	Combo,
 	Cancel
 };
 
@@ -70,6 +71,22 @@ public:
 	void CastDepulso();
 	void CastGrab();
 
+	void SpellCombo();
+	void InSpellCombo();
+
+
+	//don't need
+	FVector initialPositionBeforeCombo;
+
+	UPROPERTY(EditAnywhere)
+	int32 comboStrength = 100;
+	bool didCombo;
+
+	FVector currentLocation;
+
+	bool didLevioso;
+
+
 	void SpellCancel();
 
 	bool isSpellCast;
@@ -107,7 +124,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float errorTolerance = 2;
-#pragma endregion 
+#pragma endregion
+
+	int32 comboCount = 0;
+
+
+	UPROPERTY(EditAnywhere)
+	TArray<class UArrowComponent*> arrowComponents;
+	UPROPERTY(EditAnywhere)
+	TArray<class UArrowComponent*> comboArrowComponents;
 
 	void DereferenceVariables();
 
