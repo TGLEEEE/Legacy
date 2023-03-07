@@ -44,15 +44,13 @@ void UEnemyFSM::BeginPlay()
 void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	/*
-	// 어떠한 상태더라도 bisintheair가 켜지면 intheair 상태로 전환한다
+
 	if (bIsInTheAir && !bDoOnce)
 	{
 		SetState(EEnemyState::INTHEAIR);
 		bDoOnce = true;
 	}
-	// bisintheair가 꺼지면 idle로 돌아간다
-	*/
+
 	switch (state)
 	{
 	case EEnemyState::IDLE:
@@ -93,8 +91,13 @@ void UEnemyFSM::TickIdle()
 		}
 	}
 
+	// 플레이어 감지하면 추격상태로 전환
+	if (FVector::Dist(me->GetActorLocation(), player->GetActorLocation()) < startChasingDistance)
+	{
+		SetState(EEnemyState::CHASE);
+	}
 
-	// 원점과 일정거리 이상 멀어지면 원점으로 복귀
+		// 아이들 상태에서 원점과 일정거리 이상 멀어지면 원점으로 복귀
 	if (FVector::Dist(originLoc, me->GetActorLocation()) >= distanceForReturnOrigin && !bIsReturning)
 	{
 		bIsReturning = true;
@@ -111,11 +114,6 @@ void UEnemyFSM::TickIdle()
 			}), 5.f, false);
 	}
 
-	// 플레이어 감지하면 추격상태로 전환
-	if (FVector::Dist(me->GetActorLocation(), player->GetActorLocation()) < startChasingDistance)
-	{
-		SetState(EEnemyState::CHASE);
-	}
 	// for debug
 	//UE_LOG(LogTemp, Warning, TEXT("timer : %f"), idleTimer);
 	//UE_LOG(LogTemp, Warning, TEXT("%f"), idleRandomLoc.X);
@@ -130,6 +128,7 @@ void UEnemyFSM::TickChase()
 	// 공격 가능 거리가 되면 공격으로 전환
 	if (FVector::Dist(me->GetActorLocation(), player->GetActorLocation()) < attackableDistance)
 	{
+		ai->StopMovement();
 		SetState(EEnemyState::ATTACK);
 	}
 	// 너무 멀어지면 Idle로 전환
@@ -147,6 +146,7 @@ void UEnemyFSM::TickAttack()
 	// 공격
 	if (attackTimer >= attackDelay)
 	{
+		// 공격 애님
 		UE_LOG(LogTemp, Error, TEXT("is attacking"));
 		attackTimer = 0;
 	}
@@ -160,18 +160,32 @@ void UEnemyFSM::TickAttack()
 void UEnemyFSM::TickInTheAir()
 {
 	// 공중에 떠서 이동 불가한 상태 (플레이어에게 Grab당한 상태 통제권x)
-		UE_LOG(LogTemp, Error, TEXT("is intheair"));
+	UE_LOG(LogTemp, Error, TEXT("is intheair"));
+
+	if (bIsInTheAir)
+	{
+		SetState(EEnemyState::IDLE);
+		bDoOnce = false;
+	}
+	// 바둥바둥 애님
+
 }
 
 void UEnemyFSM::TickDamage()
 {
 	// 피격시
 
+	// 애님 재생
+
+	// 애님 끝나는 노티파이 -> die로 분기할지 결정
+
 }
 
 void UEnemyFSM::TickDie()
 {
 	// 죽을 때
+
+	// 죽는 애님
 
 }
 

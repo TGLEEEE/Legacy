@@ -44,17 +44,17 @@ public:
 	UPROPERTY(EditAnywhere)
 	float maxIdleTime = 3.f;
 	UPROPERTY(EditAnywhere)
-	float radiusForIdleRandomLoc = 200.f;
+	float radiusForIdleRandomLoc = 300.f;
 	UPROPERTY(EditAnywhere)
-	float distanceForReturnOrigin = 500.f;
+	float distanceForReturnOrigin = 900.f;
 	UPROPERTY(EditAnywhere)
-	float startChasingDistance = 800.f;
+	float startChasingDistance = 1000.f;
 	UPROPERTY(EditAnywhere)
-	float attackableDistance = 200.f;
+	float attackableDistance = 400.f;
 	UPROPERTY(EditAnywhere)
-	float stopChaseDistance = 1200.f;
+	float stopChaseDistance = 2000.f;
 	UPROPERTY(EditAnywhere)
-	float attackDelay = 3.f;
+	float attackDelay = 2.f;
 
 	FVector idleRandomLoc;
 	FVector originLoc;
