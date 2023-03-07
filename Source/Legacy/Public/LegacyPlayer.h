@@ -72,13 +72,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UArrowComponent* grabHoverRegionArrowComponent;
 
-	UPROPERTY(EditAnywhere)
-	class UArrowComponent* comboHoverRegionArrowComponent1;
-	UPROPERTY(EditAnywhere)
-	class UArrowComponent* comboHoverRegionArrowComponent2;
-	UPROPERTY(EditAnywhere)
-	class UArrowComponent* comboHoverRegionArrowComponent3;
-
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Components")
 	class UMotionControllerComponent* leftHand;
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Components")
