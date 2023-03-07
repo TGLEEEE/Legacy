@@ -71,6 +71,15 @@ ALegacyPlayer::ALegacyPlayer()
 	grabHoverRegionArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("Grab Arrow Component"));
 	grabHoverRegionArrowComponent->SetupAttachment(rightHand);
 	grabHoverRegionArrowComponent->SetRelativeLocation(FVector(30, 10, 10));
+
+	//Bug: dont forget to set the location of the arrow components
+	comboHoverRegionArrowComponent1 = CreateDefaultSubobject<UArrowComponent>(TEXT("Combo 1 Arrow Component"));
+	comboHoverRegionArrowComponent1->SetupAttachment(cameraComp);
+	comboHoverRegionArrowComponent2 = CreateDefaultSubobject<UArrowComponent>(TEXT("Combo 2 Arrow Component"));
+	comboHoverRegionArrowComponent2->SetupAttachment(cameraComp);
+	comboHoverRegionArrowComponent3 = CreateDefaultSubobject<UArrowComponent>(TEXT("Combo 3 Arrow Component"));
+	comboHoverRegionArrowComponent3->SetupAttachment(cameraComp);
+
 }
 
 // Called when the game starts or when spawned
