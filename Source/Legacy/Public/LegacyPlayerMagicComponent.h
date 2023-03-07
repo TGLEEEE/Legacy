@@ -70,6 +70,11 @@ public:
 	void CastDepulso();
 	void CastGrab();
 
+	void SpellCombo();
+	FVector initialPositionBeforeCombo;
+	int32 comboStrength;
+	bool didCombo;
+
 	void SpellCancel();
 
 	bool isSpellCast;

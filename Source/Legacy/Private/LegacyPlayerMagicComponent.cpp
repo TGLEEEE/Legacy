@@ -56,7 +56,7 @@ void ULegacyPlayerMagicComponent::TickComponent(float DeltaTime, ELevelTick Tick
 void ULegacyPlayerMagicComponent::OnActionCastSpell()
 {
 	isSpellCast = true;
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - isSpellCast"));
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - isSpellCast"));
 }
 
 void ULegacyPlayerMagicComponent::OnActionGrabPressed()
@@ -193,6 +193,13 @@ void ULegacyPlayerMagicComponent::CastLevioso()
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::Cast Levioso - Lifting object"));
 	}
 
+	if (isSpellCombo && grabbedComponent){
+		if (!didCombo) { initialPositionBeforeCombo = me->physicsHandleComp->GetGrabbedComponent()->GetComponentLocation(); }
+		SpellCombo();
+
+		//bug fix: need to do isSpellCombo = false???
+	}
+
 
 	if (isGrab) { spellstate = SpellState::Grab; }
 	if (isAccio) { spellstate = SpellState::Accio; }
@@ -226,14 +233,33 @@ void ULegacyPlayerMagicComponent::CastAccio()
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::Cast Levioso - Lifting object"));
 	}
 
+	if (isSpellCombo && grabbedComponent){
+		if (!didCombo) { initialPositionBeforeCombo = me->physicsHandleComp->GetGrabbedComponent()->GetComponentLocation(); }
+		SpellCombo();
+		//bug fix: need to do isSpellCombo = false???
+	}
+
 	//bug temporary
-	if (isSpellCancel) { spellstate = SpellState::Cancel; }
 	if (isDepulso) { spellstate = SpellState::Depulso; }
+	if (isGrab) { spellstate = SpellState::Grab; }
+	if (isSpellCancel) { spellstate = SpellState::Cancel; }
 
 	//bug fix
 	//timer => isAccio = false
 
 }
+
+
+void ULegacyPlayerMagicComponent::SpellCombo()
+{
+	FVector currentLocation = grabbedComponent->GetComponentLocation();
+	FVector comboDirection = me->GetActorForwardVector();
+	comboDirection.Normalize();				//maybe already normalized
+
+	me->physicsHandleComp->SetTargetLocation(currentLocation + comboDirection * comboStrength);
+}
+
+
 
 void ULegacyPlayerMagicComponent::CastDepulso()
 {
@@ -295,6 +321,7 @@ void ULegacyPlayerMagicComponent::CastGrab()
 }
 
 
+
 void ULegacyPlayerMagicComponent::DetectTarget()
 {
 	//if the player casts a spell on a detected component, return
@@ -344,6 +371,16 @@ void ULegacyPlayerMagicComponent::DereferenceVariables()
 	//Bug: might need to take this to rest
 	me->physicsHandleComp->ReleaseComponent();
 
+	isAccio = false;
+	isLevioso = false;
+	isDepulso = false;
+	isGrab = false;
+	isSpellCombo = false;
+
+	isSpellCancel = false;
+
+	didCombo = false;
+
 	//dereference grabbedComponent
 	grabbedComponent = nullptr;
 }
@@ -353,13 +390,6 @@ void ULegacyPlayerMagicComponent::DereferenceVariables()
 
 void ULegacyPlayerMagicComponent::SpellCancel()
 {
-	isAccio = false;
-	isLevioso = false;
-	isDepulso = false;
-	isGrab = false;
-	isSpellCombo = false;
-
-	isSpellCancel = false;
 
 	DereferenceVariables();
 
