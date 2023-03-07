@@ -4,7 +4,6 @@
 #include "LegacyPlayerMagicComponent.h"
 #include "EnhancedInputComponent.h"
 #include "LegacyPlayer.h"
-#include "Kismet/KismetSystemLibrary.h"
 
 #include "Camera/CameraComponent.h"
 #include "Enemy.h"
@@ -12,11 +11,19 @@
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
+
 
 
 void ULegacyPlayerMagicComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	me->GetComponents(arrowComponents);
+	comboArrowComponents.Init(false, arrowComponents.Num() - 3);
+	for(int32 i = 0; i < comboArrowComponents.Num(); ++i){
+		comboArrowComponents[i] = arrowComponents[i + 3];
+	}
 }
 
 void ULegacyPlayerMagicComponent::SetupPlayerInput(UInputComponent* PlayerInputComponent)
@@ -39,6 +46,8 @@ void ULegacyPlayerMagicComponent::SetupPlayerInput(UInputComponent* PlayerInputC
 		inputSystem->BindAction(me->iA_SpellCombo, ETriggerEvent::Triggered, this, &ULegacyPlayerMagicComponent::OnActionSpellComboPressed);
 		inputSystem->BindAction(me->iA_SpellCancel, ETriggerEvent::Triggered, this, &ULegacyPlayerMagicComponent::OnActionSpellCancelPressed);
 	}
+
+
 }
 
 void ULegacyPlayerMagicComponent::TickComponent(float DeltaTime, ELevelTick TickType,
@@ -49,6 +58,13 @@ void ULegacyPlayerMagicComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	DetectTarget();
 
 	UpdateSpellState();
+
+	if(isSpellCombo){
+		UE_LOG(LogTemp, Warning, TEXT("TickComponent - isSpellCombo"));
+	}
+	else{
+		UE_LOG(LogTemp, Warning, TEXT("TickComponent - !isSpellCombo"));
+	}
 
 }
 
@@ -112,12 +128,16 @@ void ULegacyPlayerMagicComponent::OnActionSpell3Released()
 void ULegacyPlayerMagicComponent::OnActionSpellComboPressed()
 {
 	isSpellCombo = true;
+	comboCount++;
+	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionSpellComboPressed - isSpellComboo"));
 }
 
 //bug: temporary; dont need this because will do timer
 void ULegacyPlayerMagicComponent::OnActionSpellCancelPressed()
 {
 	isSpellCancel = true;
+	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionSpellCancelPressed - isSpellCancel"));
+
 }
 
 
@@ -148,6 +168,10 @@ void ULegacyPlayerMagicComponent::UpdateSpellState()
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::UpdateSpellState - SpellState::Grab"));
 		CastGrab();
 		break;
+	case SpellState::Combo:
+		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::UpdateSpellState - SpellState::Combo"));
+		SpellCombo();
+		break;
 	case SpellState::Cancel:
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::UpdateSpellState - SpellState::Cancel"));
 		SpellCancel();
@@ -163,6 +187,7 @@ void ULegacyPlayerMagicComponent::CheckSpellState()
 	else if (isAccio) { spellstate = SpellState::Accio; }
 	else if (isDepulso) { spellstate = SpellState::Depulso; }
 	else if (isGrab) { spellstate = SpellState::Grab; }
+	//else if (isSpellCombo) { spellstate = SpellState::Combo;  }
 	else if (isSpellCancel) { spellstate = SpellState::Cancel; }
 }
 
@@ -187,30 +212,55 @@ void ULegacyPlayerMagicComponent::CastLevioso()
 		//grab the component with physics handle
 		me->physicsHandleComp->GrabComponentAtLocation(grabbedComponent, NAME_None, grabbedComponent->GetComponentLocation());
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::Cast Levioso - Make detected component the grabbed component"));
+		currentLocation = objectInitialHeight + objectOffsetHeight;
 	}
 	else if (grabbedComponent){
-		me->physicsHandleComp->SetTargetLocation(objectInitialHeight + objectOffsetHeight);
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::Cast Levioso - Lifting object"));
+		grabbedComponent->SetSimulatePhysics(true);
+		me->physicsHandleComp->SetTargetLocation(currentLocation);
 	}
 
-	if (isSpellCombo && grabbedComponent){
-		if (!didCombo) { initialPositionBeforeCombo = me->physicsHandleComp->GetGrabbedComponent()->GetComponentLocation(); }
+	if(isSpellCombo){
 		SpellCombo();
-
-		//bug fix: need to do isSpellCombo = false???
 	}
-
 
 	if (isGrab) { spellstate = SpellState::Grab; }
 	if (isAccio) { spellstate = SpellState::Accio; }
 	if (isDepulso) { spellstate = SpellState::Depulso; }
-
+	//if (isSpellCombo) { spellstate = SpellState::Combo; }
 	if(isSpellCancel){ spellstate = SpellState::Cancel; }
 }
+
+void ULegacyPlayerMagicComponent::SpellCombo()
+{
+	me->physicsHandleComp->SetInterpolationSpeed(60);
+
+	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::SpellCombo "));
+	if (!grabbedComponent) { spellstate = SpellState::Rest; return; }
+
+	FVector comboDirection = me->GetActorForwardVector();
+	comboDirection.Normalize();				//maybe already normalized
+
+
+	//if(comboCount < comboArrowComponents.Num()){
+	if(comboCount < 5){
+		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::SpellCombo"));
+		currentLocation += comboDirection * 100;
+		me->physicsHandleComp->SetTargetLocation(currentLocation);
+		isSpellCombo = false;
+	}
+	else{
+		comboCount = 0;
+		spellstate = SpellState::Rest;
+	}
+
+	
+}
+
 
 void ULegacyPlayerMagicComponent::CastAccio()
 {
 	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAccio"));
+
 
 	me->physicsHandleComp->SetLinearDamping(10);
 	me->physicsHandleComp->SetLinearStiffness(50);
@@ -228,20 +278,18 @@ void ULegacyPlayerMagicComponent::CastAccio()
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::Cast Levioso - Make detected component the grabbed component"));
 	}
 	else if (grabbedComponent) {
+		grabbedComponent->SetSimulatePhysics(true);
+
 		me->physicsHandleComp->SetTargetLocation(me->accioHoverRegionArrowComponent->GetComponentLocation());
 
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::Cast Levioso - Lifting object"));
 	}
 
-	if (isSpellCombo && grabbedComponent){
-		if (!didCombo) { initialPositionBeforeCombo = me->physicsHandleComp->GetGrabbedComponent()->GetComponentLocation(); }
-		SpellCombo();
-		//bug fix: need to do isSpellCombo = false???
-	}
 
 	//bug temporary
 	if (isDepulso) { spellstate = SpellState::Depulso; }
 	if (isGrab) { spellstate = SpellState::Grab; }
+	//if (isSpellCombo) { spellstate = SpellState::Combo; }
 	if (isSpellCancel) { spellstate = SpellState::Cancel; }
 
 	//bug fix
@@ -250,14 +298,6 @@ void ULegacyPlayerMagicComponent::CastAccio()
 }
 
 
-void ULegacyPlayerMagicComponent::SpellCombo()
-{
-	FVector currentLocation = grabbedComponent->GetComponentLocation();
-	FVector comboDirection = me->GetActorForwardVector();
-	comboDirection.Normalize();				//maybe already normalized
-
-	me->physicsHandleComp->SetTargetLocation(currentLocation + comboDirection * comboStrength);
-}
 
 
 
@@ -272,7 +312,7 @@ void ULegacyPlayerMagicComponent::CastDepulso()
 
 		enemy->GetCapsuleComponent()->SetSimulatePhysics(false);
 
-		FVector throwDirection = me->GetActorForwardVector() - enemy->GetActorLocation();
+		FVector throwDirection = enemy->GetActorLocation() - me->GetActorForwardVector();
 		throwDirection.Normalize();
 		enemy->Throw(throwDirection * 300000, 1);
 
@@ -380,6 +420,11 @@ void ULegacyPlayerMagicComponent::DereferenceVariables()
 	isSpellCancel = false;
 
 	didCombo = false;
+	comboCount = 0;
+
+	didLevioso = false;
+
+	enemy = nullptr;
 
 	//dereference grabbedComponent
 	grabbedComponent = nullptr;
