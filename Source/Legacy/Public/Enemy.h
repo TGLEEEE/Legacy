@@ -28,7 +28,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class UEnemyFSM* enemyFSM;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UEnemyState* enemyState;
 
 	UFUNCTION(BlueprintCallable)

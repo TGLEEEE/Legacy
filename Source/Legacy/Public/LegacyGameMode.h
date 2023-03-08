@@ -14,4 +14,24 @@ class LEGACY_API ALegacyGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+public:
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
+
+	UPROPERTY()
+	int worldTime;
+	UPROPERTY()
+	int worldTimeSec;
+	UPROPERTY()
+	int worldTimeMin;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> timerWidgetFactory;
+	UPROPERTY()
+	class UUserWidget* timerWidgetUI;
+
+	FTimerHandle worldtimerHandle;
+
+	void WorldTimer();
+	
 };

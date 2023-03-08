@@ -48,21 +48,25 @@ public:
 	UPROPERTY(EditAnywhere)
 	float distanceForReturnOrigin = 900.f;
 	UPROPERTY(EditAnywhere)
-	float startChasingDistance = 1000.f;
+	float startChasingDistance = 1800.f;
 	UPROPERTY(EditAnywhere)
-	float attackableDistance = 400.f;
+	float attackableDistance = 300.f;
 	UPROPERTY(EditAnywhere)
-	float stopChaseDistance = 2000.f;
+	float stopChaseDistance = 3000.f;
 	UPROPERTY(EditAnywhere)
 	float attackDelay = 2.f;
+	UPROPERTY()
+	class UEnemyAnim* enemyAnim;
 
 	FVector idleRandomLoc;
 	FVector originLoc;
 	float idleTimer;
-	float attackTimer;
+	float attackTimer = 2.f;
 	bool bIsReturning;
 	bool bIsInTheAir;
 	bool bDoOnce;
+	bool bIsMoving;
+	bool bDamageAnimDoOnce;
 
 	void TickIdle();
 	void TickChase();

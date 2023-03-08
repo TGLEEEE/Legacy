@@ -5,6 +5,7 @@
 #include "Enemy.h"
 #include "NavigationSystem.h"
 #include "AIController.h"
+#include "EnemyAnim.h"
 #include "EngineUtils.h"
 #include "LegacyPlayer.h"
 #include "Components/CapsuleComponent.h"
@@ -37,6 +38,8 @@ void UEnemyFSM::BeginPlay()
 	originLoc = me->GetActorLocation();
 	// player 캐스팅
 	player = Cast<ALegacyPlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter());
+	// anim instance 캐스팅
+	enemyAnim = Cast<UEnemyAnim>(me->GetMesh()->GetAnimInstance());
 }
 
 
@@ -44,6 +47,8 @@ void UEnemyFSM::BeginPlay()
 void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	enemyAnim->bIsInTheAir = bIsInTheAir;
 
 	if (bIsInTheAir && !bDoOnce)
 	{
@@ -76,6 +81,15 @@ void UEnemyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 
 void UEnemyFSM::TickIdle()
 {
+	if (!bIsMoving)
+	{
+		enemyAnim->animState = EEnemyState::IDLE;
+	}
+	else
+	{
+		enemyAnim->animState = EEnemyState::CHASE;
+	}
+
 	// 일정 시간동안 멍때림
 	idleTimer += GetWorld()->GetDeltaSeconds();
 
@@ -83,11 +97,13 @@ void UEnemyFSM::TickIdle()
 	if (idleTimer >= maxIdleTime && !bIsReturning)
 	{
 		auto result = ai->MoveToLocation(idleRandomLoc);
+		bIsMoving = true;
 		// 도착했다면 다시 멍때림
 		if (result == EPathFollowingRequestResult::AlreadyAtGoal)
 		{
 			UpdateRandomLoc(radiusForIdleRandomLoc, idleRandomLoc);
 			idleTimer = 0;
+			bIsMoving = false;
 		}
 	}
 
@@ -102,6 +118,7 @@ void UEnemyFSM::TickIdle()
 	{
 		bIsReturning = true;
 		ai->MoveToLocation(originLoc);
+		bIsMoving = true;
 
 		FTimerHandle hd;
 		GetWorld()->GetTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]()
@@ -111,6 +128,7 @@ void UEnemyFSM::TickIdle()
 				UpdateRandomLoc(radiusForIdleRandomLoc, idleRandomLoc);
 				idleTimer = 0;
 				bIsReturning = false;
+				bIsMoving = false;
 			}), 5.f, false);
 	}
 
@@ -123,6 +141,8 @@ void UEnemyFSM::TickIdle()
 
 void UEnemyFSM::TickChase()
 {
+	enemyAnim->animState = EEnemyState::CHASE;
+
 	// 플레이어 위치를 향해 이동
 	ai->MoveToLocation(player->GetActorLocation());
 	// 공격 가능 거리가 되면 공격으로 전환
@@ -142,12 +162,14 @@ void UEnemyFSM::TickChase()
 
 void UEnemyFSM::TickAttack()
 {
+	enemyAnim->animState = EEnemyState::ATTACK;
+
 	attackTimer += GetWorld()->GetDeltaSeconds();
 	// 공격
 	if (attackTimer >= attackDelay)
 	{
 		// 공격 애님
-		UE_LOG(LogTemp, Error, TEXT("is attacking"));
+		enemyAnim->bDoAttack = true;
 		attackTimer = 0;
 	}
 
@@ -159,6 +181,8 @@ void UEnemyFSM::TickAttack()
 
 void UEnemyFSM::TickInTheAir()
 {
+	enemyAnim->animState = EEnemyState::INTHEAIR;
+
 	// 공중에 떠서 이동 불가한 상태 (플레이어에게 Grab당한 상태 통제권x)
 	UE_LOG(LogTemp, Error, TEXT("is intheair"));
 
@@ -173,16 +197,26 @@ void UEnemyFSM::TickInTheAir()
 
 void UEnemyFSM::TickDamage()
 {
-	// 피격시
+	if (!bDamageAnimDoOnce)
+	{
+		bDamageAnimDoOnce = true;
 
-	// 애님 재생
+		EEnemyState temp = state;
+		enemyAnim->animState = EEnemyState::DAMAGE;
 
-	// 애님 끝나는 노티파이 -> die로 분기할지 결정
-
+		FTimerHandle hd;
+		GetWorld()->GetTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]()
+			{
+				SetState(temp);
+				bDamageAnimDoOnce = false;
+			}), 0.2f, false);
+	}
 }
 
 void UEnemyFSM::TickDie()
 {
+	enemyAnim->animState = EEnemyState::DIE;
+
 	// 죽을 때
 
 	// 죽는 애님
