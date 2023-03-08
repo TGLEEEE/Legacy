@@ -12,6 +12,7 @@ enum class SpellState : uint8 {
 	Levioso,
 	Accio,
 	Depulso,
+	AvadaKedavra,
 	Grab,
 	Cancel
 };
@@ -76,6 +77,7 @@ public:
 	void CastLevioso();
 	void CastAccio();
 	void CastDepulso();
+	void CastAvadaKedavra();
 	void CastGrab();
 	void SpellCombo();
 	void SpellCancel();
@@ -108,5 +110,11 @@ public:
 
 	void DereferenceVariables();
 
+	//fx
+	UPROPERTY(EditAnywhere)
+	class UNiagaraSystem* avadaKedavraNiagara;
+
+	UPROPERTY(EditAnywhere)
+	class UNiagaraComponent* avadaKedavraNiagaraComponent;
 
 };

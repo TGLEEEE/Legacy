@@ -13,7 +13,8 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "EnemyFSM.h"
-
+#include "Niagara/Public/NiagaraFunctionLibrary.h"
+#include "Niagara/Public/NiagaraComponent.h"
 
 void ULegacyPlayerMagicComponent::BeginPlay()
 {
@@ -98,6 +99,7 @@ void ULegacyPlayerMagicComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	DetectTarget();
 
 	UpdateSpellState();
+	CastAvadaKedavra();
 }
 
 
@@ -115,6 +117,9 @@ void ULegacyPlayerMagicComponent::UpdateSpellState()
 			break;
 		case SpellState::Depulso:
 			CastDepulso();
+			break;
+		case SpellState::AvadaKedavra:
+			CastAvadaKedavra();
 			break;
 		case SpellState::Grab:
 			CastGrab();
@@ -214,6 +219,7 @@ void ULegacyPlayerMagicComponent::CastAccio()
 void ULegacyPlayerMagicComponent::SpellCombo()
 {
 	//enemy->enemyFSM->bIsInTheAir = true;
+	if (!enemy) { return; }
 	enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
 
 	me->physicsHandleComp->SetInterpolationSpeed(100);
@@ -241,6 +247,8 @@ void ULegacyPlayerMagicComponent::SpellCombo()
 void ULegacyPlayerMagicComponent::CastDepulso()
 {
 	//enemy->enemyFSM->bIsInTheAir = true;
+	if (!enemy) { return; }
+
 	enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
 
 	enemy = Cast<AEnemy>(detectedComponent->GetOwner());
@@ -258,6 +266,14 @@ void ULegacyPlayerMagicComponent::CastDepulso()
 		isDepulso = false;
 		spellstate = SpellState::Rest;
 	}
+}
+
+void ULegacyPlayerMagicComponent::CastAvadaKedavra()
+{
+	avadaKedavraNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(avadaKedavraNiagara, me->staticMeshCompWand, NAME_None, FVector(0), FRotator(0), 
+		EAttachLocation::KeepRelativeOffset, true, true, ENCPoolMethod::None, true);
+
+	//avadaKedavraNiagaraComponent.
 }
 
 void ULegacyPlayerMagicComponent::CastGrab()
