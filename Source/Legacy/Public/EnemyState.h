@@ -35,5 +35,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	float mass = 100;
 
+	UFUNCTION(BlueprintCallable)
 	void OnDamageProcess(int amount);
 };
