@@ -101,8 +101,6 @@ void ULegacyPlayerMagicComponent::TickComponent(float DeltaTime, ELevelTick Tick
 }
 
 
-
-
 void ULegacyPlayerMagicComponent::UpdateSpellState()
 {
 	switch (spellstate) {
@@ -242,7 +240,6 @@ void ULegacyPlayerMagicComponent::SpellCombo()
 
 void ULegacyPlayerMagicComponent::CastDepulso()
 {
-
 	//enemy->enemyFSM->bIsInTheAir = true;
 	enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
 
@@ -261,13 +258,10 @@ void ULegacyPlayerMagicComponent::CastDepulso()
 		isDepulso = false;
 		spellstate = SpellState::Rest;
 	}
-
-		
 }
 
 void ULegacyPlayerMagicComponent::CastGrab()
 {
-
 	me->physicsHandleComp->SetLinearDamping(5);
 	me->physicsHandleComp->SetLinearStiffness(50);
 	me->physicsHandleComp->SetInterpolationSpeed(60);
@@ -307,9 +301,9 @@ void ULegacyPlayerMagicComponent::DetectTarget()
 	//if the player casts a spell on a detected component, return
 	if (grabbedComponent) { return; }
 
-	FVector wandHandPosition = me->rightHand->GetComponentLocation();
-	FVector traceStartLocation = wandHandPosition + me->rightHand->GetForwardVector() * detectionRadius;				//add with detection radius so that the trace doesn't start from the back of the camera
-	FVector traceEndLocation = traceStartLocation + me->rightHand->GetForwardVector() * 100000;
+	FVector wandHandPosition = me->staticMeshCompWand->GetComponentLocation();
+	FVector traceStartLocation = wandHandPosition + me->staticMeshCompWand->GetForwardVector() * detectionRadius;				//add with detection radius so that the trace doesn't start from the back of the camera
+	FVector traceEndLocation = traceStartLocation + me->staticMeshCompWand->GetForwardVector() * 100000;
 
 	TEnumAsByte<ECollisionChannel> traceChannel;
 	traceChannel = ECollisionChannel::ECC_Visibility;
@@ -359,10 +353,12 @@ void ULegacyPlayerMagicComponent::DereferenceVariables()
 	isSpellCancel = false;
 
 	comboCount = 0;
-	//enemy->enemyFSM->bIsInTheAir = false;
-	enemy->enemyFSM->SetState(EEnemyState::IDLE);
+	if(enemy){
+		//enemy->enemyFSM->bIsInTheAir = false;
+		enemy->enemyFSM->SetState(EEnemyState::IDLE);
+		enemy = nullptr;
+	}
 
-	enemy = nullptr;
 
 	//dereference grabbedComponent
 	grabbedComponent = nullptr;
