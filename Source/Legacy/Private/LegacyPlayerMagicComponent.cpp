@@ -273,7 +273,10 @@ void ULegacyPlayerMagicComponent::CastAvadaKedavra()
 	avadaKedavraNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(avadaKedavraNiagara, me->staticMeshCompWand, NAME_None, FVector(0), FRotator(0), 
 		EAttachLocation::KeepRelativeOffset, true, true, ENCPoolMethod::None, true);
 
-	//avadaKedavraNiagaraComponent.
+	//bug: fill this in
+	/avadaKedavraNiagaraComponent.SetNiagaraVariableVec3(FString("");
+	avadaKedavraNiagaraComponent.SetNiagaraVariableVec3(FString("");
+	avadaKedavraNiagaraComponent.SetNiagaraVariableVec3(FString("");
 }
 
 void ULegacyPlayerMagicComponent::CastGrab()
