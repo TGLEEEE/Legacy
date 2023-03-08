@@ -16,6 +16,13 @@ AEnemy::AEnemy()
 
 	enemyFSM = CreateDefaultSubobject<UEnemyFSM>(TEXT("FSM"));
 	enemyState = CreateDefaultSubobject<UEnemyState>(TEXT("Enemy State Comp"));
+
+	ConstructorHelpers::FClassFinder<UAnimInstance>tempAnimClass(TEXT("/Script/CoreUObject.Class'/Script/Legacy.EnemyAnim'"));
+    if (tempAnimClass.Succeeded())
+    {
+		GetMesh()->SetAnimInstanceClass(tempAnimClass.Class);
+    }
+
 }
 
 // Called when the game starts or when spawned
@@ -46,7 +53,7 @@ void AEnemy::Throw(FVector force, int Amount)
 	// 날려버리자
 	enemyFSM->ai->StopMovement();
 	enemyFSM->SetState(EEnemyState::INTHEAIR);
-	GetCharacterMovement()->Launch((force + (FVector::UpVector * force.Length() / 6)) / enemyState->mass);
+	GetCharacterMovement()->Launch((force + (FVector::UpVector * force.Length() / 10)) / enemyState->mass);
 	// 랜덤하게 로테이션 변경
 	int p = FMath::RandRange(0, 360);
 	int y = FMath::RandRange(0, 360);
