@@ -53,24 +53,34 @@ ALegacyPlayer::ALegacyPlayer()
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/MannequinsXR/Meshes/SKM_MannyXR_left.SKM_MannyXR_left'"));
 	if (tempMesh.Succeeded()) {
 		leftHandMesh->SetSkeletalMesh(tempMesh.Object);
-		leftHandMesh->SetRelativeLocationAndRotation(FVector(-2.981260, -3.500000, 4.561753), FRotator(-25.000000, -179.999999, 89.999998));
+		leftHandMesh->SetRelativeLocationAndRotation(FVector(-2.981260, -3.5, 4.561753), FRotator(-25, -180, 89.999998));
+
 	}
 	
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> tempMesh2(TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/MannequinsXR/Meshes/SKM_MannyXR_right.SKM_MannyXR_right'"));
 	if (tempMesh2.Succeeded()) {
 		rightHandMesh->SetSkeletalMesh(tempMesh2.Object);
-		rightHandMesh->SetRelativeLocationAndRotation(FVector((120, 60 ,80)), FRotator(0, -10.000000, -119.999999));
+		rightHandMesh->SetRelativeLocationAndRotation(FVector((-2.981260, 3.5, 4.561753)), FRotator(25, 0.000000, 89.999998));
 	}
 #pragma endregion VR
 
 	//update
+
+	staticMeshCompWand = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Box Component Wand"));
+	staticMeshCompWand->SetupAttachment(rightHandMesh);
+	staticMeshCompWand->SetRelativeLocation(FVector(18.512654, 31.897307, -5.600729));
+	staticMeshCompWand->SetRelativeRotation(FRotator(0.000000, 56.993283, 0.000000));
+	//Temporary
+	staticMeshCompWand->SetRelativeScale3D(FVector(0.611458, 0.025521, 0.040060));
+
 	accioHoverRegionArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("Accio Arrow Component"));
 	accioHoverRegionArrowComponent->SetupAttachment(GetRootComponent());
 	accioHoverRegionArrowComponent->SetRelativeLocation(FVector(10, 10, 10));
 
 	grabHoverRegionArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("Grab Arrow Component"));
-	grabHoverRegionArrowComponent->SetupAttachment(rightHand);
-	grabHoverRegionArrowComponent->SetRelativeLocation(FVector(30, 10, 10));
+	grabHoverRegionArrowComponent->SetupAttachment(staticMeshCompWand);
+	grabHoverRegionArrowComponent->SetRelativeLocation(FVector(300, 0, 0));
+
 
 
 }
