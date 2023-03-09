@@ -59,15 +59,14 @@ void UEnemyState::Throw(FVector force, int Amount)
 	me->enemyFSM->SetState(EEnemyState::INTHEAIR);
 	me->GetCharacterMovement()->Launch((force + (FVector::UpVector * force.Length() / 10)) / mass);
 	// 랜덤하게 로테이션 변경
-	//int p = FMath::RandRange(0, 360);
-	//int y = FMath::RandRange(0, 360);
-	//int r = FMath::RandRange(0, 360);
-	//me->SetActorRotation(FRotator(p, y, r));
+	int p = FMath::RandRange(0, 360);
+	int y = FMath::RandRange(0, 360);
+	int r = FMath::RandRange(0, 360);
+	me->SetActorRotation(FRotator(p, y, r));
 
 	// 날린후?
 	FTimerHandle hd;
 	GetWorld()->GetTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]() {
-		me->SetActorRotation(FRotator::ZeroRotator);
 		me->enemyFSM->SetState(EEnemyState::IDLE);
 		}), 1.5f, false);
 
