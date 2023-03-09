@@ -63,6 +63,7 @@ public:
 	float idleTimer;
 	float attackTimer = 2.f;
 	bool bIsReturning;
+	UPROPERTY(EditAnywhere)
 	bool bIsInTheAir;
 	bool bDoOnce;
 	bool bIsMoving;
