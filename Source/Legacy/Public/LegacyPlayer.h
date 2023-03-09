@@ -53,6 +53,14 @@ public:
 	class UInputAction* iA_Spell2;
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
 	class UInputAction* iA_Spell3;
+
+	//update
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Menu")
+	class UInputAction* iA_UIActivation;
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Menu")
+	class UInputAction* iA_UISelection;
+
+
 #pragma endregion 
 
 #pragma region Components
@@ -66,6 +74,10 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class UPhysicsHandleComponent* physicsHandleComp;
+
+	//update
+	UPROPERTY(EditAnywhere)
+	class ULegacyPlayerUIComponent* uIComponent;
 
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* staticMeshCompWand;

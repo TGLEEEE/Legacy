@@ -21,7 +21,6 @@ void ULegacyPlayerMagicComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-
 }
 
 void ULegacyPlayerMagicComponent::SetupPlayerInput(UInputComponent* PlayerInputComponent)
@@ -101,6 +100,7 @@ void ULegacyPlayerMagicComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
 	UpdateSpellState();
 	CastAvadaKedavra();
+
 }
 
 
@@ -271,14 +271,37 @@ void ULegacyPlayerMagicComponent::CastDepulso()
 
 void ULegacyPlayerMagicComponent::CastAvadaKedavra()
 {
-	avadaKedavraNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(avadaKedavraNiagara, me->staticMeshCompWand, NAME_None, FVector(0), FRotator(0), 
-		EAttachLocation::KeepRelativeOffset, true, true, ENCPoolMethod::None, true);
+	if(!isAvadaKedavraCast){
+		avadaKedavraNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(avadaKedavraNiagara, me->staticMeshCompWand, NAME_None, FVector(0), FRotator(0), 
+			EAttachLocation::KeepRelativeOffset, true, true, ENCPoolMethod::None, true);
+		isAvadaKedavraCast = true;
+	}
 
-	//bug: fill this in
-	//avadaKedavraNiagaraComponent.SetNiagaraVariableVec3(FString("");
-	//avadaKedavraNiagaraComponent.SetNiagaraVariableVec3(FString("");
-	//avadaKedavraNiagaraComponent.SetNiagaraVariableVec3(FString("");
+	//need to do line trace
+	FVector startPosition = me->staticMeshCompWand->GetComponentLocation();
+	FVector endPosition;
+	FVector impactNormal;
+	FHitResult hitResult;
+	FCollisionQueryParams params;
+	params.AddIgnoredActor(me);
+
+	bool isHit = GetWorld()->LineTraceSingleByChannel(hitResult, startPosition, startPosition + me->staticMeshCompWand->GetForwardVector() * 1000000, ECollisionChannel::ECC_Visibility, params);
+
+	if (isHit) {
+		endPosition = hitResult.ImpactPoint;
+		impactNormal = hitResult.ImpactNormal;					//not used
+		if(avadaKedavraNiagaraComponent){
+			avadaKedavraNiagaraComponent->SetNiagaraVariableVec3(FString("beamStartPoint"), startPosition);
+			avadaKedavraNiagaraComponent->SetNiagaraVariableVec3(FString("beamEndPoint"), endPosition);
+			avadaKedavraNiagaraComponent->SetNiagaraVariableVec3(FString("impactNormal"), impactNormal);
+		}
+	}
+
+	////bug: fill this in
+	//if(enemy){
+	//}
 }
+
 
 void ULegacyPlayerMagicComponent::CastGrab()
 {
@@ -338,7 +361,7 @@ void ULegacyPlayerMagicComponent::DetectTarget()
 	if (isHit) {
 		enemy = Cast<AEnemy>(hitResult.GetActor());
 
-		//bug temporary
+		//bug: temporary
 		detectedComponent = hitResult.GetComponent();
 
 		if(enemy){
