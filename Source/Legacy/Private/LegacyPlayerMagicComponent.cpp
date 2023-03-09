@@ -160,8 +160,10 @@ void ULegacyPlayerMagicComponent::CastLevioso()
 		//grab the component with physics handle
 		me->physicsHandleComp->GrabComponentAtLocation(grabbedComponent, NAME_None, grabbedComponent->GetComponentLocation());
 		currentLocation = objectInitialHeight + objectOffsetHeight;
-		//enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
-		enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
+		if(enemy){
+			//enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
+			enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
+		}
 	}
 	else if (grabbedComponent){
 		grabbedComponent->SetSimulatePhysics(true);
@@ -196,8 +198,10 @@ void ULegacyPlayerMagicComponent::CastAccio()
 		//grab the component with physics handle
 		me->physicsHandleComp->GrabComponentAtLocation(grabbedComponent, NAME_None, grabbedComponent->GetComponentLocation());
 
-		//enemy->enemyFSM->bIsInTheAir = true;
-		enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
+		if (enemy) {
+			//enemy->enemyFSM->bIsInTheAir = true;
+			enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
+		}
 	}
 	else if (grabbedComponent) {
 		grabbedComponent->SetSimulatePhysics(true);
