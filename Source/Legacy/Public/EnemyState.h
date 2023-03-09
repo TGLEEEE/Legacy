@@ -37,4 +37,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OnDamageProcess(int amount);
+
+	UFUNCTION()
+	void Throw(FVector force, int Amount);
 };

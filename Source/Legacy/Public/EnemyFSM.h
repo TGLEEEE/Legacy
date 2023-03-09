@@ -48,11 +48,11 @@ public:
 	UPROPERTY(EditAnywhere)
 	float distanceForReturnOrigin = 900.f;
 	UPROPERTY(EditAnywhere)
-	float startChasingDistance = 1800.f;
+	float startChasingDistance = 1200.f;
 	UPROPERTY(EditAnywhere)
 	float attackableDistance = 300.f;
 	UPROPERTY(EditAnywhere)
-	float stopChaseDistance = 3000.f;
+	float stopChaseDistance = 2000.f;
 	UPROPERTY(EditAnywhere)
 	float attackDelay = 2.f;
 	UPROPERTY()
@@ -63,6 +63,7 @@ public:
 	float idleTimer;
 	float attackTimer = 2.f;
 	bool bIsReturning;
+	UPROPERTY(EditAnywhere)
 	bool bIsInTheAir;
 	bool bDoOnce;
 	bool bIsMoving;
