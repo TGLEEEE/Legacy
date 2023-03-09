@@ -12,8 +12,8 @@ enum class SpellState : uint8 {
 	Levioso,
 	Accio,
 	Depulso,
+	AvadaKedavra,
 	Grab,
-	Combo,
 	Cancel
 };
 
@@ -41,24 +41,17 @@ public:
 	UFUNCTION()
 	void OnActionSpell1Pressed();
 	UFUNCTION()
-	void OnActionSpell1Released();
-	UFUNCTION()
-
 	void OnActionSpell2Pressed();
 	UFUNCTION()
-	void OnActionSpell2Released();
-
-	UFUNCTION()
 	void OnActionSpell3Pressed();
-	UFUNCTION()
-	void OnActionSpell3Released();
+
 
 	UFUNCTION()
 	void OnActionSpellComboPressed();
 
 	UFUNCTION()
 	void OnActionSpellCancelPressed();
-#pragma endregion Input Action
+#pragma endregion 
 
 #pragma region Magic
 	void UpdateSpellState();
@@ -66,37 +59,28 @@ public:
 
 	SpellState spellstate;
 
-	void CastLevioso();
-	void CastAccio();
-	void CastDepulso();
-	void CastGrab();
-
-	void SpellCombo();
-	void InSpellCombo();
-
-
-	//don't need
-	FVector initialPositionBeforeCombo;
-
-	UPROPERTY(EditAnywhere)
-	int32 comboStrength = 100;
-	bool didCombo;
+	int32 comboCount = 0;
 
 	FVector currentLocation;
 
-	bool didLevioso;
-
-
-	void SpellCancel();
+	bool isLevioso;
+	bool isAccio;
+	bool isDepulso;
 
 	bool isSpellCast;
 	bool isGrab;
 	bool isSpellCombo;
 	bool isSpellCancel;
+#pragma endregion 
 
-	bool isLevioso;
-	bool isAccio;
-	bool isDepulso;
+#pragma region Spells
+	void CastLevioso();
+	void CastAccio();
+	void CastDepulso();
+	void CastAvadaKedavra();
+	void CastGrab();
+	void SpellCombo();
+	void SpellCancel();
 #pragma endregion 
 
 #pragma region Detect Target
@@ -114,8 +98,6 @@ public:
 #pragma endregion
 
 #pragma region Lift
-	void LiftTarget();
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector objectInitialHeight;
 
@@ -126,14 +108,13 @@ public:
 	float errorTolerance = 2;
 #pragma endregion
 
-	int32 comboCount = 0;
-
-
-	UPROPERTY(EditAnywhere)
-	TArray<class UArrowComponent*> arrowComponents;
-	UPROPERTY(EditAnywhere)
-	TArray<class UArrowComponent*> comboArrowComponents;
-
 	void DereferenceVariables();
+
+	//fx
+	UPROPERTY(EditAnywhere)
+	class UNiagaraSystem* avadaKedavraNiagara;
+
+	UPROPERTY(EditAnywhere)
+	class UNiagaraComponent* avadaKedavraNiagaraComponent;
 
 };

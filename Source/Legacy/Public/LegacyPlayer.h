@@ -68,16 +68,15 @@ public:
 	class UPhysicsHandleComponent* physicsHandleComp;
 
 	UPROPERTY(EditAnywhere)
+	class UStaticMeshComponent* staticMeshCompWand;
+
+	UPROPERTY(EditAnywhere)
 	class UArrowComponent* accioHoverRegionArrowComponent;
 	UPROPERTY(EditAnywhere)
 	class UArrowComponent* grabHoverRegionArrowComponent;
 
 	UPROPERTY(EditAnywhere)
-	class UArrowComponent* comboHoverRegionArrowComponent1;
-	UPROPERTY(EditAnywhere)
-	class UArrowComponent* comboHoverRegionArrowComponent2;
-	UPROPERTY(EditAnywhere)
-	class UArrowComponent* comboHoverRegionArrowComponent3;
+	float grabHoverRegionOffset = 300;
 
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Components")
 	class UMotionControllerComponent* leftHand;
