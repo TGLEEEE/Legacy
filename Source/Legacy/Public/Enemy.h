@@ -30,8 +30,5 @@ public:
 	class UEnemyFSM* enemyFSM;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UEnemyState* enemyState;
-
-	UFUNCTION(BlueprintCallable)
-	void Throw(FVector force, int Amount);
-
+	
 };

@@ -13,6 +13,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "EnemyFSM.h"
+#include "EnemyState.h"
 #include "Niagara/Public/NiagaraFunctionLibrary.h"
 #include "Niagara/Public/NiagaraComponent.h"
 
@@ -259,7 +260,7 @@ void ULegacyPlayerMagicComponent::CastDepulso()
 
 		FVector throwDirection = enemy->GetActorLocation() - me->GetActorForwardVector();
 		throwDirection.Normalize();
-		enemy->Throw(throwDirection * 300000, 1);
+		enemy->enemyState->Throw(throwDirection * 300000, 1);
 
 		//enemy->enemyFSM->SetState(EEnemyState::IDLE);
 
@@ -274,9 +275,9 @@ void ULegacyPlayerMagicComponent::CastAvadaKedavra()
 		EAttachLocation::KeepRelativeOffset, true, true, ENCPoolMethod::None, true);
 
 	//bug: fill this in
-	/avadaKedavraNiagaraComponent.SetNiagaraVariableVec3(FString("");
-	avadaKedavraNiagaraComponent.SetNiagaraVariableVec3(FString("");
-	avadaKedavraNiagaraComponent.SetNiagaraVariableVec3(FString("");
+	//avadaKedavraNiagaraComponent.SetNiagaraVariableVec3(FString("");
+	//avadaKedavraNiagaraComponent.SetNiagaraVariableVec3(FString("");
+	//avadaKedavraNiagaraComponent.SetNiagaraVariableVec3(FString("");
 }
 
 void ULegacyPlayerMagicComponent::CastGrab()

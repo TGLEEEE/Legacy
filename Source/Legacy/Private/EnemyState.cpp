@@ -6,6 +6,8 @@
 #include "Enemy.h"
 #include "EnemyFSM.h"
 #include "LegacyPlayer.h"
+#include "AIController.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values for this component's properties
 UEnemyState::UEnemyState()
@@ -27,7 +29,6 @@ void UEnemyState::BeginPlay()
 	me = Cast<AEnemy>(GetOwner());
 	// player 캐스팅
 	player = Cast<ALegacyPlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter());
-	
 }
 
 
@@ -45,5 +46,29 @@ void UEnemyState::OnDamageProcess(int amount)
 	hp = hp - amount;
 	// damage state (애님 재생 등)
 	me->enemyFSM->SetState(EEnemyState::DAMAGE);
+}
+
+void UEnemyState::Throw(FVector force, int Amount)
+{
+	// 데미지 계산
+	OnDamageProcess(Amount);
+	// 날려버리자
+	me->enemyFSM->ai->StopMovement();
+	me->enemyFSM->SetState(EEnemyState::INTHEAIR);
+	me->GetCharacterMovement()->Launch((force + (FVector::UpVector * force.Length() / 10)) / mass);
+	// 랜덤하게 로테이션 변경
+	int p = FMath::RandRange(0, 360);
+	int y = FMath::RandRange(0, 360);
+	int r = FMath::RandRange(0, 360);
+	me->SetActorRotation(FRotator(p, y, r));
+
+	// 날린후?
+	FTimerHandle hd;
+	GetWorld()->GetTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]() {
+		me->SetActorRotation(FRotator::ZeroRotator);
+		me->enemyFSM->SetState(EEnemyState::IDLE);
+		}), 1.5f, false);
+
+	// 벽 부딫힐때 데미지?
 }
 

@@ -4,9 +4,6 @@
 #include "Enemy.h"
 #include "EnemyFSM.h"
 #include "EnemyState.h"
-#include "Components/CapsuleComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "AIController.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -22,7 +19,6 @@ AEnemy::AEnemy()
     {
 		GetMesh()->SetAnimInstanceClass(tempAnimClass.Class);
     }
-
 }
 
 // Called when the game starts or when spawned
@@ -43,30 +39,5 @@ void AEnemy::Tick(float DeltaTime)
 void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-
-void AEnemy::Throw(FVector force, int Amount)
-{
-	// 데미지 계산
-	enemyState->OnDamageProcess(Amount);
-	// 날려버리자
-	enemyFSM->ai->StopMovement();
-	enemyFSM->SetState(EEnemyState::INTHEAIR);
-	GetCharacterMovement()->Launch((force + (FVector::UpVector * force.Length() / 10)) / enemyState->mass);
-	// 랜덤하게 로테이션 변경
-	int p = FMath::RandRange(0, 360);
-	int y = FMath::RandRange(0, 360);
-	int r = FMath::RandRange(0, 360);
-	SetActorRotation(FRotator(p, y, r));
-	
-	// 날린후?
-	FTimerHandle hd;
-	GetWorldTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]() {
-		SetActorRotation(FRotator::ZeroRotator);
-		enemyFSM->SetState(EEnemyState::IDLE);
-		}), 1.5f, false);
-	
-	// 벽 부딫힐때 데미지?
 
 }
