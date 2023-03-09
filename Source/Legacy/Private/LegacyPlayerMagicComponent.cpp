@@ -161,8 +161,8 @@ void ULegacyPlayerMagicComponent::CastLevioso()
 		me->physicsHandleComp->GrabComponentAtLocation(grabbedComponent, NAME_None, grabbedComponent->GetComponentLocation());
 		currentLocation = objectInitialHeight + objectOffsetHeight;
 		if(enemy){
+			enemy->enemyFSM->bIsInTheAir = true;
 			//enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
-			enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
 		}
 	}
 	else if (grabbedComponent){
@@ -199,8 +199,8 @@ void ULegacyPlayerMagicComponent::CastAccio()
 		me->physicsHandleComp->GrabComponentAtLocation(grabbedComponent, NAME_None, grabbedComponent->GetComponentLocation());
 
 		if (enemy) {
-			//enemy->enemyFSM->bIsInTheAir = true;
-			enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
+			enemy->enemyFSM->bIsInTheAir = true;
+			//enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
 		}
 	}
 	else if (grabbedComponent) {
@@ -253,8 +253,8 @@ void ULegacyPlayerMagicComponent::CastDepulso()
 {
 	//enemy->enemyFSM->bIsInTheAir = true;
 	if (!enemy) { return; }
-
-	enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
+	enemy->enemyFSM->bIsInTheAir = true;
+	///enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
 
 	enemy = Cast<AEnemy>(detectedComponent->GetOwner());
 	if(enemy){
@@ -329,7 +329,7 @@ void ULegacyPlayerMagicComponent::CastGrab()
 		//grab the component with physics handle
 		me->physicsHandleComp->GrabComponentAtLocation(grabbedComponent, NAME_None, grabbedComponent->GetComponentLocation());
 
-		//enemy->enemyFSM->bIsInTheAir = true;
+		enemy->enemyFSM->bIsInTheAir = true;
 
 	}
 	else if(grabbedComponent){
@@ -403,8 +403,8 @@ void ULegacyPlayerMagicComponent::DereferenceVariables()
 
 	comboCount = 0;
 	if(enemy){
-		//enemy->enemyFSM->bIsInTheAir = false;
-		enemy->enemyFSM->SetState(EEnemyState::IDLE);
+		enemy->enemyFSM->bIsInTheAir = false;
+		//enemy->enemyFSM->SetState(EEnemyState::IDLE);
 		enemy = nullptr;
 	}
 
