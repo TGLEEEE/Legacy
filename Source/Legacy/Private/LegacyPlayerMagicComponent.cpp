@@ -271,7 +271,7 @@ void ULegacyPlayerMagicComponent::CastDepulso()
 		enemy->enemyState->bIsGrabbed = false;
 
 
-		enemy->GetCapsuleComponent()->SetSimulatePhysics(false);
+		enemy->GetCapsuleComponent()->SetSimulatePhysics(true);
 		
 		isDepulso = false;
 	}
@@ -348,7 +348,7 @@ void ULegacyPlayerMagicComponent::CastGrab()
 		if(enemy){
 			enemy->enemyFSM->bIsInTheAir = false;
 			enemy->enemyState->bIsGrabbed = false;
-			enemy->GetCapsuleComponent()->SetSimulatePhysics(false);
+			enemy->GetCapsuleComponent()->SetSimulatePhysics(true);
 		}
 		
 		spellstate = SpellState::Cancel;
@@ -422,8 +422,8 @@ void ULegacyPlayerMagicComponent::DereferenceVariables()
 		enemy = nullptr;
 	}
 
-	//turn off physics
-	grabbedComponent->SetSimulatePhysics(false);
+	////turn off physics
+	//grabbedComponent->SetSimulatePhysics(false);
 
 	//dereference grabbedComponent
 	grabbedComponent = nullptr;
