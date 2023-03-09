@@ -45,4 +45,5 @@ public:
 	void SetOriginalPhysicsState();
 
 	float originZ;
+	bool bIsGrabbed;
 };

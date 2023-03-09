@@ -76,9 +76,8 @@ void UEnemyState::Throw(FVector force, int Amount)
 
 void UEnemyState::SetOriginalPhysicsState()
 {
-	if (me->GetActorLocation().Z < originZ + 100)
+	if (me->GetActorLocation().Z < originZ + 100 && bIsGrabbed)
 	{
-		me->GetCapsuleComponent()->SetSimulatePhysics(false);
 		me->SetActorRotation(FRotator::ZeroRotator);
 	}
 }
