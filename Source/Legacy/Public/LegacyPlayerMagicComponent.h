@@ -117,4 +117,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UNiagaraComponent* avadaKedavraNiagaraComponent;
 
+	bool isAvadaKedavraCast;
+
 };
