@@ -40,6 +40,32 @@ void UEnemyState::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	SetOriginalPhysicsState();
+
+	if(bIsGrabbed){
+		UE_LOG(LogTemp, Error, TEXT("UEnemyState::TickComponent - isgrab"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UEnemyState::TickComponent - !isgrab"));
+	}
+
+	if(me->enemyFSM->bIsInTheAir)
+	{
+		UE_LOG(LogTemp, Error, TEXT("UEnemyState::TickComponent - isinair"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UEnemyState::TickComponent - !isinair"));
+	}
+
+	if(me->GetCapsuleComponent()->IsSimulatingPhysics())
+	{
+		UE_LOG(LogTemp, Error, TEXT("UEnemyState::TickComponent - issimulatephys"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("UEnemyState::TickComponent - !issimulatephys"));
+	}
 }
 
 void UEnemyState::OnDamageProcess(int amount)
@@ -75,7 +101,7 @@ void UEnemyState::Throw(FVector force, int Amount)
 
 void UEnemyState::SetOriginalPhysicsState()
 {
-	if (me->GetActorLocation().Z < originZ + 100 && bIsGrabbed)
+	if (!me->enemyFSM->bIsInTheAir && !bIsGrabbed)
 	{
 		me->SetActorRotation(FRotator::ZeroRotator);
 	}
