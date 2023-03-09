@@ -12,6 +12,7 @@
 
 //update
 #include "HeadMountedDisplayFunctionLibrary.h"
+#include "LegacyPlayerUIComponent.h"
 #include "Components/ArrowComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 
@@ -24,8 +25,10 @@ ALegacyPlayer::ALegacyPlayer()
 
 	moveComponent = CreateDefaultSubobject<ULegacyPlayerMoveComponent>(TEXT("Move Component"));
 	magicComponent = CreateDefaultSubobject<ULegacyPlayerMagicComponent>(TEXT("Magic Component"));
+	uIComponent = CreateDefaultSubobject<ULegacyPlayerUIComponent>(TEXT("UI Component"));
 
 	physicsHandleComp = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("Physics Handle Component"));
+
 
 
 #pragma region VR
@@ -82,7 +85,7 @@ ALegacyPlayer::ALegacyPlayer()
 	grabHoverRegionArrowComponent->SetRelativeLocation(FVector(300, 0, 0));
 
 
-
+	cameraComp->bUsePawnControlRotation = false;
 }
 
 // Called when the game starts or when spawned
@@ -90,6 +93,7 @@ void ALegacyPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
+#pragma region Enhanced Input
 	APlayerController* playerController = Cast<APlayerController>(GetController());
 	if (playerController) {
 		UEnhancedInputLocalPlayerSubsystem* inputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer());
@@ -103,6 +107,21 @@ void ALegacyPlayer::BeginPlay()
 	else {
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMoveComponent::SetupPlayerInput - can't find player controller"));
 	}
+#pragma endregion
+
+#pragma region Checking Platform
+	if (!UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled()) {
+		//place hand where you can see them
+		rightHand->SetRelativeLocation(FVector(20, 20, 82));
+		//turn on use pawn control rotation
+		cameraComp->bUsePawnControlRotation = true;
+	}
+	//if connected
+	else {
+		//set the tracking offset ; basically setting the height 
+		UHeadMountedDisplayFunctionLibrary::SetTrackingOrigin(EHMDTrackingOrigin::Eye);
+	}
+#pragma endregion
 }
 
 // Called every frame
