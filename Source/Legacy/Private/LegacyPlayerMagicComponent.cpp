@@ -222,9 +222,10 @@ void ULegacyPlayerMagicComponent::CastAccio()
 
 void ULegacyPlayerMagicComponent::SpellCombo()
 {
-	//enemy->enemyFSM->bIsInTheAir = true;
+
 	if (!enemy) { return; }
-	enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
+	enemy->enemyFSM->bIsInTheAir = true;
+	//enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
 
 	me->physicsHandleComp->SetInterpolationSpeed(100);
 
@@ -250,7 +251,6 @@ void ULegacyPlayerMagicComponent::SpellCombo()
 
 void ULegacyPlayerMagicComponent::CastDepulso()
 {
-	//enemy->enemyFSM->bIsInTheAir = true;
 	if (!enemy) { return; }
 	enemy->enemyFSM->bIsInTheAir = true;
 	///enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
