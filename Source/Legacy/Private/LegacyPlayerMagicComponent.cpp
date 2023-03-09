@@ -327,8 +327,9 @@ void ULegacyPlayerMagicComponent::CastGrab()
 
 		//grab the component with physics handle
 		me->physicsHandleComp->GrabComponentAtLocation(grabbedComponent, NAME_None, grabbedComponent->GetComponentLocation());
-
-		enemy->enemyFSM->bIsInTheAir = true;
+		if(enemy){
+			enemy->enemyFSM->bIsInTheAir = true;
+		}
 
 	}
 	else if(grabbedComponent){
