@@ -105,5 +105,13 @@ void UEnemyState::SetOriginalPhysicsState()
 	{
 		me->SetActorRotation(FRotator::ZeroRotator);
 	}
+
+	if (me->GetActorLocation().Z < originZ + 100)
+	{
+		FTimerHandle originHD;
+		GetWorld()->GetTimerManager().SetTimer(originHD, FTimerDelegate::CreateLambda([&]() {
+			me->GetCapsuleComponent()->SetSimulatePhysics(false);
+			}), 0.5f, false);
+	}
 }
 
