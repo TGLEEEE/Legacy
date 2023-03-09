@@ -317,6 +317,8 @@ void ULegacyPlayerMagicComponent::CastGrab()
 	if(detectedComponent && !grabbedComponent){
 		//make detected component the grabbed component
 		grabbedComponent = detectedComponent;
+		//turn on physics
+		grabbedComponent->SetSimulatePhysics(true);
 		// since updated grabbedComponent component, dereference detectedComponent for the next detection
 		detectedComponent = nullptr;
 
@@ -405,6 +407,8 @@ void ULegacyPlayerMagicComponent::DereferenceVariables()
 		enemy = nullptr;
 	}
 
+	//turn off physics
+	grabbedComponent->SetSimulatePhysics(false);
 
 	//dereference grabbedComponent
 	grabbedComponent = nullptr;
