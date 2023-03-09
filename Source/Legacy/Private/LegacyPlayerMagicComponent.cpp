@@ -259,16 +259,16 @@ void ULegacyPlayerMagicComponent::CastDepulso()
 	if(enemy){
 		if(grabbedComponent){ me->physicsHandleComp->ReleaseComponent();  }
 
-		enemy->GetCapsuleComponent()->SetSimulatePhysics(false);
 
 		FVector throwDirection = enemy->GetActorLocation() - me->GetActorForwardVector();
 		throwDirection.Normalize();
 		enemy->Throw(throwDirection * 300000, 1);
 
 		//enemy->enemyFSM->SetState(EEnemyState::IDLE);
-
+		enemy->enemyFSM->bIsInTheAir = false;
+		enemy->GetCapsuleComponent()->SetSimulatePhysics(false);
+		
 		isDepulso = false;
-		spellstate = SpellState::Rest;
 	}
 }
 
