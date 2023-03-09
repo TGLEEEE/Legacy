@@ -340,8 +340,10 @@ void ULegacyPlayerMagicComponent::CastGrab()
 
 	//Grab
 	if(!isGrab || isSpellCancel){
-		enemy->enemyFSM->bIsInTheAir = false;
-		enemy->GetCapsuleComponent()->SetSimulatePhysics(false);
+		if(enemy){
+			enemy->enemyFSM->bIsInTheAir = false;
+			enemy->GetCapsuleComponent()->SetSimulatePhysics(false);
+		}
 		
 		spellstate = SpellState::Cancel;
 	}
