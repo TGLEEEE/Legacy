@@ -7,6 +7,7 @@
 #include "EnemyFSM.h"
 #include "LegacyPlayer.h"
 #include "AIController.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values for this component's properties
@@ -29,6 +30,7 @@ void UEnemyState::BeginPlay()
 	me = Cast<AEnemy>(GetOwner());
 	// player 캐스팅
 	player = Cast<ALegacyPlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter());
+	originZ = me->GetActorLocation().Z;
 }
 
 
@@ -37,7 +39,7 @@ void UEnemyState::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	SetOriginalPhysicsState();
 }
 
 void UEnemyState::OnDamageProcess(int amount)
@@ -70,5 +72,14 @@ void UEnemyState::Throw(FVector force, int Amount)
 		}), 1.5f, false);
 
 	// 벽 부딫힐때 데미지?
+}
+
+void UEnemyState::SetOriginalPhysicsState()
+{
+	if (me->GetActorLocation().Z < originZ + 100)
+	{
+		me->GetCapsuleComponent()->SetSimulatePhysics(false);
+		me->SetActorRotation(FRotator::ZeroRotator);
+	}
 }
 
