@@ -55,7 +55,7 @@ public:
 
 #pragma region Magic
 	void UpdateSpellState();
-	void CheckSpellState();
+	void CheckSpellState(int32& quadrantNumber);
 
 	SpellState spellstate;
 

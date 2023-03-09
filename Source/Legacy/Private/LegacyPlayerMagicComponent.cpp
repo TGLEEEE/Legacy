@@ -14,6 +14,8 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "EnemyFSM.h"
 #include "EnemyState.h"
+#include "HeadMountedDisplayFunctionLibrary.h"
+#include "LegacyPlayerUIComponent.h"
 #include "Niagara/Public/NiagaraFunctionLibrary.h"
 #include "Niagara/Public/NiagaraComponent.h"
 
@@ -48,6 +50,8 @@ void ULegacyPlayerMagicComponent::SetupPlayerInput(UInputComponent* PlayerInputC
 void ULegacyPlayerMagicComponent::OnActionCastSpell()
 {
 	isSpellCast = true;
+	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - isSpellCast"));
+
 }
 
 void ULegacyPlayerMagicComponent::OnActionGrabPressed()
@@ -108,7 +112,7 @@ void ULegacyPlayerMagicComponent::UpdateSpellState()
 {
 	switch (spellstate) {
 		case SpellState::Rest:
-			CheckSpellState();
+			CheckSpellState(me->uIComponent->quadrantNumber);
 			break;
 		case SpellState::Levioso:
 			CastLevioso();
@@ -131,21 +135,30 @@ void ULegacyPlayerMagicComponent::UpdateSpellState()
 	}
 }
 
-void ULegacyPlayerMagicComponent::CheckSpellState()
+void ULegacyPlayerMagicComponent::CheckSpellState(int32& quadrantNumber)
 {
 	if (!isSpellCast) { return; }								//have to press spell cast to activate other spells
 
-	if (isLevioso) { spellstate = SpellState::Levioso; }
-	else if (isAccio) { spellstate = SpellState::Accio; }
-	else if (isDepulso) { spellstate = SpellState::Depulso; }
-	else if (isGrab) { spellstate = SpellState::Grab; }
-	else if (isSpellCancel) { spellstate = SpellState::Cancel; }
+	//if on PC
+	if (!UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled()) {
+		if (isLevioso) { spellstate = SpellState::Levioso; }
+		else if (isAccio) { spellstate = SpellState::Accio; }
+		else if (isDepulso) { spellstate = SpellState::Depulso; }
+		else if (isGrab) { spellstate = SpellState::Grab; }
+		else if (isSpellCancel) { spellstate = SpellState::Cancel; }
+	}
+	else{
+		if(quadrantNumber == 1 && isSpellCast){ spellstate = SpellState::Levioso; UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - SpellState::Levioso"));}
+		else if(quadrantNumber == 2 && isSpellCast){ spellstate = SpellState::Accio; UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - SpellState::Accio"));}
+		else if(quadrantNumber == 3 && isSpellCast){ spellstate = SpellState::Depulso; UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - SpellState::Depulso"));}
+		else if(quadrantNumber == 4 && isSpellCast){ spellstate = SpellState::AvadaKedavra; UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - SpellState::AvadaKedavra"));}
+		else if (isGrab) { spellstate = SpellState::Grab; }
+	}
 }
 
 
 void ULegacyPlayerMagicComponent::CastLevioso()
 {
-
 	me->physicsHandleComp->SetLinearDamping(5);
 	me->physicsHandleComp->SetLinearStiffness(50);
 	me->physicsHandleComp->SetInterpolationSpeed(60);
