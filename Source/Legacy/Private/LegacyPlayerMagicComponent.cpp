@@ -162,6 +162,7 @@ void ULegacyPlayerMagicComponent::CastLevioso()
 		currentLocation = objectInitialHeight + objectOffsetHeight;
 		if(enemy){
 			enemy->enemyFSM->bIsInTheAir = true;
+			enemy->enemyState->bIsGrabbed = true;
 			//enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
 		}
 	}
@@ -200,6 +201,7 @@ void ULegacyPlayerMagicComponent::CastAccio()
 
 		if (enemy) {
 			enemy->enemyFSM->bIsInTheAir = true;
+			enemy->enemyState->bIsGrabbed = true;
 			//enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
 		}
 	}
@@ -264,9 +266,11 @@ void ULegacyPlayerMagicComponent::CastDepulso()
 		FVector throwDirection = enemy->GetActorLocation() - me->GetActorForwardVector();
 		throwDirection.Normalize();
 		enemy->enemyState->Throw(throwDirection * 300000, 1);
-
 		//enemy->enemyFSM->SetState(EEnemyState::IDLE);
 		enemy->enemyFSM->bIsInTheAir = false;
+		enemy->enemyState->bIsGrabbed = false;
+
+
 		enemy->GetCapsuleComponent()->SetSimulatePhysics(false);
 		
 		isDepulso = false;
@@ -330,6 +334,7 @@ void ULegacyPlayerMagicComponent::CastGrab()
 		me->physicsHandleComp->GrabComponentAtLocation(grabbedComponent, NAME_None, grabbedComponent->GetComponentLocation());
 		if(enemy){
 			enemy->enemyFSM->bIsInTheAir = true;
+			enemy->enemyState->bIsGrabbed = true;
 		}
 
 	}
@@ -342,6 +347,7 @@ void ULegacyPlayerMagicComponent::CastGrab()
 	if(!isGrab || isSpellCancel){
 		if(enemy){
 			enemy->enemyFSM->bIsInTheAir = false;
+			enemy->enemyState->bIsGrabbed = false;
 			enemy->GetCapsuleComponent()->SetSimulatePhysics(false);
 		}
 		
@@ -410,6 +416,8 @@ void ULegacyPlayerMagicComponent::DereferenceVariables()
 	comboCount = 0;
 	if(enemy){
 		enemy->enemyFSM->bIsInTheAir = false;
+		enemy->enemyState->bIsGrabbed = false;
+
 		//enemy->enemyFSM->SetState(EEnemyState::IDLE);
 		enemy = nullptr;
 	}
