@@ -40,4 +40,9 @@ public:
 
 	UFUNCTION()
 	void Throw(FVector force, int Amount);
+
+	UFUNCTION()
+	void SetOriginalPhysicsState();
+
+	float originZ;
 };
