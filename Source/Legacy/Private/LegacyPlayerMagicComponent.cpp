@@ -14,14 +14,20 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "EnemyFSM.h"
 #include "EnemyState.h"
-#include "HeadMountedDisplayFunctionLibrary.h"
 #include "LegacyPlayerUIComponent.h"
 #include "Niagara/Public/NiagaraFunctionLibrary.h"
 #include "Niagara/Public/NiagaraComponent.h"
+#include "HeadMountedDisplayFunctionLibrary.h"
+
+#include "LegacyGameMode.h"
+
 
 void ULegacyPlayerMagicComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	legacyGameMode = Cast<ALegacyGameMode>(GetWorld()->GetAuthGameMode());
+	if (!legacyGameMode) { UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::BeginPlay - Can't find Game Mode")); }
 
 }
 
@@ -29,6 +35,7 @@ void ULegacyPlayerMagicComponent::SetupPlayerInput(UInputComponent* PlayerInputC
 {
 	Super::SetupPlayerInput(PlayerInputComponent);
 
+#pragma region Input Action Binding
 	auto inputSystem = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 	if (inputSystem) {
 		inputSystem->BindAction(me->iA_CastSpell, ETriggerEvent::Triggered, this, &ULegacyPlayerMagicComponent::OnActionCastSpell);
@@ -44,6 +51,8 @@ void ULegacyPlayerMagicComponent::SetupPlayerInput(UInputComponent* PlayerInputC
 
 		inputSystem->BindAction(me->iA_SpellCancel, ETriggerEvent::Triggered, this, &ULegacyPlayerMagicComponent::OnActionSpellCancelPressed);
 	}
+#pragma endregion
+
 }
 
 #pragma region Input Action
@@ -51,7 +60,6 @@ void ULegacyPlayerMagicComponent::OnActionCastSpell()
 {
 	isSpellCast = true;
 	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - isSpellCast"));
-
 }
 
 void ULegacyPlayerMagicComponent::OnActionGrabPressed()
@@ -104,6 +112,8 @@ void ULegacyPlayerMagicComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
 	UpdateSpellState();
 	CastAvadaKedavra();
+
+
 
 }
 

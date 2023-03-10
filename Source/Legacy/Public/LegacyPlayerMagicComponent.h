@@ -119,4 +119,8 @@ public:
 
 	bool isAvadaKedavraCast;
 
+
+	//update
+	class ALegacyGameMode* legacyGameMode;
+
 };

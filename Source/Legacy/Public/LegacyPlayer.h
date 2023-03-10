@@ -103,6 +103,11 @@ public:
 #pragma endregion Components
 
 
+	void CheckPlatform();
+
+	UPROPERTY()
+	class ALegacyGameMode* legacyGameMode;
+
 protected:
 
 #pragma region VR
@@ -110,3 +115,4 @@ protected:
 #pragma endregion 
 
 };
+
