@@ -267,6 +267,12 @@ void ULegacyPlayerMagicComponent::SpellCombo()
 
 void ULegacyPlayerMagicComponent::CastDepulso()
 {
+	if(bDoOnce)
+	{
+		return;
+	}
+	bDoOnce = true;
+
 	if (!enemy) { return; }
 	enemy->enemyFSM->bIsInTheAir = true;
 	///enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);

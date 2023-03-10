@@ -122,8 +122,6 @@ void UEnemyFSM::TickIdle()
 		FTimerHandle hd;
 		GetWorld()->GetTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]()
 			{
-				// 처음 상태로 리셋
-				//UE_LOG(LogTemp, Error, TEXT("Reset"));
 				UpdateRandomLoc(radiusForIdleRandomLoc, idleRandomLoc);
 				idleTimer = 0;
 				bIsReturning = false;

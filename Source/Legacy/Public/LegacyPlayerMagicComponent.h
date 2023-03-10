@@ -119,4 +119,5 @@ public:
 
 	bool isAvadaKedavraCast;
 
+	bool bDoOnce;
 };

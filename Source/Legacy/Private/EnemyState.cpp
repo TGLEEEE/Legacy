@@ -57,6 +57,9 @@ void UEnemyState::OnDamageProcess(int amount)
 	hp = hp - amount;
 	// damage state (애님 재생 등)
 	me->enemyFSM->SetState(EEnemyState::DAMAGE);
+	// 잘 됨 (죽음 처리 필요)
+	me->PlayAnimMontage(me->enemyFSM->enemyAnim->montage_Paladin, 1, FName("Die"));
+	//me->PlayAnimMontage(me->enemyFSM->enemyAnim->montage_Paladin, 1, FName("Damage"));
 }
 
 void UEnemyState::Throw(FVector force, int Amount)
@@ -64,13 +67,13 @@ void UEnemyState::Throw(FVector force, int Amount)
 	// 데미지 계산
 	OnDamageProcess(Amount);
 	// 날려버리자
-	me->GetCapsuleComponent()->AddForce(force * mass);
+	//me->GetCapsuleComponent()->AddForce(force * mass);
 
 	// 랜덤하게 로테이션 변경
 	int p = FMath::RandRange(0, 360);
 	int y = FMath::RandRange(0, 360);
 	int r = FMath::RandRange(0, 360);
-	me->SetActorRotation(FRotator(p, y, r));
+	//me->SetActorRotation(FRotator(p, y, r));
 
 }
 
