@@ -33,7 +33,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	UPROPERTY(EditAnywhere)
 	EEnemyState state;
 	UPROPERTY()
 	class AEnemy* me;
@@ -55,6 +55,8 @@ public:
 	float stopChaseDistance = 2000.f;
 	UPROPERTY(EditAnywhere)
 	float attackDelay = 2.f;
+	UPROPERTY(EditAnywhere)
+	bool bIsInTheAir;
 	UPROPERTY()
 	class UEnemyAnim* enemyAnim;
 
@@ -63,8 +65,6 @@ public:
 	float idleTimer;
 	float attackTimer = 2.f;
 	bool bIsReturning;
-	UPROPERTY(EditAnywhere)
-	bool bIsInTheAir;
 	bool bDoOnce;
 	bool bIsMoving;
 	bool bDamageAnimDoOnce;

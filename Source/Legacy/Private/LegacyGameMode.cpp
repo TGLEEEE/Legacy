@@ -25,6 +25,5 @@ void ALegacyGameMode::WorldTimer()
 			worldTime++;
 			worldTimeSec = worldTime % 60;
 			worldTimeMin = worldTime / 60;
-			UE_LOG(LogTemp, Error, TEXT("world time is : %d"), worldTime);
 		}), 1.f, true);
 }

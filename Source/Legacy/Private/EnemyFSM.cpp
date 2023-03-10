@@ -130,12 +130,6 @@ void UEnemyFSM::TickIdle()
 				bIsMoving = false;
 			}), 5.f, false);
 	}
-
-	// for debug
-	//UE_LOG(LogTemp, Warning, TEXT("timer : %f"), idleTimer);
-	//UE_LOG(LogTemp, Warning, TEXT("%f"), idleRandomLoc.X);
-	//UE_LOG(LogTemp, Warning, TEXT("%f"), idleRandomLoc.Y);
-	//UE_LOG(LogTemp, Warning, TEXT("%f"), idleRandomLoc.Z);
 }
 
 void UEnemyFSM::TickChase()
@@ -156,7 +150,6 @@ void UEnemyFSM::TickChase()
 		SetState(EEnemyState::IDLE);
 		UE_LOG(LogTemp, Error, TEXT("go idle"));
 	}
-	//UE_LOG(LogTemp, Error, TEXT("is chasing"));
 }
 
 void UEnemyFSM::TickAttack()
@@ -181,17 +174,12 @@ void UEnemyFSM::TickAttack()
 void UEnemyFSM::TickInTheAir()
 {
 	enemyAnim->animState = EEnemyState::INTHEAIR;
-
 	// 공중에 떠서 이동 불가한 상태 (플레이어에게 Grab당한 상태 통제권x)
-	UE_LOG(LogTemp, Error, TEXT("is intheair"));
-
 	if (bIsInTheAir)
 	{
 		SetState(EEnemyState::IDLE);
 		bDoOnce = false;
 	}
-	// 바둥바둥 애님
-
 }
 
 void UEnemyFSM::TickDamage()

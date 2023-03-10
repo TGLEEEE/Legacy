@@ -18,17 +18,17 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> timerWidgetFactory;
+	UPROPERTY()
+	class UUserWidget* timerWidgetUI;
+
 	UPROPERTY()
 	int worldTime;
 	UPROPERTY()
 	int worldTimeSec;
 	UPROPERTY()
 	int worldTimeMin;
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UUserWidget> timerWidgetFactory;
-	UPROPERTY()
-	class UUserWidget* timerWidgetUI;
 
 	FTimerHandle worldtimerHandle;
 

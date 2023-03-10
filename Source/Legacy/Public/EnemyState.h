@@ -34,16 +34,15 @@ public:
 	int hp = 10;
 	UPROPERTY(EditAnywhere)
 	float mass = 100;
+	UPROPERTY(EditAnywhere)
+	bool bIsGrabbed;
+	bool bReadyToAir = true;
 
 	UFUNCTION(BlueprintCallable)
 	void OnDamageProcess(int amount);
-
 	UFUNCTION()
 	void Throw(FVector force, int Amount);
-
 	UFUNCTION()
 	void SetOriginalPhysicsState();
-
-	float originZ;
-	bool bIsGrabbed;
+	
 };
