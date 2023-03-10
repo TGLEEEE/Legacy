@@ -55,6 +55,10 @@ void ALegacyGameMode::Tick(float DeltaSeconds)
 	FVector currentPosition = legacyPlayer->rightHand->GetComponentLocation();
 	FVector currentVelocity = legacyPlayer->rightHand->GetComponentVelocity();
 
+//not sure if this will work
+FVector relativeCureentPosition = GetTransform().InverseTransformPosition(myComponent->GetComponentLocation());
+
+
 	FTransform playerTransform = legacyPlayer->GetActorTransform();
 
 	FTransform relativeTranform = playerTransform.Inverse();
