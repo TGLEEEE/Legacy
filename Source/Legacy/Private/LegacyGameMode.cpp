@@ -7,10 +7,8 @@
 
 ///update
 #include "HeadMountedDisplayFunctionLibrary.h"
-#include "IXRTrackingSystem.h"
 #include "LegacyPlayer.h"
 #include "MotionControllerComponent.h"
-#include "XRTrackingSystemBase.h"
 
 ALegacyGameMode::ALegacyGameMode()
 {
@@ -55,8 +53,10 @@ void ALegacyGameMode::Tick(float DeltaSeconds)
 	FVector currentPosition = legacyPlayer->rightHand->GetComponentLocation();
 	FVector currentVelocity = legacyPlayer->rightHand->GetComponentVelocity();
 
-//not sure if this will work
-FVector relativeCureentPosition = GetTransform().InverseTransformPosition(myComponent->GetComponentLocation());
+	//not sure if this will work
+	FVector relativeCurrentPosition = legacyPlayer->rightHand->GetRelativeTransform().GetLocation();
+	//FVector relativeCurrentPosition = GetTransform().InverseTransformPosition(legacyPlayer->rightHand->GetComponentLocation());
+
 
 
 	FTransform playerTransform = legacyPlayer->GetActorTransform();
