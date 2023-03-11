@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "HeadMountedDisplayTypes.h"						//update
-#include "MotionControllerComponent.h"
 #include "LegacyGameMode.generated.h"
 
 /**
@@ -22,8 +21,6 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
-
-
 
 	UPROPERTY()
 	int worldTime;
@@ -42,11 +39,7 @@ public:
 	void WorldTimer();
 
 #pragma region VR
-
-
-	UPROPERTY()
 	bool isHMDActivated;
-
 	bool isControllersFound;
 
 	FVector previousPosition = FVector::Zero();
@@ -60,6 +53,7 @@ public:
 	FVector CalculateControllerVelocity(FVector currentPosition);
 	FVector CalculateControllerAcceleration(FVector currentVelocity);
 
+	UPROPERTY()
 	class ALegacyPlayer* legacyPlayer;
 
 	FXRMotionControllerData leftControllerData;
