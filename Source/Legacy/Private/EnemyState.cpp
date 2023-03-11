@@ -58,8 +58,8 @@ void UEnemyState::OnDamageProcess(int amount)
 	// damage state (¾Ö´Ô Àç»ý µî)
 	me->enemyFSM->SetState(EEnemyState::DAMAGE);
 	// Àß µÊ (Á×À½ Ã³¸® ÇÊ¿ä)
-	me->PlayAnimMontage(me->enemyFSM->enemyAnim->montage_Paladin, 1, FName("Die"));
-	//me->PlayAnimMontage(me->enemyFSM->enemyAnim->montage_Paladin, 1, FName("Damage"));
+	//me->PlayAnimMontage(me->enemyFSM->enemyAnim->montage_Paladin, 1, FName("Die"));
+	me->PlayAnimMontage(me->enemyFSM->enemyAnim->montage_Paladin, 1, FName("Damage"));
 }
 
 void UEnemyState::Throw(FVector force, int Amount)
