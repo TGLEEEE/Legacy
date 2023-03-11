@@ -1,0 +1,52 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "EnemyWizard.h"
+#include "Components/CapsuleComponent.h"
+#include "EnemyFSM.h"
+#include <Components/StaticMeshComponent.h>
+
+AEnemyWizard::AEnemyWizard()
+{
+	
+	ConstructorHelpers::FObjectFinder<UAnimBlueprint>tempAnimBP(TEXT("/Script/Engine.AnimBlueprint'/Game/Legacy/TGL/Blueprint/ABP_EnemyWizard.ABP_EnemyWizard'"));
+	if (tempAnimBP.Succeeded())
+	{
+		GetMesh()->SetAnimInstanceClass(tempAnimBP.Object->GeneratedClass);
+	}
+	
+	ConstructorHelpers::FObjectFinder<USkeletalMesh>tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/CityofBrass_Enemies/Meshes/Enemy/Corpse/Corpse_Sword.Corpse_Sword'"));
+	if (tempMesh.Succeeded())
+	{
+		GetMesh()->SetSkeletalMesh(tempMesh.Object);
+	}
+
+	wandComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Wand Comp"));
+	wandComp->SetupAttachment(GetMesh(), TEXT("SwordSocket"));
+	wandComp->SetRelativeScale3D(FVector(0.2));
+	wandComp->SetRelativeLocation(FVector(30, 0, 0));
+
+	ConstructorHelpers::FObjectFinder<UStaticMesh>tempWand(TEXT("/Script/Engine.StaticMesh'/Game/Megascans/3D_Assets/Old_Tree_Branch_wjxrbic/S_Old_Tree_Branch_wjxrbic_lod3_Var1.S_Old_Tree_Branch_wjxrbic_lod3_Var1'"));
+	if (tempWand.Succeeded())
+	{
+		wandComp->SetStaticMesh(tempWand.Object);
+	}
+
+	GetMesh()->SetRelativeLocation(FVector(0, 0, -88));
+	GetMesh()->SetRelativeScale3D(FVector(0.9));
+
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("EnemyPreset"));
+	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true);
+}
+
+void AEnemyWizard::BeginPlay()
+{
+	Super::BeginPlay();
+	enemyFSM->attackableDistance = wizardAttackRange;
+	enemyFSM->attackDelay = wizardAttackDelay;
+}
+
+void AEnemyWizard::WizardAttack()
+{
+	GetWorld()->SpawnActor<AEnemyMagicBase>(enemyMagicFactory, wandComp->GetComponentLocation(), FRotator::ZeroRotator);
+}

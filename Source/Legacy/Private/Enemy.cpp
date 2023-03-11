@@ -14,12 +14,6 @@ AEnemy::AEnemy()
 
 	enemyFSM = CreateDefaultSubobject<UEnemyFSM>(TEXT("FSM"));
 	enemyState = CreateDefaultSubobject<UEnemyState>(TEXT("Enemy State Comp"));
-
-	ConstructorHelpers::FClassFinder<UAnimInstance>tempAnimClass(TEXT("/Script/CoreUObject.Class'/Script/Legacy.EnemyAnim'"));
-    if (tempAnimClass.Succeeded())
-    {
-		GetMesh()->SetAnimInstanceClass(tempAnimClass.Class);
-    }
 }
 
 // Called when the game starts or when spawned

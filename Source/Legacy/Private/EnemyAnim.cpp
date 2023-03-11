@@ -4,6 +4,7 @@
 #include "EnemyAnim.h"
 
 #include "Enemy.h"
+#include "EnemyWizard.h"
 
 void UEnemyAnim::NativeBeginPlay()
 {
@@ -15,5 +16,11 @@ void UEnemyAnim::NativeBeginPlay()
 void UEnemyAnim::AnimNotify_AttackEnd()
 {
 	bDoAttack = false;
+}
+
+void UEnemyAnim::AnimNotify_AttackMagic()
+{
+	auto wizard = Cast<AEnemyWizard>(me);
+	wizard->WizardAttack();
 }
 
