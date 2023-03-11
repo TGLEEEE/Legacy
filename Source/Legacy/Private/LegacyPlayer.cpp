@@ -30,8 +30,6 @@ ALegacyPlayer::ALegacyPlayer()
 
 	physicsHandleComp = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("Physics Handle Component"));
 
-
-
 #pragma region VR
 	cameraComp = CreateDefaultSubobject<UCameraComponent>("Camera Component");
 	cameraComp->SetupAttachment(GetRootComponent());
@@ -115,7 +113,8 @@ void ALegacyPlayer::BeginPlay()
 	if(legacyGameMode){
 		if (!legacyGameMode->isHMDActivated) {
 			//place hand where you can see them
-			rightHand->SetRelativeLocation(FVector(20, 20, 82));
+			rightHand->SetRelativeLocation(FVector(20, 10, 82));
+			rightHand->SetRelativeRotation(FRotator(10, 30, 0));
 			//turn on use pawn control rotation
 			cameraComp->bUsePawnControlRotation = true;
 		}
