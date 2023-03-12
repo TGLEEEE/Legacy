@@ -28,4 +28,6 @@ void UTimerWidget::UpdateTimerWidget()
 {
 	WorldtimeMin->SetText(FText::AsNumber(gm->worldTimeMin));
 	WorldtimeSec->SetText(FText::AsNumber(gm->worldTimeSec));
+	EnemyCount->SetText(FText::AsNumber(gm->enemyCount));
+	EnemyCountTotal->SetText(FText::AsNumber(gm->enemyCountTotal));
 }

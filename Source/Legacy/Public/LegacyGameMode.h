@@ -30,6 +30,9 @@ public:
 	UPROPERTY()
 	int worldTimeMin;
 
+	float enemyCount;
+	float enemyCountTotal;
+
 	FTimerHandle worldtimerHandle;
 
 	void WorldTimer();

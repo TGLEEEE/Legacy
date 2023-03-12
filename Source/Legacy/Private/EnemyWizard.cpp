@@ -48,5 +48,13 @@ void AEnemyWizard::BeginPlay()
 
 void AEnemyWizard::WizardAttack()
 {
-	GetWorld()->SpawnActor<AEnemyMagicBase>(enemyMagicFactory, wandComp->GetComponentLocation(), FRotator::ZeroRotator);
+	float rate = FMath::RandRange(0.f, 1.f);
+	if (rate <= rateForTornado)
+	{
+		GetWorld()->SpawnActor<AEnemyMagicBase>(enemyMagicFactoryTornado, wandComp->GetComponentLocation(), FRotator::ZeroRotator);
+	}
+	else
+	{
+		GetWorld()->SpawnActor<AEnemyMagicBase>(enemyMagicFactorySpark, wandComp->GetComponentLocation(), FRotator::ZeroRotator);
+	}
 }

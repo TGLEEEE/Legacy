@@ -20,14 +20,18 @@ public:
 	void virtual BeginPlay() override;
 	
 	UPROPERTY(EditAnywhere)
-	float wizardAttackRange = 1000;
+	float wizardAttackRange = 1200;
 	UPROPERTY(EditAnywhere)
-	float wizardAttackDelay = 5;
+	float wizardAttackDelay = 4;
+	UPROPERTY(EditAnywhere)
+	float rateForTornado = 0.15;
 
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* wandComp;
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class AEnemyMagicBase> enemyMagicFactory;
+	TSubclassOf<class AEnemyMagicBase> enemyMagicFactorySpark;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AEnemyMagicBase> enemyMagicFactoryTornado;
 
 	void WizardAttack();
 };
