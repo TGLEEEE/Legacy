@@ -7,6 +7,7 @@
 #include "EnemyFSM.h"
 #include "LegacyPlayer.h"
 #include "AIController.h"
+#include "EnemyAnim.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -30,7 +31,6 @@ void UEnemyState::BeginPlay()
 	me = Cast<AEnemy>(GetOwner());
 	// player 캐스팅
 	player = Cast<ALegacyPlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter());
-	originZ = me->GetActorLocation().Z;
 }
 
 
@@ -38,33 +38,16 @@ void UEnemyState::BeginPlay()
 void UEnemyState::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	SetOriginalPhysicsState();
-
-	if(bIsGrabbed){
-		UE_LOG(LogTemp, Error, TEXT("UEnemyState::TickComponent - isgrab"));
-	}
-	else
+	if (bReadyToAir && bIsGrabbed)
 	{
-		UE_LOG(LogTemp, Error, TEXT("UEnemyState::TickComponent - !isgrab"));
+		me->enemyFSM->bIsInTheAir = true;
+		bReadyToAir = false;
 	}
 
-	if(me->enemyFSM->bIsInTheAir)
+	if (!bReadyToAir && !bIsGrabbed)
 	{
-		UE_LOG(LogTemp, Error, TEXT("UEnemyState::TickComponent - isinair"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("UEnemyState::TickComponent - !isinair"));
-	}
-
-	if(me->GetCapsuleComponent()->IsSimulatingPhysics())
-	{
-		UE_LOG(LogTemp, Error, TEXT("UEnemyState::TickComponent - issimulatephys"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("UEnemyState::TickComponent - !issimulatephys"));
+		// bIsInTheAir 끄는건 바닥에 떨어졌을 때
+		bReadyToAir = true;
 	}
 }
 
@@ -74,6 +57,9 @@ void UEnemyState::OnDamageProcess(int amount)
 	hp = hp - amount;
 	// damage state (애님 재생 등)
 	me->enemyFSM->SetState(EEnemyState::DAMAGE);
+	// 잘 됨 (죽음 처리 필요)
+	//me->PlayAnimMontage(me->enemyFSM->enemyAnim->montage_Paladin, 1, FName("Die"));
+	me->PlayAnimMontage(me->enemyFSM->enemyAnim->montage_Paladin, 1, FName("Damage"));
 }
 
 void UEnemyState::Throw(FVector force, int Amount)
@@ -81,30 +67,21 @@ void UEnemyState::Throw(FVector force, int Amount)
 	// 데미지 계산
 	OnDamageProcess(Amount);
 	// 날려버리자
-	me->enemyFSM->ai->StopMovement();
-	me->enemyFSM->SetState(EEnemyState::INTHEAIR);
-	me->GetCharacterMovement()->Launch((force + (FVector::UpVector * force.Length() / 10)) / mass);
+	me->GetCapsuleComponent()->AddForce(force * mass);
+
 	// 랜덤하게 로테이션 변경
-	//int p = FMath::RandRange(0, 360);
-	//int y = FMath::RandRange(0, 360);
-	//int r = FMath::RandRange(0, 360);
-	//me->SetActorRotation(FRotator(p, y, r));
+	int p = FMath::RandRange(0, 360);
+	int y = FMath::RandRange(0, 360);
+	int r = FMath::RandRange(0, 360);
+	me->SetActorRotation(FRotator(p, y, r));
 
-	// 날린후?
-	FTimerHandle hd;
-	GetWorld()->GetTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]() {
-		me->SetActorRotation(FRotator::ZeroRotator);
-		me->enemyFSM->SetState(EEnemyState::IDLE);
-		}), 1.5f, false);
-
-	// 벽 부딫힐때 데미지?
 }
 
 void UEnemyState::SetOriginalPhysicsState()
 {
-	if (!me->enemyFSM->bIsInTheAir && !bIsGrabbed)
-	{
-		me->SetActorRotation(FRotator::ZeroRotator);
-	}
+	me->enemyFSM->bIsInTheAir = false;
+	me->GetCapsuleComponent()->SetSimulatePhysics(false);
+	me->SetActorRotation(FRotator::ZeroRotator);
+	me->enemyFSM->SetState(EEnemyState::IDLE);
 }
 

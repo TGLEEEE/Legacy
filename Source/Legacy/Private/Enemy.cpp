@@ -4,6 +4,7 @@
 #include "Enemy.h"
 #include "EnemyFSM.h"
 #include "EnemyState.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -25,7 +26,7 @@ AEnemy::AEnemy()
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &AEnemy::OnHitGround);
 }
 
 // Called every frame
@@ -41,3 +42,14 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
+
+void AEnemy::OnHitGround(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherActor->GetActorNameOrLabel() == FString("NewFloor") && GetCapsuleComponent()->IsSimulatingPhysics())
+	{
+		enemyState->SetOriginalPhysicsState();
+	}
+}
+
+

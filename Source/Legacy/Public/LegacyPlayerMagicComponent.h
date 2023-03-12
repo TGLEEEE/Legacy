@@ -119,8 +119,6 @@ public:
 
 	bool isAvadaKedavraCast;
 
-
-	//update
 	UPROPERTY()
 	class ALegacyGameMode* legacyGameMode;
 
