@@ -16,24 +16,62 @@ class LEGACY_API ULegacyPlayerUIComponent : public ULegacyPlayerBaseComponent
 
 	virtual void SetupPlayerInput(UInputComponent* PlayerInputComponent) override;
 
+	virtual void BeginPlay() override;
 public:
-	UFUNCTION()
+	int32 quadrantNumber;			//number: 1-4
+	
+private:
+
+#pragma region Input Actions
+#pragma region Deprecated
+	//joystick button pressed and released
+	/*UFUNCTION()
 	void OnActionUIActivation();
 	UFUNCTION()
-	void OnActionUIDeActivation();
-
+	void OnActionUIDeActivation();*/
+#pragma endregion
+	
+	//joystick swivel
 	UFUNCTION()
 	void OnActionUIWheelSelection(const FInputActionValue& values);
+#pragma endregion
 
+	//constantly checks the position of the joystick position
 	void CheckUIState();
-	int32 CheckUIQuadrant(float& angle);					//change this to call by reference?
 
+#pragma region Get Quandrant
+	//takes in the angle of the joystick and returns the quadrant number
+	void CheckUIQuadrant(float& angle);					
+
+	//checks if the joystick position is at the edge or in the deadzone
 	bool CheckMagnitude(float& componentMagnitude);
+	
+	bool isUIActivated;				//state changed according to the IA is pressed or released
 
-	bool isUIActivated;
-	int32 quadrantNumber;
-	float joystickAngle;
+	float joystickAngle;			//0-180, 0-(-180)
 	float joystickXComponent;
 	float joystickYComponent;
 
+	UPROPERTY(EditAnywhere, Category = "Spell Selection | Controller", meta = (AllowPrivateAccess = true))
+	float deadZone = 0.4;
+#pragma endregion 
+
+#pragma region Haptic Feedbacks
+	//Haptics
+	UPROPERTY()
+	APlayerController* playerController;
+	
+	UPROPERTY(EditAnywhere, Category = "Spell Selection | Haptics", meta = (AllowPrivateAccess = true))
+	class UHapticFeedbackEffect_Curve* hFC_SpellSelection;
+
+	UPROPERTY(EditAnywhere, Category = "Spell Selection | Haptics", meta = (AllowPrivateAccess = true))
+	class UHapticFeedbackEffect_Curve* hFC_SpellSelectionBump;
+
+	void SpellSelectionHapticFeedback( bool isSpellDifferent);
+
+	void CheckActiveDeadzoneBump();
+	bool isInNewQuadrant;
+
+	bool hasBumped = false;
+#pragma endregion 
 };

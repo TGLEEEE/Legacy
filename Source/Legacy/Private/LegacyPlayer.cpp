@@ -12,6 +12,7 @@
 
 //update
 #include "HeadMountedDisplayFunctionLibrary.h"
+#include "LegacyGameMode.h"
 #include "LegacyPlayerUIComponent.h"
 #include "Components/ArrowComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
@@ -28,8 +29,6 @@ ALegacyPlayer::ALegacyPlayer()
 	uIComponent = CreateDefaultSubobject<ULegacyPlayerUIComponent>(TEXT("UI Component"));
 
 	physicsHandleComp = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("Physics Handle Component"));
-
-
 
 #pragma region VR
 	cameraComp = CreateDefaultSubobject<UCameraComponent>("Camera Component");
@@ -110,17 +109,21 @@ void ALegacyPlayer::BeginPlay()
 #pragma endregion
 
 #pragma region Checking Platform
-	if (!UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled()) {
-		//place hand where you can see them
-		rightHand->SetRelativeLocation(FVector(20, 20, 82));
-		//turn on use pawn control rotation
-		cameraComp->bUsePawnControlRotation = true;
-	}
-	//if connected
-	else {
-		//set the tracking offset ; basically setting the height 
-		UHeadMountedDisplayFunctionLibrary::SetTrackingOrigin(EHMDTrackingOrigin::Eye);
-	}
+	legacyGameMode = Cast<ALegacyGameMode>(GetWorld()->GetAuthGameMode());
+	if(legacyGameMode){
+		if (!legacyGameMode->isHMDActivated) {
+			//place hand where you can see them
+			rightHand->SetRelativeLocation(FVector(20, 10, 82));
+			rightHand->SetRelativeRotation(FRotator(10, 30, 0));
+			//turn on use pawn control rotation
+			cameraComp->bUsePawnControlRotation = true;
+		}
+		//if connected
+		else {
+			//set the tracking offset ; basically setting the height 
+			UHeadMountedDisplayFunctionLibrary::SetTrackingOrigin(EHMDTrackingOrigin::Eye);
+		}
+	} 
 #pragma endregion
 }
 
