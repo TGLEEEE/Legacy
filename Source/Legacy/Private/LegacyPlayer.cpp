@@ -16,6 +16,7 @@
 #include "LegacyPlayerUIComponent.h"
 #include "Components/ArrowComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "NiagaraComponent.h"
 
 
 // Sets default values
@@ -66,6 +67,14 @@ ALegacyPlayer::ALegacyPlayer()
 	}
 #pragma endregion VR
 
+#pragma region Warp Teleport
+	teleportCircle = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Teleport Circle"));
+	teleportCircle->SetupAttachment(RootComponent);
+	teleportCircle->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	teleportCurveComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Teleport Curve Component"));
+#pragma endregion 
+	
 	//update
 
 	staticMeshCompWand = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Box Component Wand"));
@@ -125,6 +134,7 @@ void ALegacyPlayer::BeginPlay()
 		}
 	} 
 #pragma endregion
+
 }
 
 // Called every frame
