@@ -72,6 +72,7 @@ void UEnemyState::Throw(FVector force, int Amount)
 	// 데미지 계산
 	OnDamageProcess(Amount);
 	// 날려버리자
+	force = force + (me->player->GetActorUpVector() * force.Size() / 6);
 	me->GetCapsuleComponent()->AddForce(force * mass);
 
 	// 랜덤하게 로테이션 변경
