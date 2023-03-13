@@ -26,6 +26,10 @@ public:
 	TSubclassOf<UUserWidget> timerWidgetFactory;
 	UPROPERTY()
 	class UUserWidget* timerWidgetUI;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AEnemy> enemyPaladinFactory;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AEnemy> enemyWizardFactory;
 
 	UPROPERTY()
 	int worldTime;
@@ -33,13 +37,21 @@ public:
 	int worldTimeSec;
 	UPROPERTY()
 	int worldTimeMin;
+	int currentCountForSpawnPaladin;
+	int tempCountForSpawnPaladin;
+	int currentCountForSpawnWizard;
+	int tempCountForSpawnWizard;
 
 	float enemyCount;
 	float enemyCountTotal;
 
 	FTimerHandle worldtimerHandle;
+	FTimerHandle spawnPaladinHandle;
+	FTimerHandle spawnWizardHandle;
 
 	void WorldTimer();
+	void SpawnEnemyPaladin(int spawnCount);
+	void SpawnEnemyWizard(int spawnCount);
 
 #pragma region VR
 	bool isHMDActivated;
