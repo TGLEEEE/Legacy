@@ -64,11 +64,13 @@ void ULegacyPlayerMagicComponent::OnActionCastSpellPressed()
 void ULegacyPlayerMagicComponent::OnActionGrabPressed()
 {
 	isGrab = true;
+	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionGrabPressed - isGrab"));
 }
 
 void ULegacyPlayerMagicComponent::OnActionGrabReleased()
 {
 	isGrab = false;
+	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionGrabReleased - !isGrab"));
 }
 
 void ULegacyPlayerMagicComponent::OnActionSpell1Pressed()
@@ -111,7 +113,6 @@ void ULegacyPlayerMagicComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
 	UpdateSpellState();
 	CastAvadaKedavra();
-
 }
 
 
@@ -144,6 +145,10 @@ void ULegacyPlayerMagicComponent::UpdateSpellState()
 
 void ULegacyPlayerMagicComponent::CheckSpellState(int32& quadrantNumber)
 {
+
+	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState"));
+
+
 	if (!isSpellCast) { return; }								//have to press spell cast to activate other spells
 
 	//if on PC
@@ -166,6 +171,7 @@ void ULegacyPlayerMagicComponent::CheckSpellState(int32& quadrantNumber)
 
 void ULegacyPlayerMagicComponent::CastLevioso()
 {
+	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastLevioso"));
 
 	isAccio = false;
 	isDepulso = false;
@@ -186,15 +192,19 @@ void ULegacyPlayerMagicComponent::CastLevioso()
 		currentLocation = objectInitialHeight + objectOffsetHeight;
 		if(enemy){
 			enemy->enemyState->bIsGrabbed = true;
+			UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastLevioso - enemy grabbed"));
 		}
 	}
 	else if (grabbedComponent){
 		grabbedComponent->SetSimulatePhysics(true);
 		me->physicsHandleComp->SetTargetLocation(currentLocation);
+		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastLevioso - enemy set to levioso location"));
 	}
 
 	//set timer and check if levioso spell has expired; if so go to cancel state
 	CancelSpellTimer(leviosoCancelTime);
+
+	
 
 	if(isSpellCombo){ SpellCombo(); }
 	
@@ -211,6 +221,8 @@ void ULegacyPlayerMagicComponent::CastLevioso()
 
 void ULegacyPlayerMagicComponent::CastAccio()
 {
+	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAccio"));
+
 
 	isLevioso = false;
 	isDepulso = false;
@@ -231,11 +243,13 @@ void ULegacyPlayerMagicComponent::CastAccio()
 
 		if (enemy) {
 			enemy->enemyState->bIsGrabbed = true;
+			UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAccio - Grab Enemy"));
 		}
 	}
 	else if (grabbedComponent) {
 		grabbedComponent->SetSimulatePhysics(true);
 
+		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAccio - set enemy in accio location"));
 		me->physicsHandleComp->SetTargetLocation(me->accioHoverRegionArrowComponent->GetComponentLocation());
 	}
 
@@ -286,6 +300,8 @@ void ULegacyPlayerMagicComponent::SpellCombo()
 void ULegacyPlayerMagicComponent::CastDepulso()
 {
 
+	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastDepulso"));
+
 	isLevioso = false;
 	isAccio = false;
 
@@ -297,11 +313,12 @@ void ULegacyPlayerMagicComponent::CastDepulso()
 
 		FVector throwDirection = enemy->GetActorLocation() - me->GetActorForwardVector();
 		throwDirection.Normalize();
+		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastDepulso - Throw"));
 		enemy->enemyState->Throw(throwDirection * 300000, 1);
 		enemy->enemyState->bIsGrabbed = false;
 
+		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastDepulso - Go to Cancel"));
 		enemy->GetCapsuleComponent()->SetSimulatePhysics(true);
-		
 		spellState = SpellState::Cancel;
 	}
 }
@@ -343,6 +360,12 @@ void ULegacyPlayerMagicComponent::CastAvadaKedavra()
 
 void ULegacyPlayerMagicComponent::CastGrab()
 {
+	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastGrab"));
+
+	isLevioso = false;
+	isAccio = false;
+	isDepulso = false;
+
 	me->physicsHandleComp->SetLinearDamping(5);
 	me->physicsHandleComp->SetLinearStiffness(50);
 	me->physicsHandleComp->SetInterpolationSpeed(60);
@@ -378,7 +401,7 @@ void ULegacyPlayerMagicComponent::CastGrab()
 			enemy->enemyState->bIsGrabbed = false;
 			enemy->GetCapsuleComponent()->SetSimulatePhysics(true);
 		}
-		
+		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastGrab - Go to Cancel"));
 		spellState = SpellState::Cancel;
 	}
 }
@@ -418,6 +441,7 @@ void ULegacyPlayerMagicComponent::DetectTarget()
 			//detectedComponent = hitResult.GetComponent();
 			//get the enemy's capsule component and cache it into detected component
 			detectedComponent = enemy->GetCapsuleComponent();
+			UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::DetectTarget - Get Enemy Capsule"));
 			#pragma region Debug
 			if (detectedComponent) {
 				UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::DetectTarget - grabbedComponent"));
@@ -434,9 +458,7 @@ void ULegacyPlayerMagicComponent::DetectTarget()
 
 void ULegacyPlayerMagicComponent::DereferenceVariables()
 {
-	//Bug: might need to take this to rest
-	me->physicsHandleComp->ReleaseComponent();
-
+	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::DereferenceVariables"));
 	isAccio = false;
 	isLevioso = false;
 	isDepulso = false;
@@ -450,6 +472,8 @@ void ULegacyPlayerMagicComponent::DereferenceVariables()
 		enemy = nullptr;
 	}
 
+	//Bug: might need to take this to rest
+	me->physicsHandleComp->ReleaseComponent();
 
 	//dereference grabbedComponent
 	grabbedComponent = nullptr;
@@ -461,6 +485,7 @@ void ULegacyPlayerMagicComponent::CancelSpellTimer(float spellTime)
 
 	if(currentTime > spellTime){
 		currentTime = 0;
+		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CancelSpellTimer - Go to Cancel"));
 		spellState = SpellState::Cancel;
 	}
 }
