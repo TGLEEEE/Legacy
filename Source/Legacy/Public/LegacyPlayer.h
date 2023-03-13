@@ -91,7 +91,7 @@ public:
 	class ULegacyPlayerUIComponent* uIComponent;
 
 	UPROPERTY(EditAnywhere)
-	class UStaticMeshComponent* staticMeshCompWand;
+	class UStaticMeshComponent* wandStaticMeshComponent;
 
 	UPROPERTY(EditAnywhere)
 	class UArrowComponent* accioHoverRegionArrowComponent;
@@ -101,6 +101,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	float grabHoverRegionOffset = 300;
 
+	UPROPERTY(EditAnywhere)
+	class USphereComponent* leftSphereComponent;
+	UPROPERTY(EditAnywhere)
+	class USphereComponent* rightSphereComponent;
 
 
 	FSetupPlayerInputDelegate setupPlayerInputDelegate;
