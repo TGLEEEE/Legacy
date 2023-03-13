@@ -134,8 +134,8 @@ void ALegacyPlayer::BeginPlay()
 	if(legacyGameMode){
 		if (!legacyGameMode->isHMDActivated) {
 			//place hand where you can see them
-			rightHand->SetRelativeLocation(FVector(20, 10, 82));
-			rightHand->SetRelativeRotation(FRotator(10, 30, 0));
+			rightHand->SetRelativeLocation(FVector(50, 30,80));
+			rightHand->SetRelativeRotation(FRotator(90, 50, 40));
 			//turn on use pawn control rotation
 			cameraComp->bUsePawnControlRotation = true;
 		}
