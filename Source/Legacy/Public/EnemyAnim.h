@@ -29,6 +29,8 @@ public:
 
 	UFUNCTION()
 	void AnimNotify_AttackEnd();
+	UFUNCTION()
+	void AnimNotify_AttackMagic();
 
 	UPROPERTY(EditAnywhere)
 	class UAnimMontage* montage_Paladin;

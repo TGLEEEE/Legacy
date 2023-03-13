@@ -22,6 +22,10 @@ public:
 	class UTextBlock* WorldtimeMin;
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UTextBlock* WorldtimeSec;
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	class UTextBlock* EnemyCount;
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	class UTextBlock* EnemyCountTotal;
 	UPROPERTY()
 	class ALegacyGameMode* gm;
 

@@ -112,7 +112,7 @@ void UEnemyFSM::TickIdle()
 		SetState(EEnemyState::CHASE);
 	}
 
-		// 아이들 상태에서 원점과 일정거리 이상 멀어지면 원점으로 복귀
+	// 아이들 상태에서 원점과 일정거리 이상 멀어지면 원점으로 복귀
 	if (FVector::Dist(originLoc, me->GetActorLocation()) >= distanceForReturnOrigin && !bIsReturning)
 	{
 		bIsReturning = true;
@@ -153,20 +153,23 @@ void UEnemyFSM::TickChase()
 void UEnemyFSM::TickAttack()
 {
 	enemyAnim->animState = EEnemyState::ATTACK;
-
 	attackTimer += GetWorld()->GetDeltaSeconds();
-	// 공격
+
+	// 딜레이마다 한번씩 공격
 	if (attackTimer >= attackDelay)
 	{
-		// 공격 애님
 		enemyAnim->bDoAttack = true;
 		attackTimer = 0;
 	}
 
+	// 거리 멀어지면 쫓아가게
 	if (FVector::Dist(me->GetActorLocation(), player->GetActorLocation()) > attackableDistance)
 	{
 		SetState(EEnemyState::CHASE);
 	}
+
+	// 공격중 플레이어 방향 바라보게
+	me->SetActorRotation((player->GetActorLocation() - me->GetActorLocation()).GetSafeNormal().Rotation());
 }
 
 void UEnemyFSM::TickInTheAir()
@@ -223,3 +226,4 @@ void UEnemyFSM::UpdateRandomLoc(float radius, FVector& randomLoc)
 		randomLoc = navLoc.Location;
 	}
 }
+

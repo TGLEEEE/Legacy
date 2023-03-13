@@ -6,6 +6,13 @@
 #include "Components/ActorComponent.h"
 #include "EnemyState.generated.h"
 
+UENUM(BlueprintType)
+enum class EEnemyType : uint8
+{
+	PALADIN,
+	WIZARD,
+	BOSS
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class LEGACY_API UEnemyState : public UActorComponent
@@ -37,6 +44,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool bIsGrabbed;
 	bool bReadyToAir = true;
+	EEnemyType ownerType;
 
 	UFUNCTION(BlueprintCallable)
 	void OnDamageProcess(int amount);
