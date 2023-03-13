@@ -4,6 +4,8 @@
 #include "Enemy.h"
 #include "EnemyFSM.h"
 #include "EnemyState.h"
+#include "LegacyGameMode.h"
+#include "LegacyPlayer.h"
 #include "Components/CapsuleComponent.h"
 
 // Sets default values
@@ -22,6 +24,9 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &AEnemy::OnHitGround);
+	// player Ä³½ºÆÃ
+	player = Cast<ALegacyPlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter());
+	gm = Cast<ALegacyGameMode>(GetWorld()->GetAuthGameMode());
 }
 
 // Called every frame

@@ -20,19 +20,12 @@ ALegacyGameMode::ALegacyGameMode()
 void ALegacyGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-	WorldTimer();
-	timerWidgetUI = CreateWidget(GetWorld(), timerWidgetFactory);
-	timerWidgetUI->AddToViewport();
 
 	//checks if HMD is activated
 	isHMDActivated = (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled()) ? true : false;
 
 	legacyPlayer = Cast<ALegacyPlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter()); 
 	if (!legacyPlayer) { UE_LOG(LogTemp, Warning, TEXT("Can't find Legacy Player")); }
-
-	SpawnEnemyPaladin(4);
-	SpawnEnemyWizard(6);
-	
 }
 
 void ALegacyGameMode::Tick(float DeltaSeconds)
@@ -94,6 +87,29 @@ void ALegacyGameMode::Tick(float DeltaSeconds)
 	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Current Acceleration %s"), *leftCurrentAcceleration.ToString());
 	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Current Acceleration %s"), *rightCurrentAcceleration.ToString());
 
+	if (currentWave > 0 && !bIsInWave)
+	{
+		WaveStageManager(currentWave);
+		bIsInWave = true;
+	}
+
+	if (enemyCountTotal > 0 && enemyKillCount == enemyCountTotal && bIsInWave)
+	{
+		currentWave++;
+		bIsInWave = false;
+	}
+
+	if (currentWave > 3 && !bIsInWave)
+	{
+		// ¿£µùÃ³¸® (¸ØÃç!)
+
+	}
+}
+
+void ALegacyGameMode::WaveStart()
+{
+	WorldTimer();
+	currentWave++;
 }
 
 void ALegacyGameMode::WorldTimer()
@@ -168,6 +184,12 @@ void ALegacyGameMode::SpawnEnemyWizard(int spawnCount)
 				GetWorldTimerManager().ClearTimer(spawnWizardHandle);
 			}
 		}), 1.f, true, 1.f);
+}
+
+void ALegacyGameMode::WaveStageManager(int wave)
+{
+	SpawnEnemyPaladin(wave * 2);
+	SpawnEnemyWizard(wave * wave);
 }
 
 #pragma region Extract Data From Controller

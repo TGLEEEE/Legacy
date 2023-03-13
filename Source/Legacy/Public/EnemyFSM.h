@@ -39,8 +39,6 @@ public:
 	class AEnemy* me;
 	UPROPERTY()
 	class AAIController* ai;
-	UPROPERTY()
-	class ALegacyPlayer* player;
 	UPROPERTY(EditAnywhere)
 	float maxIdleTime = 3.f;
 	UPROPERTY(EditAnywhere)
