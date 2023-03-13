@@ -318,10 +318,10 @@ void ULegacyPlayerMagicComponent::CastDepulso()
 {
 	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastDepulso"));
 
-	//potential bug; might need to delete to just !detected object
-	if (!detectedComponent && !grabbedComponent) { return; }
+	if (!detectedComponent || !grabbedComponent) {
+		return;
+	}
 
-	//potential bug
 	enemy = Cast<AEnemy>(detectedComponent->GetOwner());
 	if(enemy){
 		if(grabbedComponent){ me->physicsHandleComp->ReleaseComponent();  }
