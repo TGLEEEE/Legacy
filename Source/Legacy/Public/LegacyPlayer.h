@@ -31,13 +31,15 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 #pragma region Input
-	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Movement")
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs")
 	class UInputMappingContext* iMC_VRInput;
 
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Movement")
 	class UInputAction* iA_VRMove;
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Movement")
 	class UInputAction* iA_Mouse;
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Movement")
+	class UInputAction* iA_Warp;
 
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
 	class UInputAction* iA_CastSpell;
@@ -64,13 +66,22 @@ public:
 #pragma endregion 
 
 #pragma region Components
-	UPROPERTY(EditAnywhere, Category = "Player Settings | Components")
+	UPROPERTY(EditAnywhere)
 	class UCameraComponent* cameraComp;
 
-	UPROPERTY(EditAnywhere, Category = "Player Settings | Components")
+	UPROPERTY(EditAnywhere)
 	class ULegacyPlayerMoveComponent* moveComponent;
-	UPROPERTY(EditAnywhere, Category = "Player Settings | Components")
+	UPROPERTY(EditAnywhere)
 	class ULegacyPlayerMagicComponent* magicComponent;
+
+	UPROPERTY(EditAnywhere)
+	class UMotionControllerComponent* leftHand;
+	UPROPERTY(EditAnywhere)
+	class UMotionControllerComponent* rightHand;
+	UPROPERTY(EditAnywhere)
+	class USkeletalMeshComponent* leftHandMesh;
+	UPROPERTY(EditAnywhere)
+	class USkeletalMeshComponent* rightHandMesh;
 
 	UPROPERTY(EditAnywhere)
 	class UPhysicsHandleComponent* physicsHandleComp;
@@ -90,14 +101,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	float grabHoverRegionOffset = 300;
 
-	UPROPERTY(EditAnywhere, Category = "Player Settings | Components")
-	class UMotionControllerComponent* leftHand;
-	UPROPERTY(EditAnywhere, Category = "Player Settings | Components")
-	class UMotionControllerComponent* rightHand;
-	UPROPERTY(EditAnywhere, Category = "Player Settings | Components")
-	class USkeletalMeshComponent* leftHandMesh;
-	UPROPERTY(EditAnywhere, Category = "Player Settings | Components")
-	class USkeletalMeshComponent* rightHandMesh;
+
 
 	FSetupPlayerInputDelegate setupPlayerInputDelegate;
 #pragma endregion Components
@@ -108,21 +112,11 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class UNiagaraComponent* teleportCurveComp;
-
-	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Movement")
-	class UInputAction* IA_Teleport;
 #pragma endregion 
 
 	void CheckPlatform();
 
 	UPROPERTY()
 	class ALegacyGameMode* legacyGameMode;
-
-protected:
-
-#pragma region VR
-
-#pragma endregion 
-
 };
 
