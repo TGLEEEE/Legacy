@@ -12,7 +12,7 @@
 #include "LegacyPlayer.h"
 #include "MotionControllerComponent.h"
 #include "NavigationSystem.h"
-#include "TimerWidget.h"
+#include "ClearWidget.h"
 #include "Components/SphereComponent.h"
 
 ALegacyGameMode::ALegacyGameMode()
@@ -30,6 +30,7 @@ void ALegacyGameMode::BeginPlay()
 	legacyPlayer = Cast<ALegacyPlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter()); 
 	if (!legacyPlayer) { UE_LOG(LogTemp, Warning, TEXT("Can't find Legacy Player")); }
 
+	clearWidgetUI = CreateWidget<UClearWidget>(GetWorld(), clearWidgetFactory);
 }
 
 void ALegacyGameMode::Tick(float DeltaSeconds)
@@ -87,8 +88,7 @@ void ALegacyGameMode::Tick(float DeltaSeconds)
 
 	if (currentWave > 3 && !bIsInWave)
 	{
-		// ¿£µùÃ³¸® (¸ØÃç!)
-		UE_LOG(LogTemp, Warning, TEXT("CCLEARRRRRRRRRRRRRRRRRRRRRR"));
+		clearWidgetUI->AddToViewport();
 	}
 }
 
@@ -120,7 +120,7 @@ void ALegacyGameMode::SpawnEnemyPaladin(int spawnCount)
 			UNavigationSystemV1* navSys = UNavigationSystemV1::GetNavigationSystem(GetWorld());
 			FNavLocation navLoc;
 			FVector randomLoc;
-			bool result = navSys->GetRandomPointInNavigableRadius(legacyPlayer->GetActorLocation(), 5000, navLoc);
+			bool result = navSys->GetRandomPointInNavigableRadius(legacyPlayer->GetActorLocation(), 3000, navLoc);
 			if (result)
 			{
 				randomLoc = navLoc.Location;
@@ -152,7 +152,7 @@ void ALegacyGameMode::SpawnEnemyWizard(int spawnCount)
 			UNavigationSystemV1* navSys = UNavigationSystemV1::GetNavigationSystem(GetWorld());
 			FNavLocation navLoc;
 			FVector randomLoc;
-			bool result = navSys->GetRandomPointInNavigableRadius(legacyPlayer->GetActorLocation(), 5000, navLoc);
+			bool result = navSys->GetRandomPointInNavigableRadius(legacyPlayer->GetActorLocation(), 4000, navLoc);
 			if (result)
 			{
 				randomLoc = navLoc.Location;
@@ -169,13 +169,13 @@ void ALegacyGameMode::SpawnEnemyWizard(int spawnCount)
 			{
 				GetWorldTimerManager().ClearTimer(spawnWizardHandle);
 			}
-		}), 1.f, true, 1.f);
+		}), 1.f, true, 0.6f);
 }
 
 void ALegacyGameMode::WaveStageManager(int wave)
 {
-	SpawnEnemyPaladin(wave * 2);
-	SpawnEnemyWizard(wave * wave);
+	SpawnEnemyWizard(wave * 2);
+	SpawnEnemyPaladin(wave);
 }
 
 #pragma region Extract Data From Controller

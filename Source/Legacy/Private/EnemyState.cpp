@@ -48,6 +48,12 @@ void UEnemyState::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 		// bIsInTheAir 끄는건 바닥에 떨어졌을 때
 		bReadyToAir = true;
 	}
+
+	if (hp <= 0)
+	{
+		// die state
+		me->enemyFSM->SetState(EEnemyState::DIE);
+	}
 }
 
 void UEnemyState::OnDamageProcess(int amount)
@@ -60,11 +66,6 @@ void UEnemyState::OnDamageProcess(int amount)
 		// damage state
 		me->enemyFSM->SetState(EEnemyState::DAMAGE);
 	}
-	else
-	{
-		// die state
-		me->enemyFSM->SetState(EEnemyState::DIE);
-	}
 }
 
 void UEnemyState::Throw(FVector force, int Amount)
@@ -72,7 +73,7 @@ void UEnemyState::Throw(FVector force, int Amount)
 	// 데미지 계산
 	OnDamageProcess(Amount);
 	// 날려버리자
-	force = force + (me->player->GetActorUpVector() * force.Size() / 6);
+	force = force + (me->player->GetActorUpVector() * force.Size() / 3);
 	me->GetCapsuleComponent()->AddForce(force * mass);
 
 	// 랜덤하게 로테이션 변경

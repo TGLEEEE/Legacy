@@ -26,8 +26,10 @@ public:
 	TSubclassOf<class AEnemy> enemyPaladinFactory;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AEnemy> enemyWizardFactory;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UClearWidget> clearWidgetFactory;
 	UPROPERTY()
-	class UTimerWidget* timerWidget;
+	class UClearWidget* clearWidgetUI;
 
 	int worldTime;
 	int worldTimeSec;
