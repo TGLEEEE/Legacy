@@ -7,7 +7,9 @@
 #include "AIController.h"
 #include "EnemyAnim.h"
 #include "EngineUtils.h"
+#include "LegacyGameMode.h"
 #include "LegacyPlayer.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values for this component's properties
 UEnemyFSM::UEnemyFSM()
@@ -186,27 +188,37 @@ void UEnemyFSM::TickDamage()
 	if (!bDamageAnimDoOnce)
 	{
 		bDamageAnimDoOnce = true;
-
-		EEnemyState temp = state;
 		enemyAnim->animState = EEnemyState::DAMAGE;
-
 		FTimerHandle hd;
 		GetWorld()->GetTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]()
 			{
-				SetState(temp);
+				SetState(EEnemyState::IDLE);
 				bDamageAnimDoOnce = false;
-			}), 0.2f, false);
+			}), 0.8f, false);
 	}
 }
 
 void UEnemyFSM::TickDie()
 {
 	enemyAnim->animState = EEnemyState::DIE;
-
-	// Á×À» ¶§
-
-	// Á×´Â ¾Ö´Ô
-
+	dieTimer += GetWorld()->DeltaTimeSeconds;
+	if (!bDieCollisionOnce)
+	{
+		bDieCollisionOnce = true;
+		me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+	if (dieTimer > 3.f)
+	{
+		FVector P0 = me->GetActorLocation();
+		FVector vt = FVector::DownVector * 50.f * GetWorld()->DeltaTimeSeconds;
+		FVector P = P0 + vt;
+		me->SetActorLocation(P);
+		if (P.Z < -100.0f)
+		{
+			me->gm->enemyKillCount++;
+			me->Destroy();
+		}
+	}
 }
 
 void UEnemyFSM::SetState(EEnemyState nextState)
