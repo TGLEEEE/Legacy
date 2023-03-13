@@ -30,7 +30,6 @@ void ALegacyGameMode::BeginPlay()
 	legacyPlayer = Cast<ALegacyPlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter()); 
 	if (!legacyPlayer) { UE_LOG(LogTemp, Warning, TEXT("Can't find Legacy Player")); }
 
-	//timerWidget = Cast<UTimerWidget>(GetObjectsOfClass(UTimerWidget::StaticClass(), ));
 }
 
 void ALegacyGameMode::Tick(float DeltaSeconds)
@@ -84,7 +83,6 @@ void ALegacyGameMode::Tick(float DeltaSeconds)
 	{
 		currentWave++;
 		bIsInWave = false;
-		//timerWidget->PlayAnimation(timerWidget->waveAnim);
 	}
 
 	if (currentWave > 3 && !bIsInWave)

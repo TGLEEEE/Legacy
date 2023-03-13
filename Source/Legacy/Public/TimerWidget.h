@@ -15,6 +15,7 @@ class LEGACY_API UTimerWidget : public UUserWidget
 	GENERATED_BODY()
 		
 public:
+
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	virtual void NativeConstruct() override;
 
@@ -32,6 +33,8 @@ public:
 	class ALegacyGameMode* gm;
 	UPROPERTY(BlueprintReadOnly, Transient, meta = (BindWidgetAnim))
 	class UWidgetAnimation* waveAnim;
+
+	bool bDoOnce;
 
 	void UpdateTimerWidget();
 	FTimerHandle hdForTimerWidget;
