@@ -35,30 +35,31 @@ public:
 private:
 
 #pragma region Warp Teleport
-	void StartTeleport(const FInputActionValue& value);
-	void EndTeleport(const FInputActionValue& value);
+	void StartWarp(const FInputActionValue& value);
+	void EndWarp(const FInputActionValue& value);
 
 	bool ResetTeleport();
 
-	bool CheckTeleportHit(FVector PreviousPosition, FVector& currentPosition);
+	bool CheckTeleportHit(FVector previousPosition, FVector& currentPosition);
 	bool LineTraceHit(FVector previousPosition, FVector currentPosition, FHitResult& hitInfo);
+
+	void Warp();
+	void DrawCurvedTeleport();
 
 	UPROPERTY(VisibleAnywhere, Category = "Player Settings | Inputs | Warp Teleport", meta = (AllowPrivateAccess = true))
 	bool isWarping = true;
 	
-	bool isTeleporting = false;
+	bool isTeleporting = true;
 
 	FTimerHandle warpTimerHandle;
 
 	FVector teleportLocation;
 	
-	UPROPERTY(EditAnywhere, Category = "Movement", meta = (AllowPrivateAccess = true))
-	float warpTime = 0.2f;
 	float currentTime;
 	
-	void Warp();
-	void DrawCurvedTeleport();
 
+	UPROPERTY(EditAnywhere, Category = "Movement", meta = (AllowPrivateAccess = true))
+	float warpTime = 0.2f;
 	UPROPERTY(EditAnywhere, Category = "Player Settings | VR Settings", meta = (AllowPrivateAccess = true))
 	float curveTeleportForce = 1500;
 	UPROPERTY(EditAnywhere, Category = "Player Settings | VR Settings", meta = (AllowPrivateAccess = true))
