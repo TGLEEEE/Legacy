@@ -106,7 +106,10 @@ ALegacyPlayer::ALegacyPlayer()
 	leftSphereComponent->SetSimulatePhysics(false);
 
 	cameraComp->bUsePawnControlRotation = false;
+
+	currentHealth = maxHealth;
 }
+
 
 // Called when the game starts or when spawned
 void ALegacyPlayer::BeginPlay()
@@ -168,3 +171,10 @@ void ALegacyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	setupPlayerInputDelegate.Broadcast(PlayerInputComponent);
 }
 
+
+void ALegacyPlayer::TakeDamage(int32 damagePoints)
+{
+	currentHealth -= damagePoints;
+
+	//
+}

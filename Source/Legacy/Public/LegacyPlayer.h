@@ -118,9 +118,19 @@ public:
 	class UNiagaraComponent* teleportCurveComp;
 #pragma endregion 
 
-	void CheckPlatform();
+	void TakeDamage(int32 damagePoints);
+
+	int32 currentHealth;
 
 	UPROPERTY()
 	class ALegacyGameMode* legacyGameMode;
+
+private:
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Health", meta = (AllowPrivateAccess = true))
+	int32 maxHealth = 10;
 };
+
+
+
+
 
