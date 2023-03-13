@@ -11,6 +11,7 @@
 #include "LegacyPlayer.h"
 #include "MotionControllerComponent.h"
 #include "NavigationSystem.h"
+#include "Components/SphereComponent.h"
 
 ALegacyGameMode::ALegacyGameMode()
 {
@@ -46,43 +47,22 @@ void ALegacyGameMode::Tick(float DeltaSeconds)
 
 
 
-	FVector currentPosition = legacyPlayer->rightHand->GetComponentLocation();
-	FVector currentVelocity = legacyPlayer->rightHand->GetComponentVelocity();
+	FVector leftCurrentPosition = legacyPlayer->leftSphereComponent->GetComponentLocation();
+	FVector rightCurrentPosition = legacyPlayer->rightSphereComponent->GetComponentLocation();
+	FVector leftCurrentVelocity = legacyPlayer->leftSphereComponent->GetPhysicsLinearVelocity();
+	FVector rightCurrentVelocity = legacyPlayer->rightSphereComponent->GetPhysicsLinearVelocity();
 
-	//not sure if this will work
-	FVector relativeCurrentPosition = legacyPlayer->rightHand->GetRelativeTransform().GetLocation();
-	//FVector relativeCurrentPosition = GetTransform().InverseTransformPosition(legacyPlayer->rightHand->GetComponentLocation());
-
-
-
-	FTransform playerTransform = legacyPlayer->GetActorTransform();
-
-	FTransform relativeTranform = playerTransform.Inverse();
-	FVector relativePosition = relativeTranform.TransformVector(currentPosition);
-	FVector relativeVelocity = relativeTranform.TransformVector(currentVelocity);
-
-	float currentTime = GetWorld()->GetTimeSeconds();
-
-	float deltaTime = DeltaSeconds;
-
-	FVector currentAcceleration = (relativeVelocity - previousVelocity) / deltaTime;
-
-	previousVelocity = relativeVelocity;
-	previousTime = currentTime;
+	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Current Right Hand Position: %s"), *relativePosition.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Current Right Hand Velocity: %s"), *relativeVelocity.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Current Right Hand Acceleration: %s"), *currentAcceleration.ToString());
 
 
 
-	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Current Right Hand Position: %s"), *relativePosition.ToString());
-	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Current Right Hand Velocity: %s"), *relativeVelocity.ToString());
-	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Current Right Hand Acceleration: %s"), *currentAcceleration.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Current Position %s"), *leftCurrentPosition.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Current Position %s"), *rightCurrentPosition.ToString());
 
-
-
-	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Current Position %s"), *rightCurrentPosition.ToString());
-	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Current Position %s"), *rightCurrentPosition.ToString());
-
-	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Current Velocity %s"), *leftCurrentVelocity.ToString());
-	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Current Velocity %s"), *rightCurrentVelocity.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Current Velocity %s"), *leftCurrentVelocity.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Current Velocity %s"), *rightCurrentVelocity.ToString());
 
 	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Current Acceleration %s"), *leftCurrentAcceleration.ToString());
 	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Current Acceleration %s"), *rightCurrentAcceleration.ToString());
@@ -201,18 +181,18 @@ void ALegacyGameMode::GetControllers()
 	UHeadMountedDisplayFunctionLibrary::GetMotionControllerData(GetWorld(), EControllerHand::Right, rightControllerData);
 
 #pragma region Debug
-	if((leftControllerData.DeviceName == FName("NAME_None")) && rightControllerData.DeviceName == FName("NAME_None")){
-		UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::GetControllers - Can't find both controllers"));
-	}
-	else if(!(leftControllerData.DeviceName == FName("NAME_None")) != !(rightControllerData.DeviceName == FName("NAME_None"))){
-		UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::GetControllers - Can't find one of the controllers"));
-	}
-	else if((leftControllerData.DeviceName != FName("NAME_None")) && (rightControllerData.DeviceName != FName("NAME_None"))){
-		UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::GetControllers - Found both controllers"));
-		UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Controller %s"), *rightControllerData.DeviceName.ToString());
-		UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Controller	 %s"), *leftControllerData.DeviceName.ToString());
+	//if((leftControllerData.DeviceName == FName("NAME_None")) && rightControllerData.DeviceName == FName("NAME_None")){
+	//	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::GetControllers - Can't find both controllers"));
+	//}
+	//else if(!(leftControllerData.DeviceName == FName("NAME_None")) != !(rightControllerData.DeviceName == FName("NAME_None"))){
+	//	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::GetControllers - Can't find one of the controllers"));
+	//}
+	//else if((leftControllerData.DeviceName != FName("NAME_None")) && (rightControllerData.DeviceName != FName("NAME_None"))){
+	//	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::GetControllers - Found both controllers"));
+	//	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Controller %s"), *rightControllerData.DeviceName.ToString());
+	//	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Controller	 %s"), *leftControllerData.DeviceName.ToString());
 
-	}
+	//}
 #pragma endregion 
 }
 

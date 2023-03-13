@@ -17,6 +17,7 @@
 #include "Components/ArrowComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "NiagaraComponent.h"
+#include "Components/SphereComponent.h"
 
 
 // Sets default values
@@ -28,8 +29,10 @@ ALegacyPlayer::ALegacyPlayer()
 	moveComponent = CreateDefaultSubobject<ULegacyPlayerMoveComponent>(TEXT("Move Component"));
 	magicComponent = CreateDefaultSubobject<ULegacyPlayerMagicComponent>(TEXT("Magic Component"));
 	uIComponent = CreateDefaultSubobject<ULegacyPlayerUIComponent>(TEXT("UI Component"));
-
 	physicsHandleComp = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("Physics Handle Component"));
+	leftSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Left Sphere Component"));
+	rightSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Right Sphere Component"));
+
 
 #pragma region VR
 	cameraComp = CreateDefaultSubobject<UCameraComponent>("Camera Component");
@@ -75,23 +78,32 @@ ALegacyPlayer::ALegacyPlayer()
 	teleportCurveComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Teleport Curve Component"));
 #pragma endregion 
 	
-	//update
-
-	staticMeshCompWand = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Box Component Wand"));
-	staticMeshCompWand->SetupAttachment(rightHandMesh);
-	staticMeshCompWand->SetRelativeLocation(FVector(18.512654, 31.897307, -5.600729));
-	staticMeshCompWand->SetRelativeRotation(FRotator(0.000000, 56.993283, 0.000000));
+	wandStaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Wand Static Mesh"));
+	wandStaticMeshComponent->SetupAttachment(rightHandMesh);
+	wandStaticMeshComponent->SetRelativeLocation(FVector(8.429074, 16.892678, -2.629340));
+	wandStaticMeshComponent->SetRelativeRotation(FRotator(0, 56.993283, 0));
+	wandStaticMeshComponent->SetRelativeScale3D(FVector(0.06f));
 	//Temporary
-	staticMeshCompWand->SetRelativeScale3D(FVector(0.611458, 0.025521, 0.040060));
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempWandMesh(TEXT("/Script/Engine.StaticMesh'/Game/Legacy/YWP/Assets/source/ElderWand.ElderWand'"));
+
+	//if found
+	if (tempWandMesh.Succeeded()) {
+		wandStaticMeshComponent->SetStaticMesh(tempWandMesh.Object);
+	}
+	//wandStaticMeshComponent->SetRelativeScale3D(FVector(0.611458, 0.025521, 0.040060));
 
 	accioHoverRegionArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("Accio Arrow Component"));
-	accioHoverRegionArrowComponent->SetupAttachment(GetRootComponent());
+	accioHoverRegionArrowComponent->SetupAttachment(cameraComp);
 	accioHoverRegionArrowComponent->SetRelativeLocation(FVector(10, 10, 10));
 
 	grabHoverRegionArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("Grab Arrow Component"));
-	grabHoverRegionArrowComponent->SetupAttachment(staticMeshCompWand);
+	grabHoverRegionArrowComponent->SetupAttachment(wandStaticMeshComponent);
 	grabHoverRegionArrowComponent->SetRelativeLocation(FVector(300, 0, 0));
 
+	leftSphereComponent->SetupAttachment(leftHand);
+	leftSphereComponent->SetSimulatePhysics(true);
+	rightSphereComponent->SetupAttachment(rightHand);
+	leftSphereComponent->SetSimulatePhysics(false);
 
 	cameraComp->bUsePawnControlRotation = false;
 }

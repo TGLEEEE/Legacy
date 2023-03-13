@@ -12,7 +12,7 @@ enum class SpellState : uint8 {
 	Levioso,
 	Accio,
 	Depulso,
-	AvadaKedavra,
+	//AvadaKedavra,
 	Grab,
 	Cancel
 };
@@ -31,7 +31,7 @@ public:
 
 #pragma region Input Actions
 	UFUNCTION()
-	void OnActionCastSpell();
+	void OnActionCastSpellPressed();
 	UFUNCTION()
 	void OnActionGrabPressed();
 	UFUNCTION()
@@ -45,9 +45,9 @@ public:
 	void OnActionSpell3Pressed();
 
 
+	//temporary
 	UFUNCTION()
 	void OnActionSpellComboPressed();
-
 	UFUNCTION()
 	void OnActionSpellCancelPressed();
 #pragma endregion 
@@ -56,7 +56,7 @@ public:
 	void UpdateSpellState();
 	void CheckSpellState(int32& quadrantNumber);
 
-	SpellState spellstate;
+	SpellState spellState;
 
 	int32 comboCount = 0;
 
@@ -78,6 +78,7 @@ public:
 	void CastDepulso();
 	void CastAvadaKedavra();
 	void CastGrab();
+	//temporary
 	void SpellCombo();
 	void SpellCancel();
 #pragma endregion 
@@ -110,7 +111,6 @@ public:
 
 	void DereferenceVariables();
 
-	//fx
 	UPROPERTY(EditAnywhere)
 	class UNiagaraSystem* avadaKedavraNiagara;
 
@@ -119,7 +119,17 @@ public:
 
 	bool isAvadaKedavraCast;
 
-	UPROPERTY()
-	class ALegacyGameMode* legacyGameMode;
+	FTimerHandle spellCancelTimerHandle;
 
+	void CancelSpellTimer(float spellTime);
+
+	float currentTime;
+
+	//write category
+	UPROPERTY(EditAnywhere)
+	float leviosoCancelTime = 3;
+	UPROPERTY(EditAnywhere)
+	float accioCancelTime = 2;
+	UPROPERTY(EditAnywhere)
+	float avadaKedavraCancelTime = 3;
 };
