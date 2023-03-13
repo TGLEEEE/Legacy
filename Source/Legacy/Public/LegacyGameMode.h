@@ -23,23 +23,32 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<UUserWidget> timerWidgetFactory;
-	UPROPERTY()
-	class UUserWidget* timerWidgetUI;
+	TSubclassOf<class AEnemy> enemyPaladinFactory;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AEnemy> enemyWizardFactory;
 
-	UPROPERTY()
 	int worldTime;
-	UPROPERTY()
 	int worldTimeSec;
-	UPROPERTY()
 	int worldTimeMin;
-
-	float enemyCount;
-	float enemyCountTotal;
+	int currentCountForSpawnPaladin;
+	int tempCountForSpawnPaladin;
+	int currentCountForSpawnWizard;
+	int tempCountForSpawnWizard;
+	int enemyKillCount;
+	int enemyCountTotal;
+	int currentWave;
+	bool bIsInWave;
 
 	FTimerHandle worldtimerHandle;
+	FTimerHandle spawnPaladinHandle;
+	FTimerHandle spawnWizardHandle;
 
+	UFUNCTION(BlueprintCallable)
+	void WaveStart();
 	void WorldTimer();
+	void SpawnEnemyPaladin(int spawnCount);
+	void SpawnEnemyWizard(int spawnCount);
+	void WaveStageManager(int wave);
 
 #pragma region VR
 	bool isHMDActivated;

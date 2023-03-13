@@ -4,6 +4,8 @@
 #include "Enemy.h"
 #include "EnemyFSM.h"
 #include "EnemyState.h"
+#include "LegacyGameMode.h"
+#include "LegacyPlayer.h"
 #include "Components/CapsuleComponent.h"
 
 // Sets default values
@@ -14,6 +16,7 @@ AEnemy::AEnemy()
 
 	enemyFSM = CreateDefaultSubobject<UEnemyFSM>(TEXT("FSM"));
 	enemyState = CreateDefaultSubobject<UEnemyState>(TEXT("Enemy State Comp"));
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 // Called when the game starts or when spawned
@@ -21,6 +24,9 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &AEnemy::OnHitGround);
+	// player Ä³½ºÆÃ
+	player = Cast<ALegacyPlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter());
+	gm = Cast<ALegacyGameMode>(GetWorld()->GetAuthGameMode());
 }
 
 // Called every frame

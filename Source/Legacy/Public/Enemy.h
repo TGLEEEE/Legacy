@@ -30,6 +30,10 @@ public:
 	class UEnemyFSM* enemyFSM;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UEnemyState* enemyState;
+	UPROPERTY()
+	class ALegacyPlayer* player;
+	UPROPERTY()
+	class ALegacyGameMode* gm;
 
 	UFUNCTION()
 	void OnHitGround(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);

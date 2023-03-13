@@ -34,8 +34,6 @@ public:
 
 	UPROPERTY()
 	class AEnemy* me;
-	UPROPERTY()
-	class ALegacyPlayer* player;
 
 	UPROPERTY(EditAnywhere)
 	int hp = 10;

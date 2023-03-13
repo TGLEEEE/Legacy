@@ -8,6 +8,7 @@
 #include "LegacyPlayer.h"
 #include "AIController.h"
 #include "EnemyAnim.h"
+#include "LegacyGameMode.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -29,8 +30,6 @@ void UEnemyState::BeginPlay()
 
 	// Enemy 접근할 일이 많을테니 캐싱
 	me = Cast<AEnemy>(GetOwner());
-	// player 캐스팅
-	player = Cast<ALegacyPlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter());
 }
 
 
@@ -55,11 +54,20 @@ void UEnemyState::OnDamageProcess(int amount)
 {
 	// 데미지 빼고
 	hp = hp - amount;
-	// damage state (애님 재생 등)
-	me->enemyFSM->SetState(EEnemyState::DAMAGE);
-	// 잘 됨 (죽음 처리 필요)
-	//me->PlayAnimMontage(me->enemyFSM->enemyAnim->montage_Paladin, 1, FName("Die"));
-	me->PlayAnimMontage(me->enemyFSM->enemyAnim->montage_Paladin, 1, FName("Damage"));
+	// 분기
+	if (hp > 0)
+	{
+		// damage state
+		//me->enemyFSM->SetState(EEnemyState::DAMAGE);
+		me->PlayAnimMontage(me->enemyFSM->enemyAnim->montage_Paladin, 1, FName("Damage"));
+	}
+	else
+	{
+		// die state
+		me->enemyFSM->SetState(EEnemyState::DIE);
+		me->PlayAnimMontage(me->enemyFSM->enemyAnim->montage_Paladin, 1, FName("Die"));
+		me->gm->enemyKillCount++;
+	}
 }
 
 void UEnemyState::Throw(FVector force, int Amount)

@@ -26,7 +26,7 @@ public:
 	class UTextBlock* EnemyCount;
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UTextBlock* EnemyCountTotal;
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	class ALegacyGameMode* gm;
 
 	void UpdateTimerWidget();

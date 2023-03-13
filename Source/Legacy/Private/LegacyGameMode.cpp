@@ -6,9 +6,11 @@
 #include "Blueprint/UserWidget.h"
 
 ///update
+#include "Enemy.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "LegacyPlayer.h"
 #include "MotionControllerComponent.h"
+#include "NavigationSystem.h"
 #include "Components/SphereComponent.h"
 
 ALegacyGameMode::ALegacyGameMode()
@@ -19,18 +21,12 @@ ALegacyGameMode::ALegacyGameMode()
 void ALegacyGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-	WorldTimer();
-	timerWidgetUI = CreateWidget(GetWorld(), timerWidgetFactory);
-	timerWidgetUI->AddToViewport();
 
 	//checks if HMD is activated
 	isHMDActivated = (UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled()) ? true : false;
 
 	legacyPlayer = Cast<ALegacyPlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter()); 
 	if (!legacyPlayer) { UE_LOG(LogTemp, Warning, TEXT("Can't find Legacy Player")); }
-
-
-	
 }
 
 void ALegacyGameMode::Tick(float DeltaSeconds)
@@ -71,6 +67,29 @@ void ALegacyGameMode::Tick(float DeltaSeconds)
 	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Current Acceleration %s"), *leftCurrentAcceleration.ToString());
 	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Current Acceleration %s"), *rightCurrentAcceleration.ToString());
 
+	if (currentWave > 0 && !bIsInWave)
+	{
+		WaveStageManager(currentWave);
+		bIsInWave = true;
+	}
+
+	if (enemyCountTotal > 0 && enemyKillCount == enemyCountTotal && bIsInWave)
+	{
+		currentWave++;
+		bIsInWave = false;
+	}
+
+	if (currentWave > 3 && !bIsInWave)
+	{
+		// 엔딩처리 (멈춰!)
+
+	}
+}
+
+void ALegacyGameMode::WaveStart()
+{
+	WorldTimer();
+	currentWave++;
 }
 
 void ALegacyGameMode::WorldTimer()
@@ -81,6 +100,76 @@ void ALegacyGameMode::WorldTimer()
 			worldTimeSec = worldTime % 60;
 			worldTimeMin = worldTime / 60;
 		}), 1.f, true);
+}
+
+void ALegacyGameMode::SpawnEnemyPaladin(int spawnCount)
+{
+	currentCountForSpawnPaladin = 0;
+	tempCountForSpawnPaladin = spawnCount;
+
+	// 모든 작업을 약간의 딜레이를 가지고 spawncount번 반복한다
+	GetWorldTimerManager().SetTimer(spawnPaladinHandle, FTimerDelegate::CreateLambda([&]()
+	{
+			// 플레이어 근처의 네비게이트 가능한 랜덤 위치를 뽑는다
+			UNavigationSystemV1* navSys = UNavigationSystemV1::GetNavigationSystem(GetWorld());
+			FNavLocation navLoc;
+			FVector randomLoc;
+			bool result = navSys->GetRandomPointInNavigableRadius(legacyPlayer->GetActorLocation(), 5000, navLoc);
+			if (result)
+			{
+				randomLoc = navLoc.Location;
+			}
+			// 해당 랜덤 위치에 적을 스폰한다
+			GetWorld()->SpawnActor<AEnemy>(enemyPaladinFactory, randomLoc, FRotator::ZeroRotator);
+			// 해당 랜덤 위치에 FX를 스폰한다
+
+			// 메인 위젯의 카운터값을 올린다
+			enemyCountTotal++;
+			// 몇번 반복했는지 세보고 목표에 도달했다면 타이머를 리셋한다
+			currentCountForSpawnPaladin++;
+			if (currentCountForSpawnPaladin == tempCountForSpawnPaladin)
+			{
+				GetWorldTimerManager().ClearTimer(spawnPaladinHandle);
+			}
+	}), 1.f, true, 1.f);
+}
+
+void ALegacyGameMode::SpawnEnemyWizard(int spawnCount)
+{
+	currentCountForSpawnWizard = 0;
+	tempCountForSpawnWizard = spawnCount;
+
+	// 모든 작업을 약간의 딜레이를 가지고 spawncount번 반복한다
+	GetWorldTimerManager().SetTimer(spawnWizardHandle, FTimerDelegate::CreateLambda([&]()
+		{
+			// 플레이어 근처의 네비게이트 가능한 랜덤 위치를 뽑는다
+			UNavigationSystemV1* navSys = UNavigationSystemV1::GetNavigationSystem(GetWorld());
+			FNavLocation navLoc;
+			FVector randomLoc;
+			bool result = navSys->GetRandomPointInNavigableRadius(legacyPlayer->GetActorLocation(), 5000, navLoc);
+			if (result)
+			{
+				randomLoc = navLoc.Location;
+			}
+			// 해당 랜덤 위치에 적을 스폰한다
+			GetWorld()->SpawnActor<AEnemy>(enemyWizardFactory, randomLoc, FRotator::ZeroRotator);
+			// 해당 랜덤 위치에 FX를 스폰한다
+
+			// 메인 위젯의 카운터값을 올린다
+			enemyCountTotal++;
+			// 몇번 반복했는지 세보고 목표에 도달했다면 타이머를 리셋한다
+			currentCountForSpawnWizard++;
+			if (currentCountForSpawnWizard == tempCountForSpawnWizard)
+			{
+				GetWorldTimerManager().ClearTimer(spawnWizardHandle);
+			}
+		}), 1.f, true, 1.f);
+}
+
+void ALegacyGameMode::WaveStageManager(int wave)
+{
+	SpawnEnemyPaladin(wave * 2);
+	SpawnEnemyWizard(wave * wave);
 }
 
 #pragma region Extract Data From Controller

@@ -35,8 +35,6 @@ void UEnemyFSM::BeginPlay()
 	UpdateRandomLoc(radiusForIdleRandomLoc, idleRandomLoc);
 	// 시작원점 저장
 	originLoc = me->GetActorLocation();
-	// player 캐스팅
-	player = Cast<ALegacyPlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter());
 	// anim instance 캐스팅
 	enemyAnim = Cast<UEnemyAnim>(me->GetMesh()->GetAnimInstance());
 }
@@ -107,7 +105,7 @@ void UEnemyFSM::TickIdle()
 	}
 
 	// 플레이어 감지하면 추격상태로 전환
-	if (FVector::Dist(me->GetActorLocation(), player->GetActorLocation()) < startChasingDistance)
+	if (FVector::Dist(me->GetActorLocation(), me->player->GetActorLocation()) < startChasingDistance)
 	{
 		SetState(EEnemyState::CHASE);
 	}
@@ -135,15 +133,15 @@ void UEnemyFSM::TickChase()
 	enemyAnim->animState = EEnemyState::CHASE;
 
 	// 플레이어 위치를 향해 이동
-	ai->MoveToLocation(player->GetActorLocation());
+	ai->MoveToLocation(me->player->GetActorLocation());
 	// 공격 가능 거리가 되면 공격으로 전환
-	if (FVector::Dist(me->GetActorLocation(), player->GetActorLocation()) < attackableDistance)
+	if (FVector::Dist(me->GetActorLocation(), me->player->GetActorLocation()) < attackableDistance)
 	{
 		ai->StopMovement();
 		SetState(EEnemyState::ATTACK);
 	}
 	// 너무 멀어지면 Idle로 전환
-	if (FVector::Dist(me->GetActorLocation(), player->GetActorLocation()) > stopChaseDistance)
+	if (FVector::Dist(me->GetActorLocation(), me->player->GetActorLocation()) > stopChaseDistance)
 	{
 		SetState(EEnemyState::IDLE);
 		UE_LOG(LogTemp, Error, TEXT("go idle"));
@@ -163,13 +161,13 @@ void UEnemyFSM::TickAttack()
 	}
 
 	// 거리 멀어지면 쫓아가게
-	if (FVector::Dist(me->GetActorLocation(), player->GetActorLocation()) > attackableDistance)
+	if (FVector::Dist(me->GetActorLocation(), me->player->GetActorLocation()) > attackableDistance)
 	{
 		SetState(EEnemyState::CHASE);
 	}
 
 	// 공격중 플레이어 방향 바라보게
-	me->SetActorRotation((player->GetActorLocation() - me->GetActorLocation()).GetSafeNormal().Rotation());
+	me->SetActorRotation((me->player->GetActorLocation() - me->GetActorLocation()).GetSafeNormal().Rotation());
 }
 
 void UEnemyFSM::TickInTheAir()
