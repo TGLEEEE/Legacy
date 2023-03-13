@@ -4,21 +4,17 @@
 #include "LegacyPlayerMoveComponent.h"
 #include "EnhancedInputComponent.h"
 #include "LegacyPlayer.h"
-
+#include "MotionControllerComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "NiagaraComponent.h"
+#include "NiagaraDataInterfaceArrayFunctionLibrary.h"
 
 void ULegacyPlayerMoveComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ResetTeleport();
 }
-
-
-
-void ULegacyPlayerMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-                                               FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-}
-
 
 void ULegacyPlayerMoveComponent::SetupPlayerInput(UInputComponent* PlayerInputComponent)
 {
@@ -29,9 +25,30 @@ void ULegacyPlayerMoveComponent::SetupPlayerInput(UInputComponent* PlayerInputCo
 	if (inputSystem) {
 		inputSystem->BindAction(me->iA_VRMove, ETriggerEvent::Triggered, this, &ULegacyPlayerMoveComponent::Move);
 		inputSystem->BindAction(me->iA_Mouse, ETriggerEvent::Triggered, this, &ULegacyPlayerMoveComponent::Look);
+
+		inputSystem->BindAction(me->IA_Teleport, ETriggerEvent::Started, this, &ULegacyPlayerMoveComponent::StartTeleport);
+		inputSystem->BindAction(me->IA_Teleport, ETriggerEvent::Completed, this, &ULegacyPlayerMoveComponent::EndTeleport);
 	}
 	
 }
+
+void ULegacyPlayerMoveComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+                                               FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if(isTeleporting){
+		
+		DrawCurvedTeleport();
+
+		//draw curves
+		if (me->teleportCurveComp) {
+			UNiagaraDataInterfaceArrayFunctionLibrary::SetNiagaraArrayVector(me->teleportCurveComp, FName("User.PointArray"), curveVectorPoints);
+		}
+	}
+}
+
+
 
 void ULegacyPlayerMoveComponent::Move(const FInputActionValue& values)
 {
@@ -39,6 +56,8 @@ void ULegacyPlayerMoveComponent::Move(const FInputActionValue& values)
 
 	me->AddMovementInput(me->GetActorForwardVector(), axis.X);
 	me->AddMovementInput(me->GetActorRightVector(), axis.Y);
+
+
 }
 
 void ULegacyPlayerMoveComponent::Look(const FInputActionValue& values)
@@ -47,3 +66,151 @@ void ULegacyPlayerMoveComponent::Look(const FInputActionValue& values)
 	me->AddControllerYawInput(axis.X);
 	me->AddControllerPitchInput(axis.Y);
 }
+
+void ULegacyPlayerMoveComponent::StartTeleport(const FInputActionValue& value)
+{
+	//flag isTeleporting when pressing the teleport button
+	isTeleporting = true;
+
+	//turn on teleport curve
+	me->teleportCurveComp->SetVisibility(true);
+}
+
+void ULegacyPlayerMoveComponent::EndTeleport(const FInputActionValue& value)
+{
+	//if cant teleport
+	if(!ResetTeleport()){
+		return;
+	}
+
+	if(isWarping){
+		Warp();
+		return;
+	}
+
+	me->SetActorLocation(teleportLocation + FVector::UpVector * me->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+
+}
+
+bool ULegacyPlayerMoveComponent::ResetTeleport()
+{
+	//can teleport only if the teleport circle is enabled
+	bool canTeleport = me->teleportCircle->GetVisibleFlag();
+
+	//disable teleport circle's visibility
+	me->teleportCircle->SetVisibility(false);
+
+	//unflag isTeleporting
+	isTeleporting = false;
+
+	//turn off teleport curve
+	me->teleportCurveComp->SetVisibility(false);
+
+	return canTeleport;
+}
+
+bool ULegacyPlayerMoveComponent::CheckTeleportHit(FVector PreviousPosition, FVector& currentPosition)
+{
+	FHitResult hitResult;
+	bool isHit = LineTraceHit(PreviousPosition, currentPosition, hitResult);
+
+	//check if the line trace hits an object called Floor
+	if (isHit && (hitResult.GetActor()->GetName().Contains(TEXT("Floor")))) {
+		currentPosition = hitResult.Location;
+
+		me->teleportCircle->SetVisibility(true);
+		me->teleportCircle->SetWorldLocation(currentPosition);
+
+		teleportLocation = currentPosition;
+	}
+	else{
+		me->teleportCircle->SetVisibility(false);
+	}
+
+	return isHit;
+}
+
+bool ULegacyPlayerMoveComponent::LineTraceHit(FVector previousPosition, FVector currentPosition, FHitResult& hitResult)
+{
+	FCollisionQueryParams params;
+	//potential bug; just me? or my other components as well??
+	params.AddIgnoredActor(me);
+	bool isHit = GetWorld()->LineTraceSingleByChannel(hitResult, previousPosition, currentPosition
+, ECollisionChannel::ECC_Visibility, params);
+
+	return isHit;
+}
+
+
+void ULegacyPlayerMoveComponent::DrawCurvedTeleport()
+{
+	//reset the curveVectorPoints
+	curveVectorPoints.RemoveAt(0, curveVectorPoints.Num());
+
+	//throw with given starting point, direction, and force
+	//potential bug
+	FVector position = me->rightHand->GetComponentLocation();
+	FVector direction = me->rightHand->GetForwardVector() * curveTeleportForce;
+
+	//record the starting position
+	curveVectorPoints.Add(position);
+
+	//as the projectile is moving repeatedly
+	for(int i = 0; i < curveSmoothness; ++i){
+		//record the last position
+		FVector prevPosition = position;
+
+		//v = v0 +at
+		direction += FVector::UpVector * gravity * simulatedTime;
+		//p = p0 + vt
+		position += direction * simulatedTime;
+
+		if(CheckTeleportHit(prevPosition, position)){
+			//record the current position
+			curveVectorPoints.Add(position);
+
+			break;
+		}
+		//record the current position
+		curveVectorPoints.Add(position);
+	}
+}
+
+
+void ULegacyPlayerMoveComponent::Warp()
+{
+	//if isWarping is not flagged, then don't run method
+	if(!isWarping){ return; }
+
+	//reset time
+	currentTime = 0;
+
+	me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	//lambda function
+	GetWorld()->GetTimerManager().SetTimer(warpTimerHandle, FTimerDelegate::CreateLambda(
+[this]()->void
+		{
+			//body; time runs, keep adding time
+			currentTime += GetWorld()->DeltaTimeSeconds;
+			FVector currentPosition = me->GetActorLocation();
+			FVector endPosition = teleportLocation + FVector::UpVector + me->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+
+			//calculate position to go to
+			//bug; no viable function
+			//currentPosition = FMath::Lerp<FVector>(currentPosition, endPosition, currentTime / warpTime);
+			//move actor
+			me->SetActorLocation(currentPosition);
+
+			if(currentTime >=warpTime){
+				//assign that position
+				me->SetActorLocation(endPosition);
+				//turn off timer
+				GetWorld()->GetTimerManager().ClearTimer(warpTimerHandle);
+				me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			}
+		}
+	), 0.02f, true);
+	
+}
+

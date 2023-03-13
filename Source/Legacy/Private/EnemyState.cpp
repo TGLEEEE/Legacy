@@ -67,13 +67,13 @@ void UEnemyState::Throw(FVector force, int Amount)
 	// 데미지 계산
 	OnDamageProcess(Amount);
 	// 날려버리자
-	//me->GetCapsuleComponent()->AddForce(force * mass);
+	me->GetCapsuleComponent()->AddForce(force * mass);
 
 	// 랜덤하게 로테이션 변경
 	int p = FMath::RandRange(0, 360);
 	int y = FMath::RandRange(0, 360);
 	int r = FMath::RandRange(0, 360);
-	//me->SetActorRotation(FRotator(p, y, r));
+	me->SetActorRotation(FRotator(p, y, r));
 
 }
 

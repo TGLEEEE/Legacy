@@ -102,6 +102,21 @@ public:
 	FSetupPlayerInputDelegate setupPlayerInputDelegate;
 #pragma endregion Components
 
+#pragma region Warp Teleport
+	UPROPERTY(EditAnywhere)
+	class UNiagaraComponent* teleportCircle;
+
+	UPROPERTY(EditAnywhere)
+	class UNiagaraComponent* teleportCurveComp;
+
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Movement")
+	class UInputAction* IA_Teleport;
+#pragma endregion 
+
+	void CheckPlatform();
+
+	UPROPERTY()
+	class ALegacyGameMode* legacyGameMode;
 
 protected:
 
@@ -110,3 +125,4 @@ protected:
 #pragma endregion 
 
 };
+
