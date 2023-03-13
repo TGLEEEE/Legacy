@@ -318,26 +318,27 @@ void ULegacyPlayerMagicComponent::CastDepulso()
 {
 	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastDepulso"));
 
-	if (!detectedComponent || !grabbedComponent) {
+	if (!detectedComponent && !grabbedComponent) {
 		return;
 	}
+	else{
+		enemy = Cast<AEnemy>(detectedComponent->GetOwner());
+		if(enemy){
+			if(grabbedComponent){ me->physicsHandleComp->ReleaseComponent();  }
 
-	enemy = Cast<AEnemy>(detectedComponent->GetOwner());
-	if(enemy){
-		if(grabbedComponent){ me->physicsHandleComp->ReleaseComponent();  }
+			enemy->GetCapsuleComponent()->SetSimulatePhysics(true);
 
-		enemy->GetCapsuleComponent()->SetSimulatePhysics(true);
+			FVector throwDirection = me->wandStaticMeshComponent->GetForwardVector();
+			throwDirection.Normalize();
+			UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastDepulso - Throw"));
+			enemy->enemyState->Throw(throwDirection * 300000, 1);
+			enemy->enemyState->bIsGrabbed = false;
 
-		FVector throwDirection = me->wandStaticMeshComponent->GetForwardVector();
-		throwDirection.Normalize();
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastDepulso - Throw"));
-		enemy->enemyState->Throw(throwDirection * 300000, 1);
-		enemy->enemyState->bIsGrabbed = false;
+			detectedComponent = nullptr;
 
-		detectedComponent = nullptr;
-
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastDepulso - Go to Cancel"));
-		spellState = SpellState::Cancel;
+			UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastDepulso - Go to Cancel"));
+			spellState = SpellState::Cancel;
+		}
 	}
 }
 
