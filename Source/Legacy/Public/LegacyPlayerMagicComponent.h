@@ -23,14 +23,13 @@ class LEGACY_API ULegacyPlayerMagicComponent : public ULegacyPlayerBaseComponent
 	GENERATED_BODY()
 
 public:
-
 	virtual void SetupPlayerInput(class UInputComponent* PlayerInputComponent) override;
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	virtual void BeginPlay() override;
 
-#pragma region
+#pragma region Input Actions
 	UFUNCTION()
 	void OnActionCastSpell();
 	UFUNCTION()
@@ -86,6 +85,7 @@ public:
 #pragma region Detect Target
 	void DetectTarget();
 
+	UPROPERTY()
 	class AEnemy* enemy;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Magic Settings | Object Detection")
@@ -119,5 +119,7 @@ public:
 
 	bool isAvadaKedavraCast;
 
-	bool bDoOnce;
+	UPROPERTY()
+	class ALegacyGameMode* legacyGameMode;
+
 };

@@ -5,23 +5,26 @@
 #include "EnhancedInputComponent.h"
 #include "LegacyPlayer.h"
 
-#include "Camera/CameraComponent.h"
 #include "Enemy.h"
-#include "MotionControllerComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "EnemyFSM.h"
 #include "EnemyState.h"
-#include "HeadMountedDisplayFunctionLibrary.h"
 #include "LegacyPlayerUIComponent.h"
 #include "Niagara/Public/NiagaraFunctionLibrary.h"
 #include "Niagara/Public/NiagaraComponent.h"
+#include "HeadMountedDisplayFunctionLibrary.h"
+
+#include "LegacyGameMode.h"
+
 
 void ULegacyPlayerMagicComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	legacyGameMode = Cast<ALegacyGameMode>(GetWorld()->GetAuthGameMode());
+	if (!legacyGameMode) { UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::BeginPlay - Can't find Game Mode")); }
 
 }
 
@@ -29,6 +32,7 @@ void ULegacyPlayerMagicComponent::SetupPlayerInput(UInputComponent* PlayerInputC
 {
 	Super::SetupPlayerInput(PlayerInputComponent);
 
+#pragma region Input Action Binding
 	auto inputSystem = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 	if (inputSystem) {
 		inputSystem->BindAction(me->iA_CastSpell, ETriggerEvent::Triggered, this, &ULegacyPlayerMagicComponent::OnActionCastSpell);
@@ -44,6 +48,8 @@ void ULegacyPlayerMagicComponent::SetupPlayerInput(UInputComponent* PlayerInputC
 
 		inputSystem->BindAction(me->iA_SpellCancel, ETriggerEvent::Triggered, this, &ULegacyPlayerMagicComponent::OnActionSpellCancelPressed);
 	}
+#pragma endregion
+
 }
 
 #pragma region Input Action
@@ -51,7 +57,6 @@ void ULegacyPlayerMagicComponent::OnActionCastSpell()
 {
 	isSpellCast = true;
 	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpell - isSpellCast"));
-
 }
 
 void ULegacyPlayerMagicComponent::OnActionGrabPressed()
@@ -104,6 +109,8 @@ void ULegacyPlayerMagicComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
 	UpdateSpellState();
 	CastAvadaKedavra();
+
+
 
 }
 
@@ -174,9 +181,7 @@ void ULegacyPlayerMagicComponent::CastLevioso()
 		me->physicsHandleComp->GrabComponentAtLocation(grabbedComponent, NAME_None, grabbedComponent->GetComponentLocation());
 		currentLocation = objectInitialHeight + objectOffsetHeight;
 		if(enemy){
-			enemy->enemyFSM->bIsInTheAir = true;
 			enemy->enemyState->bIsGrabbed = true;
-			//enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
 		}
 	}
 	else if (grabbedComponent){
@@ -213,9 +218,7 @@ void ULegacyPlayerMagicComponent::CastAccio()
 		me->physicsHandleComp->GrabComponentAtLocation(grabbedComponent, NAME_None, grabbedComponent->GetComponentLocation());
 
 		if (enemy) {
-			enemy->enemyFSM->bIsInTheAir = true;
 			enemy->enemyState->bIsGrabbed = true;
-			//enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
 		}
 	}
 	else if (grabbedComponent) {
@@ -240,8 +243,6 @@ void ULegacyPlayerMagicComponent::SpellCombo()
 {
 
 	if (!enemy) { return; }
-	enemy->enemyFSM->bIsInTheAir = true;
-	//enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
 
 	me->physicsHandleComp->SetInterpolationSpeed(100);
 
@@ -267,33 +268,24 @@ void ULegacyPlayerMagicComponent::SpellCombo()
 
 void ULegacyPlayerMagicComponent::CastDepulso()
 {
-	if(bDoOnce)
-	{
-		return;
-	}
-	bDoOnce = true;
-
 	if (!enemy) { return; }
-	enemy->enemyFSM->bIsInTheAir = true;
-	///enemy->enemyFSM->SetState(EEnemyState::INTHEAIR);
 
 	enemy = Cast<AEnemy>(detectedComponent->GetOwner());
 	if(enemy){
 		if(grabbedComponent){ me->physicsHandleComp->ReleaseComponent();  }
 
-
 		FVector throwDirection = enemy->GetActorLocation() - me->GetActorForwardVector();
 		throwDirection.Normalize();
 		enemy->enemyState->Throw(throwDirection * 300000, 1);
-		//enemy->enemyFSM->SetState(EEnemyState::IDLE);
-		enemy->enemyFSM->bIsInTheAir = false;
 		enemy->enemyState->bIsGrabbed = false;
-
 
 		enemy->GetCapsuleComponent()->SetSimulatePhysics(true);
 		
 		isDepulso = false;
+		//bug: change this to rest?
 	}
+	//make a timer, and stop it?
+	
 }
 
 void ULegacyPlayerMagicComponent::CastAvadaKedavra()
@@ -352,7 +344,6 @@ void ULegacyPlayerMagicComponent::CastGrab()
 		//grab the component with physics handle
 		me->physicsHandleComp->GrabComponentAtLocation(grabbedComponent, NAME_None, grabbedComponent->GetComponentLocation());
 		if(enemy){
-			enemy->enemyFSM->bIsInTheAir = true;
 			enemy->enemyState->bIsGrabbed = true;
 		}
 
@@ -365,7 +356,6 @@ void ULegacyPlayerMagicComponent::CastGrab()
 	//Grab
 	if(!isGrab || isSpellCancel){
 		if(enemy){
-			enemy->enemyFSM->bIsInTheAir = false;
 			enemy->enemyState->bIsGrabbed = false;
 			enemy->GetCapsuleComponent()->SetSimulatePhysics(true);
 		}
@@ -434,10 +424,7 @@ void ULegacyPlayerMagicComponent::DereferenceVariables()
 
 	comboCount = 0;
 	if(enemy){
-		enemy->enemyFSM->bIsInTheAir = false;
 		enemy->enemyState->bIsGrabbed = false;
-
-		//enemy->enemyFSM->SetState(EEnemyState::IDLE);
 		enemy = nullptr;
 	}
 
