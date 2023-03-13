@@ -26,8 +26,12 @@ public:
 	class UTextBlock* EnemyCount;
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	class UTextBlock* EnemyCountTotal;
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	class UTextBlock* WaveTextbox;
 	UPROPERTY(BlueprintReadOnly)
 	class ALegacyGameMode* gm;
+	UPROPERTY(BlueprintReadOnly, Transient, meta = (BindWidgetAnim))
+	class UWidgetAnimation* waveAnim;
 
 	void UpdateTimerWidget();
 	FTimerHandle hdForTimerWidget;
