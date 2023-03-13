@@ -30,4 +30,5 @@ void UTimerWidget::UpdateTimerWidget()
 	WorldtimeSec->SetText(FText::AsNumber(gm->worldTimeSec));
 	EnemyCount->SetText(FText::AsNumber(gm->enemyKillCount));
 	EnemyCountTotal->SetText(FText::AsNumber(gm->enemyCountTotal));
+	WaveTextbox->SetText(FText::FromString(FString("WAVE ") + FString::FromInt(gm->currentWave)));
 }

@@ -14,6 +14,7 @@ AEnemyMagicBase::AEnemyMagicBase()
 
 	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collision"));
 	SetRootComponent(boxComp);
+	boxComp->SetCollisionProfileName(FName("EnemyMagicPreset"));
 
 	mainFXComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Main FX"));
 	mainFXComp->SetupAttachment(RootComponent);
@@ -48,6 +49,12 @@ void AEnemyMagicBase::Tick(float DeltaTime)
 
 void AEnemyMagicBase::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	auto pl = Cast<ALegacyPlayer>(OtherActor);
+	if (pl)
+	{
+		// 추후에 플레이어 데미지 처리 하기
+		Destroy();
+	}
 	Destroy();
 }
 

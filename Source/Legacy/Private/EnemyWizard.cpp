@@ -25,6 +25,7 @@ AEnemyWizard::AEnemyWizard()
 	wandComp->SetupAttachment(GetMesh(), TEXT("SwordSocket"));
 	wandComp->SetRelativeScale3D(FVector(0.2));
 	wandComp->SetRelativeLocation(FVector(30, 0, 0));
+	wandComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh>tempWand(TEXT("/Script/Engine.StaticMesh'/Game/Megascans/3D_Assets/Old_Tree_Branch_wjxrbic/S_Old_Tree_Branch_wjxrbic_lod3_Var1.S_Old_Tree_Branch_wjxrbic_lod3_Var1'"));
 	if (tempWand.Succeeded())

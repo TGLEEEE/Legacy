@@ -7,10 +7,12 @@
 
 ///update
 #include "Enemy.h"
+#include "EngineUtils.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "LegacyPlayer.h"
 #include "MotionControllerComponent.h"
 #include "NavigationSystem.h"
+#include "TimerWidget.h"
 #include "Components/SphereComponent.h"
 
 ALegacyGameMode::ALegacyGameMode()
@@ -27,6 +29,8 @@ void ALegacyGameMode::BeginPlay()
 
 	legacyPlayer = Cast<ALegacyPlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter()); 
 	if (!legacyPlayer) { UE_LOG(LogTemp, Warning, TEXT("Can't find Legacy Player")); }
+
+	//timerWidget = Cast<UTimerWidget>(GetObjectsOfClass(UTimerWidget::StaticClass(), ));
 }
 
 void ALegacyGameMode::Tick(float DeltaSeconds)
@@ -67,8 +71,11 @@ void ALegacyGameMode::Tick(float DeltaSeconds)
 	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Current Acceleration %s"), *leftCurrentAcceleration.ToString());
 	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Current Acceleration %s"), *rightCurrentAcceleration.ToString());
 
-	if (currentWave > 0 && !bIsInWave)
+	// Wave System
+	if (currentWave > 0 && !bIsInWave && currentWave < 4)
 	{
+		enemyKillCount = 0;
+		enemyCountTotal = 0;
 		WaveStageManager(currentWave);
 		bIsInWave = true;
 	}
@@ -77,12 +84,13 @@ void ALegacyGameMode::Tick(float DeltaSeconds)
 	{
 		currentWave++;
 		bIsInWave = false;
+		//timerWidget->PlayAnimation(timerWidget->waveAnim);
 	}
 
 	if (currentWave > 3 && !bIsInWave)
 	{
 		// ¿£µùÃ³¸® (¸ØÃç!)
-
+		UE_LOG(LogTemp, Warning, TEXT("CCLEARRRRRRRRRRRRRRRRRRRRRR"));
 	}
 }
 

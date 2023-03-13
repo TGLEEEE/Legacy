@@ -58,15 +58,12 @@ void UEnemyState::OnDamageProcess(int amount)
 	if (hp > 0)
 	{
 		// damage state
-		//me->enemyFSM->SetState(EEnemyState::DAMAGE);
-		me->PlayAnimMontage(me->enemyFSM->enemyAnim->montage_Paladin, 1, FName("Damage"));
+		me->enemyFSM->SetState(EEnemyState::DAMAGE);
 	}
 	else
 	{
 		// die state
 		me->enemyFSM->SetState(EEnemyState::DIE);
-		me->PlayAnimMontage(me->enemyFSM->enemyAnim->montage_Paladin, 1, FName("Die"));
-		me->gm->enemyKillCount++;
 	}
 }
 

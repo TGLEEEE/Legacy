@@ -62,10 +62,13 @@ public:
 	FVector originLoc;
 	float idleTimer;
 	float attackTimer = 2.f;
+	float dieTimer;
+	
 	bool bIsReturning;
 	bool bDoOnce;
 	bool bIsMoving;
 	bool bDamageAnimDoOnce;
+	bool bDieCollisionOnce;
 
 	void TickIdle();
 	void TickChase();
