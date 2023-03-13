@@ -318,13 +318,15 @@ void ULegacyPlayerMagicComponent::CastDepulso()
 {
 	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastDepulso"));
 
-	if (!detectedComponent || !grabbedComponent) {
-		return;
+	if (detectedComponent) {
+		enemy = Cast<AEnemy>(detectedComponent->GetOwner());
+	}
+	else if(grabbedComponent){
+		enemy = Cast<AEnemy>(grabbedComponent->GetOwner());
 	}
 
-	enemy = Cast<AEnemy>(detectedComponent->GetOwner());
-	if(enemy){
-		if(grabbedComponent){ me->physicsHandleComp->ReleaseComponent();  }
+	if (enemy) {
+		if (grabbedComponent) { me->physicsHandleComp->ReleaseComponent(); }
 
 		enemy->GetCapsuleComponent()->SetSimulatePhysics(true);
 
@@ -337,8 +339,9 @@ void ULegacyPlayerMagicComponent::CastDepulso()
 		detectedComponent = nullptr;
 
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastDepulso - Go to Cancel"));
-		spellState = SpellState::Cancel;
 	}
+
+	spellState = SpellState::Cancel;
 }
 
 void ULegacyPlayerMagicComponent::CastAvadaKedavra()
