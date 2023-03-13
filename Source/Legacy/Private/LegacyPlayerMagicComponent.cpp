@@ -148,22 +148,6 @@ void ULegacyPlayerMagicComponent::CheckSpellState(int32& quadrantNumber)
 
 	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState"));
 
-	if (!isLevioso && !isDepulso && !isAccio && !isGrab) {
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState:: None"));
-	}
-	else if (isLevioso && !isDepulso && !isAccio && !isGrab) {
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState:: Only isLevioso"));
-	}
-	else if (!isLevioso && isDepulso && !isAccio && !isGrab) {
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState:: Only isDepulso"));
-	}
-	else if (!isLevioso && isDepulso && isAccio && !isGrab) {
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState:: Only isAccio"));
-	}
-	else if (!isLevioso && isDepulso && isAccio && isGrab) {
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState:: Only isGrab"));
-	}
-
 	//potential bug: delete or keep
 	//if (!isSpellCast) { return; }								//have to press spell cast to activate other spells
 
@@ -334,7 +318,8 @@ void ULegacyPlayerMagicComponent::CastDepulso()
 {
 	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastDepulso"));
 
-	if (!detectedComponent) { return; }
+	//potential bug; might need to delete to just !detected object
+	if (!detectedComponent && !grabbedComponent) { return; }
 
 	//potential bug
 	enemy = Cast<AEnemy>(detectedComponent->GetOwner());
