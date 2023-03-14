@@ -251,7 +251,7 @@ void ULegacyPlayerMagicComponent::CastLevioso()
 	if(isSpellCombo){ SpellCombo(); }
 	
 	//transition to another state
-	if (isAccio || me->uIComponent->quadrantNumber == 1) { spellState = SpellState::Accio; }
+	if (isAccio || me->uIComponent->quadrantNumber == 2) { spellState = SpellState::Accio; }
 	if (isDepulso || me->uIComponent->quadrantNumber == 3) { spellState = SpellState::Depulso; }
 	if (isGrab) { spellState = SpellState::Grab; }
 
@@ -303,7 +303,7 @@ void ULegacyPlayerMagicComponent::CastAccio()
 	}
 
 	//transition to another state
-	if (isLevioso || me->uIComponent->quadrantNumber == 2) { spellState = SpellState::Levioso; }
+	if (isLevioso || me->uIComponent->quadrantNumber == 1) { spellState = SpellState::Levioso; }
 	if (isDepulso || me->uIComponent->quadrantNumber == 3) { spellState = SpellState::Depulso; }
 	if (isGrab) { spellState = SpellState::Grab; }
 
