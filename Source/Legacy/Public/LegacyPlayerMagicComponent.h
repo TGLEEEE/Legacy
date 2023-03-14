@@ -12,7 +12,7 @@ enum class SpellState : uint8 {
 	Levioso,
 	Accio,
 	Depulso,
-	//AvadaKedavra,
+	AvadaKedavra,
 	Grab,
 	Cancel
 };
@@ -111,11 +111,19 @@ public:
 
 	void DereferenceVariables();
 
+#pragma region Spell VFX
 	UPROPERTY(EditAnywhere)
 	class UNiagaraSystem* avadaKedavraNiagara;
-
 	UPROPERTY(EditAnywhere)
 	class UNiagaraComponent* avadaKedavraNiagaraComponent;
+
+	UPROPERTY(EditAnywhere)
+	class UNiagaraSystem* spellWandNiagaraSystem;
+	UPROPERTY(EditAnywhere)
+	class UNiagaraComponent* spellWandNiagaraComponent;
+
+
+#pragma endregion 
 
 	bool isAvadaKedavraCast;
 

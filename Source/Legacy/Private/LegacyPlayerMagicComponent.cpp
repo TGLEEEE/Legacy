@@ -112,7 +112,6 @@ void ULegacyPlayerMagicComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	DetectTarget();
 
 	UpdateSpellState();
-	CastAvadaKedavra();
 }
 
 
@@ -131,9 +130,9 @@ void ULegacyPlayerMagicComponent::UpdateSpellState()
 		case SpellState::Depulso:
 			CastDepulso();
 			break;
-		/*case SpellState::AvadaKedavra:
+		case SpellState::AvadaKedavra:
 			CastAvadaKedavra();
-			break;*/
+			break;
 		case SpellState::Grab:
 			CastGrab();
 			break;
@@ -178,7 +177,7 @@ void ULegacyPlayerMagicComponent::CheckSpellState(int32& quadrantNumber)
 		if(quadrantNumber == 1 && isSpellCast){ spellState = SpellState::Levioso; UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState::Levioso"));}
 		else if(quadrantNumber == 2 && isSpellCast){ spellState = SpellState::Accio; UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState::Accio"));}
 		else if(quadrantNumber == 3 && isSpellCast){ spellState = SpellState::Depulso; UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState::Depulso"));}
-		//else if(quadrantNumber == 4 && isSpellCast){ spellstate = SpellState::AvadaKedavra; UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpellPressed - SpellState::AvadaKedavra"));}
+		else if(quadrantNumber == 4 && isSpellCast){ spellState = SpellState::AvadaKedavra; UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpellPressed - SpellState::AvadaKedavra"));}
 		else if (isGrab) { spellState = SpellState::Grab; }
 	}
 
@@ -318,6 +317,8 @@ void ULegacyPlayerMagicComponent::CastDepulso()
 {
 	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastDepulso"));
 
+
+
 	if (detectedComponent) {
 		enemy = Cast<AEnemy>(detectedComponent->GetOwner());
 	}
@@ -371,10 +372,6 @@ void ULegacyPlayerMagicComponent::CastAvadaKedavra()
 			avadaKedavraNiagaraComponent->SetNiagaraVariableVec3(FString("impactNormal"), impactNormal);
 		}
 	}
-
-	////bug: fill this in
-	//if(enemy){
-	//}
 
 }
 
