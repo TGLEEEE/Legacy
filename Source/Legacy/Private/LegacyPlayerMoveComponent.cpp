@@ -55,6 +55,7 @@ void ULegacyPlayerMoveComponent::TickComponent(float DeltaTime, ELevelTick TickT
 void ULegacyPlayerMoveComponent::Move(const FInputActionValue& values)
 {
 	FVector2D axis = values.Get<FVector2D>();
+
 	if (me->legacyGameMode->isHMDActivated) {
 		me->AddMovementInput(me->cameraComp->GetRightVector(), axis.X);
 		me->AddMovementInput(me->cameraComp->GetForwardVector(), axis.Y);

@@ -109,10 +109,7 @@ public:
 
 	FSetupPlayerInputDelegate setupPlayerInputDelegate;
 
-#pragma region VFX Components
-	UPROPERTY(EditAnywhere)
-	class UNiagaraComponent* wandSpellNiagaraComponent;
-#pragma endregion 
+
 #pragma endregion Components
 
 #pragma region Warp Teleport
