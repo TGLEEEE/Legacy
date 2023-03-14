@@ -16,4 +16,6 @@ class LEGACY_API AEnemyPaladin : public AEnemy
 
 public:
 	AEnemyPaladin();
+	void virtual BeginPlay() override;
+
 };
