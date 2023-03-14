@@ -153,7 +153,7 @@ void ULegacyPlayerMagicComponent::UpdateSpellState()
 void ULegacyPlayerMagicComponent::CheckSpellState(int32& quadrantNumber)
 {
 
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState"));
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState"));
 
 	//potential bug: delete or keep
 	//if (!isSpellCast) { return; }								//have to press spell cast to activate other spells
@@ -500,6 +500,7 @@ void ULegacyPlayerMagicComponent::DereferenceVariables()
 	isSpellCombo = false;
 	isSpellCancel = false;
 	isSpellCast = false;
+	me->uIComponent->quadrantNumber = 0;
 
 	comboCount = 0;
 
