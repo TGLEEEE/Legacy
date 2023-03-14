@@ -55,8 +55,8 @@ void ULegacyPlayerMoveComponent::Move(const FInputActionValue& values)
 {
 	FVector2D axis = values.Get<FVector2D>();
 
-	me->AddMovementInput(me->cameraComp->GetForwardVector(), axis.X);
-	me->AddMovementInput(me->cameraComp->GetRightVector(), axis.Y);
+	me->AddMovementInput(me->cameraComp->GetRightVector(), axis.X);
+	me->AddMovementInput(me->cameraComp->GetForwardVector(), axis.Y);
 }
 
 void ULegacyPlayerMoveComponent::Look(const FInputActionValue& values)
