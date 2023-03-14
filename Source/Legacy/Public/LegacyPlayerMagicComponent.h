@@ -118,7 +118,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UNiagaraComponent* avadaKedavraNiagaraComponent;
 
-	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AActor> wandLightFactory;
 
 	void UpdateWandEndEffect();
 #pragma endregion 
