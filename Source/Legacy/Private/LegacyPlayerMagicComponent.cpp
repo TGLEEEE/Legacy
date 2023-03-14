@@ -28,9 +28,10 @@ void ULegacyPlayerMagicComponent::BeginPlay()
 		me->rightHand->SetRelativeRotation(me->cameraComp->GetRelativeRotation());
 	}
 
-	/*spellWandNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(spellWandNiagaraSystem, me->wandStaticMeshComponent, NAME_None,
-		FVector(0), FRotator(0), EAttachLocation::KeepRelativeOffset,
-		true, true, ENCPoolMethod::None, true);*/
+	AActor* wandLight = GetWorld()->SpawnActor<AActor>(wandLightFactory, me->wandStaticMeshComponent->GetComponentLocation(), FRotator::ZeroRotator);
+	if(wandLight){
+		wandLight->AttachToComponent(me->wandStaticMeshComponent, FAttachmentTransformRules::KeepRelativeTransform);
+	}
 }
 
 void ULegacyPlayerMagicComponent::SetupPlayerInput(UInputComponent* PlayerInputComponent)
@@ -122,21 +123,16 @@ void ULegacyPlayerMagicComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
 void ULegacyPlayerMagicComponent::UpdateWandEndEffect()
 {
-	/*spellWandNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(spellWandNiagaraSystem, me->wandStaticMeshComponent, NAME_None,
-		FVector(0), FRotator(0), EAttachLocation::KeepRelativeOffset,
-		true, true, ENCPoolMethod::None, true);*/
-
-	
-	/*if(spellState == SpellState::Levioso ||
+	if(spellState == SpellState::Levioso ||
 		spellState == SpellState::Accio ||
 		spellState == SpellState::Depulso ||
 		spellState == SpellState::AvadaKedavra || spellState == SpellState::Grab){
 
-		spellWandNiagaraComponent->ActivateSystem();
+		//wandLightNiagaraComponent->SetVisibility(true);
 	}
 	else{
-		spellWandNiagaraComponent->Deactivate();
-	}*/
+		//wandLightNiagaraComponent->SetVisibility(false);
+	}
 }
 
 
