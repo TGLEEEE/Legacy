@@ -52,9 +52,9 @@ void AEnemyMagicBase::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	auto pl = Cast<ALegacyPlayer>(OtherActor);
 	if (pl)
 	{
-		// 추후에 플레이어 데미지 처리 하기
-		Destroy();
+		pl->TakeDamageFromEnemy(1);
 	}
+
 	Destroy();
 }
 
