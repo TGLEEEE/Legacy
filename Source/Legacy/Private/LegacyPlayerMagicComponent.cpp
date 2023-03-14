@@ -27,6 +27,10 @@ void ULegacyPlayerMagicComponent::BeginPlay()
 	if (!UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled()) {
 		me->rightHand->SetRelativeRotation(me->cameraComp->GetRelativeRotation());
 	}
+
+	/*spellWandNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(spellWandNiagaraSystem, me->wandStaticMeshComponent, NAME_None,
+		FVector(0), FRotator(0), EAttachLocation::KeepRelativeOffset,
+		true, true, ENCPoolMethod::None, true);*/
 }
 
 void ULegacyPlayerMagicComponent::SetupPlayerInput(UInputComponent* PlayerInputComponent)
@@ -112,6 +116,27 @@ void ULegacyPlayerMagicComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	DetectTarget();
 
 	UpdateSpellState();
+
+	UpdateWandEndEffect();
+}
+
+void ULegacyPlayerMagicComponent::UpdateWandEndEffect()
+{
+	/*spellWandNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(spellWandNiagaraSystem, me->wandStaticMeshComponent, NAME_None,
+		FVector(0), FRotator(0), EAttachLocation::KeepRelativeOffset,
+		true, true, ENCPoolMethod::None, true);*/
+
+	
+	/*if(spellState == SpellState::Levioso ||
+		spellState == SpellState::Accio ||
+		spellState == SpellState::Depulso ||
+		spellState == SpellState::AvadaKedavra || spellState == SpellState::Grab){
+
+		spellWandNiagaraComponent->ActivateSystem();
+	}
+	else{
+		spellWandNiagaraComponent->Deactivate();
+	}*/
 }
 
 
@@ -215,20 +240,20 @@ void ULegacyPlayerMagicComponent::CastLevioso()
 		detectedComponent = nullptr;
 	}
 	else if (grabbedComponent){
+		//Cancel Timer inside the grabbedComponent, so that it'll only run when grabbed object
+		//set timer and check if levioso spell has expired; if so go to cancel state
+		CancelSpellTimer(leviosoCancelTime);
+
 		me->physicsHandleComp->SetTargetLocation(currentLocation);
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastLevioso - enemy set to levioso location"));
 	}
 
-	//set timer and check if levioso spell has expired; if so go to cancel state
-	CancelSpellTimer(leviosoCancelTime);
-	
-
 	if(isSpellCombo){ SpellCombo(); }
 	
 	//transition to another state
+	if (isAccio || me->uIComponent->quadrantNumber == 1) { spellState = SpellState::Accio; }
+	if (isDepulso || me->uIComponent->quadrantNumber == 3) { spellState = SpellState::Depulso; }
 	if (isGrab) { spellState = SpellState::Grab; }
-	if (isAccio) { spellState = SpellState::Accio; }
-	if (isDepulso) { spellState = SpellState::Depulso; }
 
 	//only for PC
 	if(isSpellCancel){ spellState = SpellState::Cancel; }
@@ -266,12 +291,11 @@ void ULegacyPlayerMagicComponent::CastAccio()
 		detectedComponent = nullptr;
 	}
 	else if (grabbedComponent) {
+		//set timer and check if accio spell has expired; if so go to cancel state
+		CancelSpellTimer(accioCancelTime);
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAccio - set enemy in accio location"));
 		me->physicsHandleComp->SetTargetLocation(me->accioHoverRegionArrowComponent->GetComponentLocation());
 	}
-
-	//set timer and check if accio spell has expired; if so go to cancel state
-	CancelSpellTimer(accioCancelTime);
 
 	//working progress
 	if (isSpellCombo) {
@@ -279,7 +303,8 @@ void ULegacyPlayerMagicComponent::CastAccio()
 	}
 
 	//transition to another state
-	if (isDepulso) { spellState = SpellState::Depulso; }
+	if (isLevioso || me->uIComponent->quadrantNumber == 2) { spellState = SpellState::Levioso; }
+	if (isDepulso || me->uIComponent->quadrantNumber == 3) { spellState = SpellState::Depulso; }
 	if (isGrab) { spellState = SpellState::Grab; }
 
 	//only for PC
@@ -348,7 +373,7 @@ void ULegacyPlayerMagicComponent::CastDepulso()
 void ULegacyPlayerMagicComponent::CastAvadaKedavra()
 {
 	if(!isAvadaKedavraCast){
-		avadaKedavraNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(avadaKedavraNiagara, me->wandStaticMeshComponent, NAME_None, FVector(0), FRotator(0), 
+		avadaKedavraNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(avadaKedavraNiagaraSystem, me->wandStaticMeshComponent, NAME_None, FVector(0), FRotator(0), 
 			EAttachLocation::KeepRelativeOffset, true, true, ENCPoolMethod::None, true);
 		isAvadaKedavraCast = true;
 	}
@@ -372,7 +397,6 @@ void ULegacyPlayerMagicComponent::CastAvadaKedavra()
 			avadaKedavraNiagaraComponent->SetNiagaraVariableVec3(FString("impactNormal"), impactNormal);
 		}
 	}
-
 }
 
 
@@ -516,7 +540,6 @@ void ULegacyPlayerMagicComponent::SpellCancel()
 	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::SpellCancel"));
 
 	DereferenceVariables();
-
 	spellState = SpellState::Rest;
 }
 
