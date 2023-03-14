@@ -113,16 +113,13 @@ public:
 
 #pragma region Spell VFX
 	UPROPERTY(EditAnywhere)
-	class UNiagaraSystem* avadaKedavraNiagara;
+	class UNiagaraSystem* avadaKedavraNiagaraSystem;
 	UPROPERTY(EditAnywhere)
 	class UNiagaraComponent* avadaKedavraNiagaraComponent;
 
-	UPROPERTY(EditAnywhere)
-	class UNiagaraSystem* spellWandNiagaraSystem;
-	UPROPERTY(EditAnywhere)
-	class UNiagaraComponent* spellWandNiagaraComponent;
+	
 
-
+	void UpdateWandEndEffect();
 #pragma endregion 
 
 	bool isAvadaKedavraCast;
@@ -140,4 +137,7 @@ public:
 	float accioCancelTime = 2;
 	UPROPERTY(EditAnywhere)
 	float avadaKedavraCancelTime = 3;
+
 };
+
+
