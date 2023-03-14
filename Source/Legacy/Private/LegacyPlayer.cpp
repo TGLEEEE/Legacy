@@ -109,8 +109,9 @@ ALegacyPlayer::ALegacyPlayer()
 
 	currentHealth = maxHealth;
 
-	wandSpellNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("Wand Spell Niagara Component");
-	wandSpellNiagaraComponent->SetupAttachment(wandStaticMeshComponent);
+	//delete
+	//wandSpellNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("Wand Spell Niagara Component");
+	//wandSpellNiagaraComponent->SetupAttachment(wandStaticMeshComponent);
 }
 
 
