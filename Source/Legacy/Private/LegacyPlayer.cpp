@@ -109,9 +109,6 @@ ALegacyPlayer::ALegacyPlayer()
 
 	currentHealth = maxHealth;
 
-	//delete
-	//wandSpellNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("Wand Spell Niagara Component");
-	//wandSpellNiagaraComponent->SetupAttachment(wandStaticMeshComponent);
 }
 
 
@@ -145,6 +142,7 @@ void ALegacyPlayer::BeginPlay()
 			rightHand->SetRelativeLocation(FVector(50, 30,80));
 			rightHand->SetRelativeRotation(FRotator(90, 50, 40));
 			//turn on use pawn control rotation
+			//cameraComp->bUsePawnControlRotation = true;						//this to turn on PawnControlRotation - Mouse Not Looking Up; seems like the computer doesnt VRPC as HMD Connected
 			cameraComp->bUsePawnControlRotation = false;
 		}
 		//if connected
@@ -156,7 +154,19 @@ void ALegacyPlayer::BeginPlay()
 	} 
 #pragma endregion
 
+	//timer to get controller data
+	GetWorld()->GetTimerManager().SetTimer(controllerDataTimer, this, &ALegacyPlayer::GetControllerData, controllerTickSeconds,true);
+
 }
+
+// Called to bind functionality to input
+void ALegacyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	setupPlayerInputDelegate.Broadcast(PlayerInputComponent);
+}
+
 
 // Called every frame
 void ALegacyPlayer::Tick(float DeltaTime)
@@ -167,14 +177,44 @@ void ALegacyPlayer::Tick(float DeltaTime)
 	if (!UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled()) {
 		rightHand->SetRelativeRotation(cameraComp->GetRelativeRotation());
 	}
+	
 }
 
-// Called to bind functionality to input
-void ALegacyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	setupPlayerInputDelegate.Broadcast(PlayerInputComponent);
+
+void ALegacyPlayer::GetControllerData(){
+	FVector leftCurrentPosition = leftSphereComponent->GetComponentLocation();
+	FVector rightCurrentPosition = rightSphereComponent->GetComponentLocation();
+	FVector leftCurrentVelocity = leftSphereComponent->GetPhysicsLinearVelocity();
+	FVector rightCurrentVelocity = rightSphereComponent->GetPhysicsLinearVelocity();
+	FVector leftCurrentAcceleration = CalculateControllerAcceleration(leftCurrentVelocity);
+	FVector rightCurrentAcceleration = CalculateControllerAcceleration(rightCurrentVelocity);
+
+	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Current Position %s"), *leftCurrentPosition.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Current Position %s"), *rightCurrentPosition.ToString());
+
+	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Current Velocity %s"), *leftCurrentVelocity.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Current Velocity %s"), *rightCurrentVelocity.ToString());
+
+	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Current Acceleration %s"), *leftCurrentAcceleration.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Current Acceleration %s"), *rightCurrentAcceleration.ToString());
+
+	
+}
+
+
+
+FVector ALegacyPlayer::CalculateControllerAcceleration(FVector& currentVelocity)
+{
+	FVector controllerAcceleration;
+
+	controllerAcceleration = (currentVelocity - previousVelocity) / GetWorld()->DeltaTimeSeconds;
+
+
+	//update previous velocity
+	previousVelocity = currentVelocity;
+
+	return controllerAcceleration;
 }
 
 

@@ -122,7 +122,20 @@ public:
 
 	void TakeDamageFromEnemy(int32 damagePoints);
 
-	
+#pragma region VR
+	bool isControllersFound;
+
+	FVector previousPosition = FVector::Zero();
+	FVector previousVelocity = FVector::Zero();
+	float previousTime = 0.f;
+
+	FVector CalculateControllerAcceleration(FVector& currentVelocity);
+
+	FTimerHandle controllerDataTimer;
+	float controllerTickSeconds = 0.25f;
+
+	void GetControllerData();
+#pragma endregion 
 
 	UPROPERTY()
 	class ALegacyGameMode* legacyGameMode;
@@ -134,6 +147,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Player Settings | Health")
 	int32 currentHealth;
 };
+
+
 
 
 
