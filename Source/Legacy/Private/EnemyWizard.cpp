@@ -8,13 +8,13 @@
 
 AEnemyWizard::AEnemyWizard()
 {
-	
+	/*
 	ConstructorHelpers::FObjectFinder<UAnimBlueprint>tempAnimBP(TEXT("/Script/Engine.AnimBlueprint'/Game/Legacy/TGL/Blueprint/ABP_EnemyWizard.ABP_EnemyWizard'"));
 	if (tempAnimBP.Succeeded())
 	{
 		GetMesh()->SetAnimInstanceClass(tempAnimBP.Object->GeneratedClass);
 	}
-	
+	*/
 	ConstructorHelpers::FObjectFinder<USkeletalMesh>tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/CityofBrass_Enemies/Meshes/Enemy/Corpse/Corpse_Sword.Corpse_Sword'"));
 	if (tempMesh.Succeeded())
 	{

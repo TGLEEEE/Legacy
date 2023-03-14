@@ -9,7 +9,23 @@
 void UTimerWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	
+
+	if (gm->currentWave == 2 && !bDoOnce)
+	{
+		PlayAnimation(waveAnim);
+		bDoOnce = true;
+	}
+	else if (gm->currentWave == 3 && bDoOnce)
+	{
+		PlayAnimation(waveAnim);
+		bDoOnce = false;
+	}
+
+	if(gm->currentWave > 3 && !bClearOnce)
+	{
+		PlayAnimation(clearAnim);
+		bClearOnce = true;
+	}
 }
 
 void UTimerWidget::NativeConstruct()

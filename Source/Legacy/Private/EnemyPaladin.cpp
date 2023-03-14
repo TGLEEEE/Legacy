@@ -6,12 +6,13 @@
 
 AEnemyPaladin::AEnemyPaladin()
 {
+	/*
 	ConstructorHelpers::FObjectFinder<UAnimBlueprint>tempAnimBP(TEXT("/Script/Engine.AnimBlueprint'/Game/Legacy/TGL/Blueprint/ABP_Enemy.ABP_Enemy'"));
 	if (tempAnimBP.Succeeded())
 	{
 		GetMesh()->SetAnimInstanceClass(tempAnimBP.Object->GeneratedClass);
 	}
-
+	*/
 	ConstructorHelpers::FObjectFinder<USkeletalMesh>tempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/Legacy/TGL/Assets/Char/Paladin/PaladinWPropJNordstrom_UE.PaladinWPropJNordstrom_UE'"));
 	if (tempMesh.Succeeded())
 	{

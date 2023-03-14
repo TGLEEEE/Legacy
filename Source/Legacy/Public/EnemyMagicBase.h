@@ -33,7 +33,7 @@ public:
 	class ALegacyPlayer* player;
 
 	UPROPERTY(EditAnywhere)
-	float magicSpeed = 0.4;
+	float magicSpeed = 0.3;
 	float alpha;
 	FVector target;
 	FVector startLoc;

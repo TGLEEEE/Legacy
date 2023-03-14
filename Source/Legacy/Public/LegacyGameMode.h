@@ -26,8 +26,6 @@ public:
 	TSubclassOf<class AEnemy> enemyPaladinFactory;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AEnemy> enemyWizardFactory;
-	UPROPERTY()
-	class UTimerWidget* timerWidget;
 
 	int worldTime;
 	int worldTimeSec;
@@ -40,6 +38,7 @@ public:
 	int enemyCountTotal;
 	int currentWave;
 	bool bIsInWave;
+	TArray<AActor*> arrForCount;
 
 	FTimerHandle worldtimerHandle;
 	FTimerHandle spawnPaladinHandle;
@@ -51,6 +50,7 @@ public:
 	void SpawnEnemyPaladin(int spawnCount);
 	void SpawnEnemyWizard(int spawnCount);
 	void WaveStageManager(int wave);
+	void UpdateEnemyCountTotal();
 
 #pragma region VR
 	bool isHMDActivated;
