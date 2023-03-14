@@ -68,7 +68,7 @@ ALegacyPlayer::ALegacyPlayer()
 		rightHandMesh->SetSkeletalMesh(tempMesh2.Object);
 		rightHandMesh->SetRelativeLocationAndRotation(FVector((-2.981260, 3.5, 4.561753)), FRotator(25, 0.000000, 89.999998));
 	}
-#pragma endregion VR
+#pragma endregion 
 
 #pragma region Warp Teleport
 	teleportCircle = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Teleport Circle"));
@@ -108,6 +108,9 @@ ALegacyPlayer::ALegacyPlayer()
 	cameraComp->bUsePawnControlRotation = false;
 
 	currentHealth = maxHealth;
+
+	wandSpellNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("Wand Spell Niagara Component");
+	wandSpellNiagaraComponent->SetupAttachment(wandStaticMeshComponent);
 }
 
 
@@ -135,17 +138,18 @@ void ALegacyPlayer::BeginPlay()
 #pragma region Checking Platform
 	legacyGameMode = Cast<ALegacyGameMode>(GetWorld()->GetAuthGameMode());
 	if(legacyGameMode){
+		//PC
 		if (!legacyGameMode->isHMDActivated) {
 			//place hand where you can see them
 			rightHand->SetRelativeLocation(FVector(50, 30,80));
 			rightHand->SetRelativeRotation(FRotator(90, 50, 40));
 			//turn on use pawn control rotation
-			cameraComp->bUsePawnControlRotation = true;
 		}
 		//if connected
 		else {
 			//set the tracking offset ; basically setting the height 
 			UHeadMountedDisplayFunctionLibrary::SetTrackingOrigin(EHMDTrackingOrigin::Eye);
+			cameraComp->bUsePawnControlRotation = false;
 		}
 	} 
 #pragma endregion
@@ -176,5 +180,4 @@ void ALegacyPlayer::TakeDamageFromEnemy(int32 damagePoints)
 {
 	currentHealth -= damagePoints;
 
-	//
 }

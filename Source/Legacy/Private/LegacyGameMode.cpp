@@ -50,10 +50,10 @@ void ALegacyGameMode::Tick(float DeltaSeconds)
 
 
 
-	FVector leftCurrentPosition = legacyPlayer->leftSphereComponent->GetComponentLocation();
+	/*FVector leftCurrentPosition = legacyPlayer->leftSphereComponent->GetComponentLocation();
 	FVector rightCurrentPosition = legacyPlayer->rightSphereComponent->GetComponentLocation();
 	FVector leftCurrentVelocity = legacyPlayer->leftSphereComponent->GetPhysicsLinearVelocity();
-	FVector rightCurrentVelocity = legacyPlayer->rightSphereComponent->GetPhysicsLinearVelocity();
+	FVector rightCurrentVelocity = legacyPlayer->rightSphereComponent->GetPhysicsLinearVelocity();*/
 
 	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Current Right Hand Position: %s"), *relativePosition.ToString());
 	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Current Right Hand Velocity: %s"), *relativeVelocity.ToString());
