@@ -144,7 +144,7 @@ void ALegacyPlayer::BeginPlay()
 			rightHand->SetRelativeLocation(FVector(50, 30,80));
 			rightHand->SetRelativeRotation(FRotator(90, 50, 40));
 			//turn on use pawn control rotation
-			cameraComp->bUsePawnControlRotation = true;
+			cameraComp->bUsePawnControlRotation = false;
 		}
 		//if connected
 		else {

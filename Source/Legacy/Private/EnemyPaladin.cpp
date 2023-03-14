@@ -25,3 +25,9 @@ AEnemyPaladin::AEnemyPaladin()
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("EnemyPreset"));
 	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true);
 }
+
+void AEnemyPaladin::BeginPlay()
+{
+	Super::BeginPlay();
+	
+}
