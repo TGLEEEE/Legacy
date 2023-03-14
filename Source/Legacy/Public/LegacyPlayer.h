@@ -120,7 +120,7 @@ public:
 
 	void TakeDamageFromEnemy(int32 damagePoints);
 
-	int32 currentHealth;
+	
 
 	UPROPERTY()
 	class ALegacyGameMode* legacyGameMode;
@@ -128,6 +128,9 @@ public:
 private:
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Health", meta = (AllowPrivateAccess = true))
 	int32 maxHealth = 10;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player Settings | Health")
+	int32 currentHealth;
 };
 
 

@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraDataInterfaceArrayFunctionLibrary.h"
+#include "Camera/CameraComponent.h"
 
 void ULegacyPlayerMoveComponent::BeginPlay()
 {
@@ -54,8 +55,8 @@ void ULegacyPlayerMoveComponent::Move(const FInputActionValue& values)
 {
 	FVector2D axis = values.Get<FVector2D>();
 
-	me->AddMovementInput(me->GetActorForwardVector(), axis.X);
-	me->AddMovementInput(me->GetActorRightVector(), axis.Y);
+	me->AddMovementInput(me->cameraComp->GetForwardVector(), axis.X);
+	me->AddMovementInput(me->cameraComp->GetForwardVector(), axis.Y);
 }
 
 void ULegacyPlayerMoveComponent::Look(const FInputActionValue& values)
