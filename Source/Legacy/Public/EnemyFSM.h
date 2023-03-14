@@ -42,17 +42,17 @@ public:
 	UPROPERTY(EditAnywhere)
 	float maxIdleTime = 3.f;
 	UPROPERTY(EditAnywhere)
-	float radiusForIdleRandomLoc = 300.f;
+	float radiusForIdleRandomLoc = 500.f;
 	UPROPERTY(EditAnywhere)
-	float distanceForReturnOrigin = 1000.f;
+	float distanceForReturnOrigin = 1500.f;
 	UPROPERTY(EditAnywhere)
-	float startChasingDistance = 2000.f;
+	float startChasingDistance = 2500.f;
 	UPROPERTY(EditAnywhere)
 	float attackableDistance = 200.f;
 	UPROPERTY(EditAnywhere)
-	float stopChaseDistance = 3000.f;
+	float stopChaseDistance = 4000.f;
 	UPROPERTY(EditAnywhere)
-	float attackDelay = 2.f;
+	float attackDelay = 2.5f;
 	UPROPERTY(EditAnywhere)
 	bool bIsInTheAir;
 	UPROPERTY()

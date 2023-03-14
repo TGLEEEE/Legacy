@@ -30,6 +30,7 @@ void UEnemyState::BeginPlay()
 
 	// Enemy 접근할 일이 많을테니 캐싱
 	me = Cast<AEnemy>(GetOwner());
+	me->GetCharacterMovement()->MaxWalkSpeed = 500;
 }
 
 
