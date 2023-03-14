@@ -210,7 +210,7 @@ void UEnemyFSM::TickDie()
 	if (dieTimer > 3.f)
 	{
 		FVector P0 = me->GetActorLocation();
-		FVector vt = FVector::DownVector * 50.f * GetWorld()->DeltaTimeSeconds;
+		FVector vt = FVector::DownVector * 80.f * GetWorld()->DeltaTimeSeconds;
 		FVector P = P0 + vt;
 		me->SetActorLocation(P);
 		if (P.Z < -100.0f)

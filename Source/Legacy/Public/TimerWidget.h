@@ -33,8 +33,11 @@ public:
 	class ALegacyGameMode* gm;
 	UPROPERTY(BlueprintReadOnly, Transient, meta = (BindWidgetAnim))
 	class UWidgetAnimation* waveAnim;
+	UPROPERTY(BlueprintReadOnly, Transient, meta = (BindWidgetAnim))
+	class UWidgetAnimation* clearAnim;
 
 	bool bDoOnce;
+	bool bClearOnce;
 
 	void UpdateTimerWidget();
 	FTimerHandle hdForTimerWidget;

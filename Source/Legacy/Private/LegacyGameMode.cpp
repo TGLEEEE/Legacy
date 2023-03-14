@@ -30,8 +30,6 @@ void ALegacyGameMode::BeginPlay()
 
 	legacyPlayer = Cast<ALegacyPlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter()); 
 	if (!legacyPlayer) { UE_LOG(LogTemp, Warning, TEXT("Can't find Legacy Player")); }
-
-	clearWidgetUI = CreateWidget<UClearWidget>(GetWorld(), clearWidgetFactory);
 }
 
 void ALegacyGameMode::Tick(float DeltaSeconds)
@@ -81,7 +79,7 @@ void ALegacyGameMode::Tick(float DeltaSeconds)
 		bIsInWave = true;
 	}
 
-	if (enemyCountTotal > 0 && enemyKillCount == enemyCountTotal && bIsInWave)
+	if (enemyCountTotal > 0 && enemyKillCount == enemyCountTotal)
 	{
 		currentWave++;
 		bIsInWave = false;
@@ -89,7 +87,11 @@ void ALegacyGameMode::Tick(float DeltaSeconds)
 
 	if (currentWave > 3 && !bIsInWave)
 	{
-		clearWidgetUI->AddToViewport();
+		FTimerHandle hd;
+		GetWorldTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]()
+			{
+				UGameplayStatics::SetGamePaused(GetWorld(), true);
+			}), 3.f, false);
 	}
 
 	UpdateEnemyCountTotal();
