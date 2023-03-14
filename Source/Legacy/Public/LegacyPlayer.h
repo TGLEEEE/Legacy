@@ -118,7 +118,7 @@ public:
 	class UNiagaraComponent* teleportCurveComp;
 #pragma endregion 
 
-	void TakeDamage(int32 damagePoints);
+	void TakeDamageFromEnemy(int32 damagePoints);
 
 	int32 currentHealth;
 

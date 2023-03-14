@@ -172,7 +172,7 @@ void ALegacyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 }
 
 
-void ALegacyPlayer::TakeDamage(int32 damagePoints)
+void ALegacyPlayer::TakeDamageFromEnemy(int32 damagePoints)
 {
 	currentHealth -= damagePoints;
 
