@@ -14,6 +14,7 @@
 #include "NavigationSystem.h"
 #include "ClearWidget.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ALegacyGameMode::ALegacyGameMode()
 {
@@ -90,6 +91,8 @@ void ALegacyGameMode::Tick(float DeltaSeconds)
 	{
 		clearWidgetUI->AddToViewport();
 	}
+
+	UpdateEnemyCountTotal();
 }
 
 void ALegacyGameMode::WaveStart()
@@ -130,7 +133,7 @@ void ALegacyGameMode::SpawnEnemyPaladin(int spawnCount)
 			// 해당 랜덤 위치에 FX를 스폰한다
 
 			// 메인 위젯의 카운터값을 올린다
-			enemyCountTotal++;
+			//enemyCountTotal++;
 			// 몇번 반복했는지 세보고 목표에 도달했다면 타이머를 리셋한다
 			currentCountForSpawnPaladin++;
 			if (currentCountForSpawnPaladin == tempCountForSpawnPaladin)
@@ -162,7 +165,7 @@ void ALegacyGameMode::SpawnEnemyWizard(int spawnCount)
 			// 해당 랜덤 위치에 FX를 스폰한다
 
 			// 메인 위젯의 카운터값을 올린다
-			enemyCountTotal++;
+			//enemyCountTotal++;
 			// 몇번 반복했는지 세보고 목표에 도달했다면 타이머를 리셋한다
 			currentCountForSpawnWizard++;
 			if (currentCountForSpawnWizard == tempCountForSpawnWizard)
@@ -174,8 +177,18 @@ void ALegacyGameMode::SpawnEnemyWizard(int spawnCount)
 
 void ALegacyGameMode::WaveStageManager(int wave)
 {
-	SpawnEnemyWizard(wave * 2);
+	SpawnEnemyWizard(wave * 2 - 1);
 	SpawnEnemyPaladin(wave);
+}
+
+void ALegacyGameMode::UpdateEnemyCountTotal()
+{
+	arrForCount.Empty();
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemy::StaticClass(), arrForCount);
+	if (enemyCountTotal < arrForCount.Num())
+	{
+		enemyCountTotal = arrForCount.Num();
+	}
 }
 
 #pragma region Extract Data From Controller

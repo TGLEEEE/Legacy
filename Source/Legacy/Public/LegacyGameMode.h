@@ -42,6 +42,7 @@ public:
 	int enemyCountTotal;
 	int currentWave;
 	bool bIsInWave;
+	TArray<AActor*> arrForCount;
 
 	FTimerHandle worldtimerHandle;
 	FTimerHandle spawnPaladinHandle;
@@ -53,6 +54,7 @@ public:
 	void SpawnEnemyPaladin(int spawnCount);
 	void SpawnEnemyWizard(int spawnCount);
 	void WaveStageManager(int wave);
+	void UpdateEnemyCountTotal();
 
 #pragma region VR
 	bool isHMDActivated;
