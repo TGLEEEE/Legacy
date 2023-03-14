@@ -32,6 +32,7 @@ public:
 #pragma region Input Actions
 	UFUNCTION()
 	void OnActionCastSpellPressed();
+	//will unflag castspell with onoverlap
 	UFUNCTION()
 	void OnActionGrabPressed();
 	UFUNCTION()

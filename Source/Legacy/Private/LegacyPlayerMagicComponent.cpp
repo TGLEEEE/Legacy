@@ -173,7 +173,7 @@ void ULegacyPlayerMagicComponent::CheckSpellState(int32& quadrantNumber)
 	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState"));
 
 	//potential bug: delete or keep
-	//if (!isSpellCast) { return; }								//have to press spell cast to activate other spells
+	if (!isSpellCast) { return; }								//have to press spell cast to activate other spells
 
 	//if on PC
 	if (!UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled()) {
@@ -251,8 +251,8 @@ void ULegacyPlayerMagicComponent::CastLevioso()
 	if(isSpellCombo){ SpellCombo(); }
 	
 	//transition to another state
-	if (isAccio || me->uIComponent->quadrantNumber == 2) { spellState = SpellState::Accio; }
-	if (isDepulso || me->uIComponent->quadrantNumber == 3) { spellState = SpellState::Depulso; }
+	if (isAccio || (me->uIComponent->quadrantNumber == 2 && isSpellCast)) { spellState = SpellState::Accio; }
+	if (isDepulso || (me->uIComponent->quadrantNumber == 3 && isSpellCast)) { spellState = SpellState::Depulso; }
 	if (isGrab) { spellState = SpellState::Grab; }
 
 	//only for PC
@@ -303,8 +303,8 @@ void ULegacyPlayerMagicComponent::CastAccio()
 	}
 
 	//transition to another state
-	if (isLevioso || me->uIComponent->quadrantNumber == 1) { spellState = SpellState::Levioso; }
-	if (isDepulso || me->uIComponent->quadrantNumber == 3) { spellState = SpellState::Depulso; }
+	if (isLevioso || (me->uIComponent->quadrantNumber == 1 && isSpellCast)) { spellState = SpellState::Levioso; }
+	if (isDepulso || (me->uIComponent->quadrantNumber == 3 && isSpellCast)) { spellState = SpellState::Depulso; }
 	if (isGrab) { spellState = SpellState::Grab; }
 
 	//only for PC
@@ -431,6 +431,10 @@ void ULegacyPlayerMagicComponent::CastGrab()
 		//me->physicsHandleComp->SetTargetLocation(objectInitialHeight + objectOffsetHeight);
 		me->physicsHandleComp->SetTargetLocation(me->grabHoverRegionArrowComponent->GetComponentLocation());
 	}
+
+	if (isLevioso || me->uIComponent->quadrantNumber == 1) { spellState = SpellState::Levioso; }
+	if (isAccio || me->uIComponent->quadrantNumber == 2) { spellState = SpellState::Accio; }
+	if (isDepulso || me->uIComponent->quadrantNumber == 3) { spellState = SpellState::Depulso; }
 
 	//Grab
 	if(!isGrab || isSpellCancel){
