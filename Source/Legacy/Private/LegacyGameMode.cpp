@@ -36,39 +36,6 @@ void ALegacyGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	//find VR Controllers
-	if(isHMDActivated && !isControllersFound){ GetControllers(); }
-
-	//FVector leftCurrentPosition = CalculateControllerPosition(leftControllerData);
-	//FVector rightCurrentPosition = CalculateControllerPosition(rightControllerData);
-
-	//FVector leftCurrentVelocity = CalculateControllerVelocity(leftCurrentPosition);
-	//FVector rightCurrentVelocity = CalculateControllerAcceleration(rightCurrentPosition);
-
-	//FVector leftCurrentAcceleration = CalculateControllerVelocity(leftCurrentVelocity);
-	//FVector rightCurrentAcceleration = CalculateControllerAcceleration(rightCurrentVelocity);
-
-
-
-	/*FVector leftCurrentPosition = legacyPlayer->leftSphereComponent->GetComponentLocation();
-	FVector rightCurrentPosition = legacyPlayer->rightSphereComponent->GetComponentLocation();
-	FVector leftCurrentVelocity = legacyPlayer->leftSphereComponent->GetPhysicsLinearVelocity();
-	FVector rightCurrentVelocity = legacyPlayer->rightSphereComponent->GetPhysicsLinearVelocity();*/
-
-	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Current Right Hand Position: %s"), *relativePosition.ToString());
-	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Current Right Hand Velocity: %s"), *relativeVelocity.ToString());
-	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Current Right Hand Acceleration: %s"), *currentAcceleration.ToString());
-
-
-
-	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Current Position %s"), *leftCurrentPosition.ToString());
-	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Current Position %s"), *rightCurrentPosition.ToString());
-
-	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Current Velocity %s"), *leftCurrentVelocity.ToString());
-	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Current Velocity %s"), *rightCurrentVelocity.ToString());
-
-	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Current Acceleration %s"), *leftCurrentAcceleration.ToString());
-	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Current Acceleration %s"), *rightCurrentAcceleration.ToString());
 
 	// Wave System
 	if (currentWave > 0 && !bIsInWave && currentWave < 4)
@@ -192,61 +159,3 @@ void ALegacyGameMode::UpdateEnemyCountTotal()
 		enemyCountTotal = arrForCount.Num();
 	}
 }
-
-#pragma region Extract Data From Controller
-
-
-void ALegacyGameMode::GetControllers()
-{
-	UHeadMountedDisplayFunctionLibrary::GetMotionControllerData(GetWorld(), EControllerHand::Left, leftControllerData);
-	UHeadMountedDisplayFunctionLibrary::GetMotionControllerData(GetWorld(), EControllerHand::Right, rightControllerData);
-
-#pragma region Debug
-	//if((leftControllerData.DeviceName == FName("NAME_None")) && rightControllerData.DeviceName == FName("NAME_None")){
-	//	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::GetControllers - Can't find both controllers"));
-	//}
-	//else if(!(leftControllerData.DeviceName == FName("NAME_None")) != !(rightControllerData.DeviceName == FName("NAME_None"))){
-	//	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::GetControllers - Can't find one of the controllers"));
-	//}
-	//else if((leftControllerData.DeviceName != FName("NAME_None")) && (rightControllerData.DeviceName != FName("NAME_None"))){
-	//	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::GetControllers - Found both controllers"));
-	//	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Controller %s"), *rightControllerData.DeviceName.ToString());
-	//	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Controller	 %s"), *leftControllerData.DeviceName.ToString());
-
-	//}
-#pragma endregion 
-}
-
-//takes controller data and returns the position of the controller
-FVector ALegacyGameMode::CalculateControllerPosition(FXRMotionControllerData& controllerData)
-{
-	FVector controllerPosition = controllerData.AimPosition;
-
-	return controllerPosition;
-}
-
-FVector ALegacyGameMode::CalculateControllerVelocity(FVector currentPosition)
-{
-	FVector controllerVelocity;
-
-	controllerVelocity = (currentPosition - previousPosition) / GetWorld()->DeltaTimeSeconds;
-
-	//update previous position
-	previousPosition = currentPosition;
-
-	return controllerVelocity;
-}
-
-FVector ALegacyGameMode::CalculateControllerAcceleration(FVector currentVelocity)
-{
-	FVector controllerAcceleration;
-
-	controllerAcceleration = (currentVelocity - previousVelocity) / GetWorld()->DeltaTimeSeconds;
-
-
-	//update previous velocity
-	previousVelocity = currentVelocity;
-
-	return controllerAcceleration;
-}
-#pragma endregion

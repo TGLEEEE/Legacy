@@ -17,6 +17,11 @@ class LEGACY_API ALegacyGameMode : public AGameModeBase
 	
 public:
 
+	UPROPERTY()
+	class ALegacyPlayer* legacyPlayer;
+
+	bool isHMDActivated;
+
 	ALegacyGameMode();
 
 	virtual void BeginPlay() override;
@@ -52,28 +57,5 @@ public:
 	void WaveStageManager(int wave);
 	void UpdateEnemyCountTotal();
 
-#pragma region VR
-	bool isHMDActivated;
-	bool isControllersFound;
 
-	FVector previousPosition = FVector::Zero();
-	FVector previousVelocity = FVector::Zero();
-	float previousTime = 0.f;
-
-
-	void GetControllers();
-
-	FVector CalculateControllerPosition(FXRMotionControllerData& controllerData);
-	FVector CalculateControllerVelocity(FVector currentPosition);
-	FVector CalculateControllerAcceleration(FVector currentVelocity);
-
-	UPROPERTY()
-	class ALegacyPlayer* legacyPlayer;
-
-	FXRMotionControllerData leftControllerData;
-	FXRMotionControllerData rightControllerData;
-
-
-
-#pragma endregion 
 };
