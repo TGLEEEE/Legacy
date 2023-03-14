@@ -3,6 +3,7 @@
 
 #include "LegacyPlayerMoveComponent.h"
 #include "EnhancedInputComponent.h"
+#include "LegacyGameMode.h"
 #include "LegacyPlayer.h"
 #include "MotionControllerComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -54,9 +55,14 @@ void ULegacyPlayerMoveComponent::TickComponent(float DeltaTime, ELevelTick TickT
 void ULegacyPlayerMoveComponent::Move(const FInputActionValue& values)
 {
 	FVector2D axis = values.Get<FVector2D>();
-
-	me->AddMovementInput(me->cameraComp->GetRightVector(), axis.X);
-	me->AddMovementInput(me->cameraComp->GetForwardVector(), axis.Y);
+	if (me->legacyGameMode->isHMDActivated) {
+		me->AddMovementInput(me->cameraComp->GetRightVector(), axis.X);
+		me->AddMovementInput(me->cameraComp->GetForwardVector(), axis.Y);
+	}
+	else{
+		me->AddMovementInput(me->GetActorForwardVector(), axis.X);
+		me->AddMovementInput(me->GetActorRightVector(), axis.Y);
+	}
 }
 
 void ULegacyPlayerMoveComponent::Look(const FInputActionValue& values)
