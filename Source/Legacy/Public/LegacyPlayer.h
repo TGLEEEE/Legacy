@@ -94,6 +94,10 @@ public:
 	class UStaticMeshComponent* wandStaticMeshComponent;
 
 	UPROPERTY(EditAnywhere)
+	class UArrowComponent* wandLightArrowComponent;
+
+
+	UPROPERTY(EditAnywhere)
 	class UArrowComponent* accioHoverRegionArrowComponent;
 	UPROPERTY(EditAnywhere)
 	class UArrowComponent* grabHoverRegionArrowComponent;
@@ -106,11 +110,25 @@ public:
 	UPROPERTY(EditAnywhere)
 	class USphereComponent* rightSphereComponent;
 
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* magicRegionColliderComponent;
 
 	FSetupPlayerInputDelegate setupPlayerInputDelegate;
 
 
 #pragma endregion Components
+
+#pragma region Overlap
+	UFUNCTION()
+	void OnMagicRegionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void OnMagicRegionEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	class UStaticMeshComponent* hitComponent;
+
+	bool isInMagicRegion;
+#pragma endregion 
+
 
 #pragma region Warp Teleport
 	UPROPERTY(EditAnywhere)
@@ -127,14 +145,22 @@ public:
 
 	FVector previousPosition = FVector::Zero();
 	FVector previousVelocity = FVector::Zero();
+	FVector previousAcceleration = FVector::Zero();
+
+	float rightCurrentVelocityMagnitude;
+	float rightCurrentAccelerationMagnitude;
+
 	float previousTime = 0.f;
+
+	void GetControllerData();
 
 	FVector CalculateControllerAcceleration(FVector& currentVelocity);
 
 	FTimerHandle controllerDataTimer;
-	float controllerTickSeconds = 0.25f;
 
-	void GetControllerData();
+	UPROPERTY(EditAnywhere)
+	float controllerTickSeconds = 0.1f;
+
 #pragma endregion 
 
 	UPROPERTY()
