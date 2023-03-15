@@ -57,6 +57,13 @@ public:
 	void UpdateSpellState();
 	void CheckSpellState(int32& quadrantNumber);
 
+	void CheckSpellActivation();
+
+	UPROPERTY(EditAnywhere)
+	float accelerationHighThreshold = 15000;
+	UPROPERTY(EditAnywhere)
+	float accelerationLowThreshold = 500;
+
 	SpellState spellState;
 
 	int32 comboCount = 0;
@@ -119,9 +126,11 @@ public:
 	class UNiagaraComponent* avadaKedavraNiagaraComponent;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class AActor> wandLightFactory;
+	class UNiagaraSystem* wandLightNiagaraSystem;
+	UPROPERTY(EditAnywhere)
+	class UNiagaraComponent* wandLightNiagaraComponent;
 
-	void UpdateWandEndEffect();
+	void UpdateWandLight();
 #pragma endregion 
 
 	bool isAvadaKedavraCast;
@@ -139,6 +148,10 @@ public:
 	float accioCancelTime = 2;
 	UPROPERTY(EditAnywhere)
 	float avadaKedavraCancelTime = 3;
+
+	
+
+	class UStaticMeshComponent* wandComponent;
 
 };
 

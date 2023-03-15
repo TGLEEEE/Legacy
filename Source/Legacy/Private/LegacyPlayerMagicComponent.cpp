@@ -30,6 +30,8 @@ void ULegacyPlayerMagicComponent::BeginPlay()
 
 }
 
+
+
 void ULegacyPlayerMagicComponent::SetupPlayerInput(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInput(PlayerInputComponent);
@@ -113,15 +115,31 @@ void ULegacyPlayerMagicComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	DetectTarget();
 
 	UpdateSpellState();
+	UpdateWandLight();
 
-	//UpdateWandEndEffect();
+	CheckSpellActivation();
+	CastAvadaKedavra();
 }
 
-void ULegacyPlayerMagicComponent::UpdateWandEndEffect()
+void ULegacyPlayerMagicComponent::CheckSpellActivation()
 {
+	if(me->isInMagicRegion && (me->rightCurrentAccelerationMagnitude > accelerationHighThreshold) ){
+		//bug: might need to make a user parameters to just switch it off
+		wandLightNiagaraComponent->SetVisibility(true);
 
+		//if less than acceleration
+		//Lerp to fade out user parameter intensity or etc...
+		if (me->rightCurrentAccelerationMagnitude < accelerationLowThreshold){
+			wandLightNiagaraComponent->SetVisibility(false);
+		}
+
+		UE_LOG(LogTemp, Warning, TEXT("Spell Ready"));
+	}
+	else if(!me->isInMagicRegion || (me->rightCurrentAccelerationMagnitude < accelerationLowThreshold)){
+		//UE_LOG(LogTemp, Warning, TEXT("Spell Reset"));
+		wandLightNiagaraComponent->SetVisibility(false);
+	}
 }
-
 
 void ULegacyPlayerMagicComponent::UpdateSpellState()
 {
@@ -188,8 +206,9 @@ void ULegacyPlayerMagicComponent::CheckSpellState(int32& quadrantNumber)
 		else if(quadrantNumber == 4 && isSpellCast){ spellState = SpellState::AvadaKedavra; UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpellPressed - SpellState::AvadaKedavra"));}
 		else if (isGrab) { spellState = SpellState::Grab; }
 	}
-
 }
+
+
 
 
 void ULegacyPlayerMagicComponent::CastLevioso()
@@ -476,11 +495,11 @@ void ULegacyPlayerMagicComponent::DetectTarget()
 			//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::DetectTarget - found enemy"));
 			#pragma endregion 
 			detectedComponent = hitResult.GetComponent();
-			UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::DetectTarget - Get Enemy Capsule"));
+			//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::DetectTarget - Get Enemy Capsule"));
 			#pragma region Debug
-			if (detectedComponent) {
+			/*if (detectedComponent) {
 				UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::DetectTarget - detectedComponent"));
-			}
+			}*/
 			#pragma endregion
 		}
 		#pragma region Debug
@@ -518,6 +537,17 @@ void ULegacyPlayerMagicComponent::DereferenceVariables()
 
 	//dereference grabbedComponent
 	grabbedComponent = nullptr;
+}
+
+void ULegacyPlayerMagicComponent::UpdateWandLight()
+{
+	if (!wandLightNiagaraComponent) {
+		wandLightNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(wandLightNiagaraSystem, me->wandLightArrowComponent, NAME_None, FVector(0), FRotator(0),
+			EAttachLocation::KeepRelativeOffset, true, true, ENCPoolMethod::None, true);
+		return;
+	}
+
+	wandLightNiagaraComponent->SetNiagaraVariableVec3(FString("EffectPosition"), me->wandLightArrowComponent->GetComponentLocation());
 }
 
 void ULegacyPlayerMagicComponent::CancelSpellTimer(float spellTime)
