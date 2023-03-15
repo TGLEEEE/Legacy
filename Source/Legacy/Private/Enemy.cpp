@@ -6,7 +6,9 @@
 #include "EnemyState.h"
 #include "LegacyGameMode.h"
 #include "LegacyPlayer.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Components/CapsuleComponent.h"
+#include "NavigationSystem.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -28,6 +30,11 @@ void AEnemy::BeginPlay()
 	// player 캐스팅
 	player = Cast<ALegacyPlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter());
 	gm = Cast<ALegacyGameMode>(GetWorld()->GetAuthGameMode());
+
+	// 스폰시 이펙트 나오게
+	FVector spawnLoc = GetActorLocation();
+	spawnLoc.Z = 0;
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), enemySpawnFX, spawnLoc);
 }
 
 // Called every frame
