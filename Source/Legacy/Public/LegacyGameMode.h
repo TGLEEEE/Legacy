@@ -33,6 +33,8 @@ public:
 	TSubclassOf<class AEnemy> enemyWizardFactory;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bIsGameStart;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int currentWave;
 	int worldTime;
 	int worldTimeSec;
 	int worldTimeMin;
@@ -42,7 +44,6 @@ public:
 	int tempCountForSpawnWizard;
 	int enemyKillCount;
 	int enemyCountTotal;
-	int currentWave;
 	bool bIsInWave;
 	TArray<AActor*> arrForCount;
 
