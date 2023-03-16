@@ -118,7 +118,7 @@ void ULegacyPlayerMagicComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	UpdateWandLight();
 
 	CheckSpellActivation();
-	CastAvadaKedavra();
+	//CastAvadaKedavra();
 }
 
 void ULegacyPlayerMagicComponent::CheckSpellActivation()
