@@ -44,10 +44,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
 	class UInputAction* iA_CastSpell;
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
-	class UInputAction* iA_SpellCombo;
-	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
-	class UInputAction* iA_SpellCancel;
-	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
 	class UInputAction* iA_Grab;
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
 	class UInputAction* iA_Spell1;
@@ -55,10 +51,18 @@ public:
 	class UInputAction* iA_Spell2;
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
 	class UInputAction* iA_Spell3;
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
+	class UInputAction* iA_Spell4;
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
+	class UInputAction* iA_SpellUltimate;
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
+	class UInputAction* iA_SpellCombo;
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
+	class UInputAction* iA_SpellCancel;
 
 	//update
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Menu")
-	class UInputAction* iA_UIActivation;
+	class UInputAction* iA_UIActivation;	//might not need
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Menu")
 	class UInputAction* iA_UISelection;
 

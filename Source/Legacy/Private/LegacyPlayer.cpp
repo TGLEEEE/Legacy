@@ -27,13 +27,14 @@ ALegacyPlayer::ALegacyPlayer()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+#pragma region Key Components
 	moveComponent = CreateDefaultSubobject<ULegacyPlayerMoveComponent>(TEXT("Move Component"));
 	magicComponent = CreateDefaultSubobject<ULegacyPlayerMagicComponent>(TEXT("Magic Component"));
 	uIComponent = CreateDefaultSubobject<ULegacyPlayerUIComponent>(TEXT("UI Component"));
 	physicsHandleComp = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("Physics Handle Component"));
 	leftSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Left Sphere Component"));
 	rightSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Right Sphere Component"));
-
+#pragma endregion 
 
 #pragma region VR
 	cameraComp = CreateDefaultSubobject<UCameraComponent>("Camera Component");
@@ -78,7 +79,8 @@ ALegacyPlayer::ALegacyPlayer()
 
 	teleportCurveComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Teleport Curve Component"));
 #pragma endregion 
-	
+
+#pragma region Wand
 	wandStaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Wand Static Mesh"));
 	wandStaticMeshComponent->SetupAttachment(rightHandMesh);
 	wandStaticMeshComponent->SetRelativeLocation(FVector(8.429074, 16.892678, -2.629340));
@@ -97,11 +99,15 @@ ALegacyPlayer::ALegacyPlayer()
 	if (tempWandMesh.Succeeded()) {
 		wandStaticMeshComponent->SetStaticMesh(tempWandMesh.Object);
 	}
+#pragma endregion
 
+#pragma region Wand Light
 	wandLightArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("Wand Light Arrow Component"));
 	wandLightArrowComponent->SetupAttachment(wandStaticMeshComponent);
 	wandLightArrowComponent->SetRelativeLocation(FVector(500,0, 0));
+#pragma endregion
 
+#pragma region Hover Regions
 	accioHoverRegionArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("Accio Arrow Component"));
 	accioHoverRegionArrowComponent->SetupAttachment(cameraComp);
 	accioHoverRegionArrowComponent->SetRelativeLocation(FVector(10, 10, 10));
@@ -109,13 +115,16 @@ ALegacyPlayer::ALegacyPlayer()
 	grabHoverRegionArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("Grab Arrow Component"));
 	grabHoverRegionArrowComponent->SetupAttachment(wandStaticMeshComponent);
 	grabHoverRegionArrowComponent->SetRelativeLocation(FVector(300, 0, 0));
+#pragma endregion
 
-
+#pragma region Sphere Components
 	leftSphereComponent->SetupAttachment(leftHand);
-	leftSphereComponent->SetSimulatePhysics(true);
-	rightSphereComponent->SetupAttachment(rightHand);
 	leftSphereComponent->SetSimulatePhysics(false);
+	rightSphereComponent->SetupAttachment(rightHand);
+	rightSphereComponent->SetSimulatePhysics(false);
+#pragma endregion 
 
+#pragma region Magic Region Collider
 	magicRegionColliderComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Magic Region Collider Component"));
 	magicRegionColliderComponent->SetupAttachment(cameraComp);
 	magicRegionColliderComponent->SetRelativeLocation(FVector(95, 0, -28));
@@ -125,12 +134,13 @@ ALegacyPlayer::ALegacyPlayer()
 	magicRegionColliderComponent->SetCollisionProfileName(TEXT("MagicRegionColliderPreset"));
 	magicRegionColliderComponent->SetCollisionObjectType(ECC_GameTraceChannel6);
 	magicRegionColliderComponent->SetGenerateOverlapEvents(true);
+#pragma endregion 
 
-
+	//
 	cameraComp->bUsePawnControlRotation = false;
 
+	//initialize health
 	currentHealth = maxHealth;
-
 }
 
 
@@ -139,6 +149,7 @@ void ALegacyPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//bind collision methods
 	magicRegionColliderComponent->OnComponentBeginOverlap.AddDynamic(this, &ALegacyPlayer::OnMagicRegionBeginOverlap);
 	magicRegionColliderComponent->OnComponentEndOverlap.AddDynamic(this, &ALegacyPlayer::OnMagicRegionEndOverlap);
 
@@ -158,13 +169,13 @@ void ALegacyPlayer::BeginPlay()
 	}
 #pragma endregion
 
-#pragma region Checking Platform
+#pragma region Checking Platform - Set Camera Control
 	legacyGameMode = Cast<ALegacyGameMode>(GetWorld()->GetAuthGameMode());
 	if(legacyGameMode){
 		//PC
 		if (!legacyGameMode->isHMDActivated) {
 			//place hand where you can see them
-			rightHand->SetRelativeLocation(FVector(50, 30,80));
+			rightHand->SetRelativeLocation(FVector(50, 30, 80));
 			rightHand->SetRelativeRotation(FRotator(90, 50, 40));
 			//turn on use pawn control rotation
 			//cameraComp->bUsePawnControlRotation = true;						//this to turn on PawnControlRotation - Mouse Not Looking Up; seems like the computer doesnt VRPC as HMD Connected
@@ -179,6 +190,7 @@ void ALegacyPlayer::BeginPlay()
 	} 
 #pragma endregion
 
+	//bug: might be unnecessary
 	//timer to get controller data
 	GetWorld()->GetTimerManager().SetTimer(controllerDataTimer, this, &ALegacyPlayer::GetControllerData, controllerTickSeconds,true);
 
@@ -228,7 +240,7 @@ void ALegacyPlayer::Tick(float DeltaTime)
 }
 
 
-
+#pragma region Controller Data
 void ALegacyPlayer::GetControllerData(){
 	//FVector leftCurrentPosition = leftSphereComponent->GetComponentLocation();
 	//FVector rightCurrentPosition = rightSphereComponent->GetComponentLocation();
@@ -244,20 +256,21 @@ void ALegacyPlayer::GetControllerData(){
 	rightCurrentAccelerationMagnitude = rightCurrentAcceleration.Size();
 
 
-	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Current Velocity %f"), leftCurrentVelocityMagnitude);
-	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Current Velocity Magnitude %f"), rightCurrentVelocityMagnitude);
-	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Current Acceleration %f"), leftCurrentAccelerationMagnitude);
-	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Current Acceleration Magnitude %f"), rightCurrentAccelerationMagnitude);
+#pragma region Debug
+	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::GetControllerData - Left Current Velocity %f"), leftCurrentVelocityMagnitude);
+	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::GetControllerData - Right Current Velocity Magnitude %f"), rightCurrentVelocityMagnitude);
+	//UE_LOG(LogTemp, Warning, TEXT("ALegacyPlayer::GetControllerData - Left Current Acceleration %f"), leftCurrentAccelerationMagnitude);
+	//UE_LOG(LogTemp, Warning, TEXT("ALegacyPlayer::GetControllerData - Right Current Acceleration Magnitude %f"), rightCurrentAccelerationMagnitude);
 
-	////UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Current Position %s"), *leftCurrentPosition.ToString());
-	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Current Position %s"), *rightCurrentPosition.ToString());
+	////UE_LOG(LogTemp, Warning, TEXT("ALegacyPlayer::GetControllerData - Left Current Position %s"), *leftCurrentPosition.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("ALegacyPlayer::GetControllerData - Right Current Position %s"), *rightCurrentPosition.ToString());
 
-	////UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Current Velocity %s"), *leftCurrentVelocity.ToString());
-	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Current Velocity %s"), *rightCurrentVelocity.ToString());
+	////UE_LOG(LogTemp, Warning, TEXT("ALegacyPlayer::GetControllerData - Left Current Velocity %s"), *leftCurrentVelocity.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("ALegacyPlayer::GetControllerData - Right Current Velocity %s"), *rightCurrentVelocity.ToString());
 
-	////UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Current Acceleration %s"), *leftCurrentAcceleration.ToString());
-	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Current Acceleration %s"), *rightCurrentAcceleration.ToString());
-
+	////UE_LOG(LogTemp, Warning, TEXT("ALegacyPlayer::GetControllerData - Left Current Acceleration %s"), *leftCurrentAcceleration.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("ALegacyPlayer::GetControllerData - Right Current Acceleration %s"), *rightCurrentAcceleration.ToString());
+#pragma endregion
 }
 
 
@@ -274,7 +287,7 @@ FVector ALegacyPlayer::CalculateControllerAcceleration(FVector& currentVelocity)
 	return controllerAcceleration;
 }
 
-
+#pragma endregion
 
 void ALegacyPlayer::TakeDamageFromEnemy(int32 damagePoints)
 {
