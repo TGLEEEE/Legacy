@@ -12,9 +12,9 @@
 #include "LegacyPlayer.h"
 #include "MotionControllerComponent.h"
 #include "NavigationSystem.h"
-#include "ClearWidget.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
 
 ALegacyGameMode::ALegacyGameMode()
 {
@@ -30,6 +30,18 @@ void ALegacyGameMode::BeginPlay()
 
 	legacyPlayer = Cast<ALegacyPlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter()); 
 	if (!legacyPlayer) { UE_LOG(LogTemp, Warning, TEXT("Can't find Legacy Player")); }
+	/*
+	if (!isHMDActivated)
+	{
+		APlayerController* PC = GetWorld()->GetFirstPlayerController();
+		if (PC)
+		{
+			PC->bShowMouseCursor = true;
+			PC->bEnableClickEvents = true;
+			PC->bEnableMouseOverEvents = true;
+		}
+	}
+	*/
 }
 
 void ALegacyGameMode::Tick(float DeltaSeconds)
@@ -97,19 +109,16 @@ void ALegacyGameMode::SpawnEnemyPaladin(int spawnCount)
 			{
 				randomLoc = navLoc.Location;
 			}
+			randomLoc.Z = 100;
 			// 해당 랜덤 위치에 적을 스폰한다
 			GetWorld()->SpawnActor<AEnemy>(enemyPaladinFactory, randomLoc, FRotator::ZeroRotator);
-			// 해당 랜덤 위치에 FX를 스폰한다
-
-			// 메인 위젯의 카운터값을 올린다
-			//enemyCountTotal++;
 			// 몇번 반복했는지 세보고 목표에 도달했다면 타이머를 리셋한다
 			currentCountForSpawnPaladin++;
 			if (currentCountForSpawnPaladin == tempCountForSpawnPaladin)
 			{
 				GetWorldTimerManager().ClearTimer(spawnPaladinHandle);
 			}
-	}), 1.f, true, 1.f);
+	}), 2.f, true, 1.f);
 }
 
 void ALegacyGameMode::SpawnEnemyWizard(int spawnCount)
@@ -129,19 +138,16 @@ void ALegacyGameMode::SpawnEnemyWizard(int spawnCount)
 			{
 				randomLoc = navLoc.Location;
 			}
+			randomLoc.Z = 100;
 			// 해당 랜덤 위치에 적을 스폰한다
 			GetWorld()->SpawnActor<AEnemy>(enemyWizardFactory, randomLoc, FRotator::ZeroRotator);
-			// 해당 랜덤 위치에 FX를 스폰한다
-
-			// 메인 위젯의 카운터값을 올린다
-			//enemyCountTotal++;
 			// 몇번 반복했는지 세보고 목표에 도달했다면 타이머를 리셋한다
 			currentCountForSpawnWizard++;
 			if (currentCountForSpawnWizard == tempCountForSpawnWizard)
 			{
 				GetWorldTimerManager().ClearTimer(spawnWizardHandle);
 			}
-		}), 1.f, true, 0.6f);
+		}), 2.f, true, 1.5f);
 }
 
 void ALegacyGameMode::WaveStageManager(int wave)

@@ -31,7 +31,8 @@ public:
 	TSubclassOf<class AEnemy> enemyPaladinFactory;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AEnemy> enemyWizardFactory;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bIsGameStart;
 	int worldTime;
 	int worldTimeSec;
 	int worldTimeMin;

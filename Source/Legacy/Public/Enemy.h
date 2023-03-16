@@ -34,6 +34,8 @@ public:
 	class ALegacyPlayer* player;
 	UPROPERTY()
 	class ALegacyGameMode* gm;
+	UPROPERTY(EditAnywhere)
+	class UNiagaraSystem* enemySpawnFX;
 
 	UFUNCTION()
 	void OnHitGround(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
