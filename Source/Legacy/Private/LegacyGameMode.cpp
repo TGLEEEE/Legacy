@@ -30,18 +30,8 @@ void ALegacyGameMode::BeginPlay()
 
 	legacyPlayer = Cast<ALegacyPlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter()); 
 	if (!legacyPlayer) { UE_LOG(LogTemp, Warning, TEXT("Can't find Legacy Player")); }
-	/*
-	if (!isHMDActivated)
-	{
-		APlayerController* PC = GetWorld()->GetFirstPlayerController();
-		if (PC)
-		{
-			PC->bShowMouseCursor = true;
-			PC->bEnableClickEvents = true;
-			PC->bEnableMouseOverEvents = true;
-		}
-	}
-	*/
+
+	
 }
 
 void ALegacyGameMode::Tick(float DeltaSeconds)
@@ -70,9 +60,10 @@ void ALegacyGameMode::Tick(float DeltaSeconds)
 		GetWorldTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]()
 			{
 				UGameplayStatics::SetGamePaused(GetWorld(), true);
-			}), 3.f, false);
+			}), 20.f, false);
 	}
 
+	// 스폰된 Enemay 카운트 함수
 	UpdateEnemyCountTotal();
 }
 
