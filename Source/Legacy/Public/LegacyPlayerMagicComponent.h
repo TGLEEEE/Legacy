@@ -13,6 +13,7 @@ enum class SpellState : uint8 {
 	Accio,
 	Depulso,
 	AvadaKedavra,
+	Ultimate,
 	Grab,
 	Cancel
 };
@@ -30,8 +31,11 @@ public:
 	virtual void BeginPlay() override;
 
 #pragma region Input Actions
+	//PC
 	UFUNCTION()
 	void OnActionCastSpellPressed();
+	UFUNCTION()
+	void OnActionCastSpellReleased();
 	//will unflag castspell with onoverlap
 	UFUNCTION()
 	void OnActionGrabPressed();
@@ -44,11 +48,19 @@ public:
 	void OnActionSpell2Pressed();
 	UFUNCTION()
 	void OnActionSpell3Pressed();
+	UFUNCTION()
+	void OnActionSpell4Pressed();
+	UFUNCTION()
+	void OnActionSpellComboPressed();
+	UFUNCTION()
+	void OnActionSpellComboReleased();
+	UFUNCTION()
+	void OnActionSpellUltimateHold();
+	UFUNCTION()
+	void OnActionSpellUltimateReleased();
 
 
 	//temporary
-	UFUNCTION()
-	void OnActionSpellComboPressed();
 	UFUNCTION()
 	void OnActionSpellCancelPressed();
 #pragma endregion 
@@ -58,11 +70,33 @@ public:
 	void CheckSpellState(int32& quadrantNumber);
 
 	void CheckSpellActivation();
+	void UpdateSpellActivation();
+
+	class AEnemy* WideSphereTrace();
+
+	AEnemy* wideSphereTraceHitEnemy;
+	AEnemy* previousWideSphereTraceHitEnemy;
+	//for debugging
+	int32 comboCountOnEnemy;
+
 
 	UPROPERTY(EditAnywhere)
-	float accelerationHighThreshold = 15000;
+	float farSphereTraceDetectionRadius = 100;
 	UPROPERTY(EditAnywhere)
-	float accelerationLowThreshold = 500;
+	float nearSphereTraceDetectionRadius = 20;
+	UPROPERTY(EditAnywhere)
+	float farSphereTraceDistance = 100000;
+	UPROPERTY(EditAnywhere)
+	float nearSphereTraceDistance = 300;
+
+	UPROPERTY(EditAnywhere)
+	float accelerationHighThreshold = 7300;
+	UPROPERTY(EditAnywhere)
+	float velocityThreshold = 140;			//vel = 198, accel -148000
+	UPROPERTY(EditAnywhere)
+	float accelerationLowThreshold = 500;		
+	UPROPERTY(EditAnywhere)
+	float wandActivationThreshold = 10;
 
 	SpellState spellState;
 
@@ -70,24 +104,29 @@ public:
 
 	FVector currentLocation;
 
+	bool isGrab;
+	bool isSpellCast;
 	bool isLevioso;
 	bool isAccio;
 	bool isDepulso;
+	bool isAvadaKedavra;
 
-	bool isSpellCast;
-	bool isGrab;
 	bool isSpellCombo;
+	bool isSpellUltimate;
+
 	bool isSpellCancel;
 #pragma endregion 
 
 #pragma region Spells
+	void CastGrab();
 	void CastLevioso();
 	void CastAccio();
 	void CastDepulso();
 	void CastAvadaKedavra();
-	void CastGrab();
-	//temporary
-	void SpellCombo();
+	void CastGrabbedSpellCombo();
+	void CastSpellCombo();
+	//PC
+	void CastUltimate();
 	void SpellCancel();
 #pragma endregion 
 
@@ -117,7 +156,13 @@ public:
 	float errorTolerance = 2;
 #pragma endregion
 
-	void DereferenceVariables();
+	bool isWandActive;
+
+#pragma region Accio
+	FVector accioHoverLocation;
+
+#pragma endregion
+
 
 #pragma region Spell VFX
 	UPROPERTY(EditAnywhere)
@@ -133,13 +178,10 @@ public:
 	void UpdateWandLight();
 #pragma endregion 
 
-	bool isAvadaKedavraCast;
-
-	FTimerHandle spellCancelTimerHandle;
+	void DereferenceVariables();
 
 	void CancelSpellTimer(float spellTime);
-
-	float currentTime;
+	FTimerHandle spellCancelTimerHandle;
 
 	//write category
 	UPROPERTY(EditAnywhere)
@@ -148,10 +190,10 @@ public:
 	float accioCancelTime = 2;
 	UPROPERTY(EditAnywhere)
 	float avadaKedavraCancelTime = 3;
+	UPROPERTY(EditAnywhere)
+	float ultimateCancelTime = 2;
 
-	
-
-	class UStaticMeshComponent* wandComponent;
+	float currentTime;
 
 };
 
