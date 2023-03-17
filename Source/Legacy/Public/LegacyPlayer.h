@@ -118,9 +118,7 @@ public:
 	class UBoxComponent* magicRegionColliderComponent;
 
 	FSetupPlayerInputDelegate setupPlayerInputDelegate;
-
-
-#pragma endregion Components
+#pragma endregion 
 
 #pragma region Overlap
 	UFUNCTION()
@@ -132,7 +130,6 @@ public:
 
 	bool isInMagicRegion;
 #pragma endregion 
-
 
 #pragma region Warp Teleport
 	UPROPERTY(EditAnywhere)
@@ -151,20 +148,30 @@ public:
 	FVector previousVelocity = FVector::Zero();
 	FVector previousAcceleration = FVector::Zero();
 
+	FVector previousAngularVelocity = FVector::Zero();
+	FVector previousAngularAcceleration = FVector::Zero();
+
+
 	float rightCurrentVelocityMagnitude;
 	float rightCurrentAccelerationMagnitude;
+	float rightCurrentAccelerationDifferenceMagnitude;
+
+
+	float rightCurrentAngularVelocityMagnitude;
+	float rightCurrentAngularAccelerationMagnitude;
 
 	float previousTime = 0.f;
 
 	void GetControllerData();
 
-	FVector CalculateControllerAcceleration(FVector& currentVelocity);
+	FVector CalculateControllerLinearAcceleration(FVector& currentVelocity);
+	FVector CalculateLinearAccelerationDifference(FVector& currentAcceleration);
+	FVector CalculateControllerAngularAcceleration(FVector& currentAngularVelocity);
 
 	FTimerHandle controllerDataTimer;
 
 	UPROPERTY(EditAnywhere)
 	float controllerTickSeconds = 0.1f;
-
 #pragma endregion 
 
 	UPROPERTY()
