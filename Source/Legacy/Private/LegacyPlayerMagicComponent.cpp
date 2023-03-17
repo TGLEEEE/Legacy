@@ -175,7 +175,7 @@ void ULegacyPlayerMagicComponent::SpawnSpellComboNiagaraEffect()
 
 	//potential bug; neet to spawn and attach, not just location? Also, need to destroy and not loop
 	spellComboNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), spellComboNiagaraSystem, comboImpactPoint,
-		FRotator(0),FVector(1), true, true, ENCPoolMethod::None, true);
+		FRotator(0),FVector(0.2), true, true, ENCPoolMethod::None, true);
 
 }
 
@@ -225,7 +225,35 @@ class AEnemy* ULegacyPlayerMagicComponent::WideSphereTrace()
 }
 
 
+void ULegacyPlayerMagicComponent::CheckSpellActivation()
+{
+	//if in region and acceleration is high enough
+	if (me->isInMagicRegion && (me->rightCurrentAccelerationMagnitude > accelerationThreshold) && me->rightCurrentVelocityMagnitude > velocityThreshold) {
+	//if (me->isInMagicRegion && me->rightCurrentAccelerationDifferenceMagnitude > accelerationDiffernceThreshold) {
 
+		//turn on light
+		//bug: might need to make a user parameters to just switch it off
+		wandLightNiagaraComponent->SetVisibility(true);
+		isWandActive = true;
+		//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Activated Velocity %f"), me->rightCurrentVelocityMagnitude);
+		//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Activated Acceleration %f"), me->rightCurrentAccelerationMagnitude);
+		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Activated Acceleration Difference %f"), me->rightCurrentAccelerationDifferenceMagnitude);
+	}
+	else if (me->isInMagicRegion && (me->rightCurrentAccelerationMagnitude < accelerationThreshold)) {
+	//else if (me->isInMagicRegion && (me->rightCurrentAccelerationDifferenceMagnitude < accelerationDiffernceThreshold)) {
+		isWandActive = false;
+		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - In region - small Velocity %f"), me->rightCurrentVelocityMagnitude);
+		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - In region - small Acceleration %f"), me->rightCurrentAccelerationMagnitude);
+		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - In region - small Acceleration Difference%f"), me->rightCurrentAccelerationDifferenceMagnitude);
+	}
+	//if in region and acceleration is too low
+	else if (!me->isInMagicRegion) {
+		//UE_LOG(LogTemp, Warning, TEXT("Spell Reset"));
+		wandLightNiagaraComponent->SetVisibility(false);
+		isWandActive = false;
+		UE_LOG(LogTemp, Error, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Deactivated"));
+	}
+}
 
 void ULegacyPlayerMagicComponent::UpdateSpellState()
 {
@@ -269,49 +297,49 @@ void ULegacyPlayerMagicComponent::CheckSpellState(int32& quadrantNumber)
 	if (!me->legacyGameMode->isHMDActivated) {
 		if (isLevioso && isSpellCast){
 			spellState = SpellState::Levioso;
-			UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState::Levioso"));
+			//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState::Levioso"));
 		}
 		else if (isAccio && isSpellCast){
 			spellState = SpellState::Accio;
-			UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState::Accio"));
+			//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState::Accio"));
 		}
 		else if (isDepulso && isSpellCast){
 			spellState = SpellState::Depulso;
-			UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState::Depulso"));
+			//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState::Depulso"));
 		}
 		else if (isAvadaKedavra && isSpellCast){
 			spellState = SpellState::AvadaKedavra;
-			UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState::Avada Kedavra"));
+			//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState::Avada Kedavra"));
 		}
 		else if (isSpellUltimate){
 			spellState = SpellState::Ultimate;
-			UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState::Ultimate"));
+			//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState::Ultimate"));
 		}
 		else if (isGrab){
 			spellState = SpellState::Grab;
-			UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState::Grab"));
+			//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState::Grab"));
 		}
 		else if (isSpellCancel){										//for PC
 			spellState = SpellState::Cancel;
-			UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState::Cancel"));
+			//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState::Cancel"));
 		}
 	}
 	else{
 		if(quadrantNumber == 1 && isSpellCast){
 			spellState = SpellState::Levioso;
-			UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState::Levioso"));
+			//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState::Levioso"));
 		}
 		else if(quadrantNumber == 2 && isSpellCast){
 			spellState = SpellState::Accio;
-			UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState::Accio"));
+			//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState::Accio"));
 		}
 		else if(quadrantNumber == 3 && isSpellCast){
 			spellState = SpellState::Depulso;
-			UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState::Depulso"));
+			//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellState - SpellState::Depulso"));
 		}
 		else if(quadrantNumber == 4 && isSpellCast){
 			spellState = SpellState::AvadaKedavra;
-			UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpellPressed - SpellState::AvadaKedavra"));
+			//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::OnActionCastSpellPressed - SpellState::AvadaKedavra"));
 		}
 		else if (isGrab){
 			spellState = SpellState::Grab;
@@ -319,35 +347,7 @@ void ULegacyPlayerMagicComponent::CheckSpellState(int32& quadrantNumber)
 	}
 }
 
-void ULegacyPlayerMagicComponent::CheckSpellActivation()
-{
-	//if in region and acceleration is high enough
-	//if (me->isInMagicRegion && (me->rightCurrentAccelerationMagnitude > accelerationHighThreshold) && me->rightCurrentVelocityMagnitude > velocityThreshold) {
-	if (me->isInMagicRegion && me->rightCurrentAccelerationDifferenceMagnitude > accelerationDiffernceThreshold) {
 
-		//turn on light
-		//bug: might need to make a user parameters to just switch it off
-		wandLightNiagaraComponent->SetVisibility(true);
-		isWandActive = true;
-		//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Activated Velocity %f"), me->rightCurrentVelocityMagnitude);
-		//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Activated Acceleration %f"), me->rightCurrentAccelerationMagnitude);
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Activated Acceleration Difference %f"), me->rightCurrentAccelerationDifferenceMagnitude);
-	}
-	//if (me->isInMagicRegion && (me->rightCurrentAccelerationMagnitude < accelerationHighThreshold)) {
-	else if (me->isInMagicRegion && (me->rightCurrentAccelerationDifferenceMagnitude < accelerationDiffernceThreshold)) {
-		isWandActive = false;
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - In region - small Velocity %f"), me->rightCurrentVelocityMagnitude);
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - In region - small Acceleration %f"), me->rightCurrentAccelerationMagnitude);
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - In region - small Acceleration Difference%f"), me->rightCurrentAccelerationDifferenceMagnitude);
-	}
-	//if in region and acceleration is too low
-	else if (!me->isInMagicRegion) {
-		//UE_LOG(LogTemp, Warning, TEXT("Spell Reset"));
-		wandLightNiagaraComponent->SetVisibility(false);
-		isWandActive = false;
-		UE_LOG(LogTemp, Error, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Deactivated"));
-	}
-}
 
 
 
