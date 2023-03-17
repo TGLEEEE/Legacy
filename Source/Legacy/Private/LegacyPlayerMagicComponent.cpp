@@ -146,23 +146,38 @@ void ULegacyPlayerMagicComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	UpdateWandLight();
 
 	CheckSpellActivation();
+	CheckSpellComboActivation();
+}
+
+void ULegacyPlayerMagicComponent::CheckSpellComboActivation()
+{
+	// only pressing combo button, the wand is active, and there is a hit result
+	if (isGrab || !isSpellCombo || !isWandActive) {return;}
 
 	AEnemy* wideSphereTraceResult = WideSphereTrace();
 
-	//if only pressing combo button, the wand is active
-	if (!isGrab && isSpellCombo && isWandActive && wideSphereTraceResult) {
-		if(!previousWideSphereTraceHitEnemy){
-			comboCountOnEnemy++;
-			UE_LOG(LogTemp, Warning, TEXT("Spell Combo On Enemy"));
-			UE_LOG(LogTemp, Warning, TEXT("Spell Combo Count - %d"), comboCountOnEnemy);
-		}
+	//if hit enemy and there is no previous hit result
+	if (wideSphereTraceResult && !previousWideSphereTraceHitEnemy) {
+		SpawnSpellComboNiagaraEffect();
+		comboCountOnEnemy++;
+	}
+	else if(wideSphereTraceResult && previousWideSphereTraceHitEnemy){
+		return;
 	}
 
+	//assign previous hit result according to current hit result
 	previousWideSphereTraceHitEnemy = wideSphereTraceResult;
-
-	
 }
 
+void ULegacyPlayerMagicComponent::SpawnSpellComboNiagaraEffect()
+{
+	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAvadaKedavra - !isAvadaKedavra"));
+
+	//potential bug; neet to spawn and attach, not just location? Also, need to destroy and not loop
+	spellComboNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), spellComboNiagaraSystem, comboImpactPoint,
+		FRotator(0),FVector(1), true, true, ENCPoolMethod::None, true);
+
+}
 
 
 class AEnemy* ULegacyPlayerMagicComponent::WideSphereTrace()
@@ -192,6 +207,8 @@ class AEnemy* ULegacyPlayerMagicComponent::WideSphereTrace()
 		AEnemy* enemyFromNearTrace = Cast<AEnemy>(hitResult.GetActor());
 		if(enemyFromNearTrace){
 			UE_LOG(LogTemp, Warning, TEXT("ShortSphereTraceHit"));
+			comboImpactPoint = hitResult.ImpactPoint;
+			comboImpactNormal = hitResult.ImpactNormal;
 			return enemyFromNearTrace;
 		}
 	}
@@ -199,6 +216,8 @@ class AEnemy* ULegacyPlayerMagicComponent::WideSphereTrace()
 	else if (!isShortSphereTraceHit && isLongSphereTrace1Hit) {
 		AEnemy* enemyFromFarTrace = Cast<AEnemy>(farSphereMultipleHitResults[0].GetActor());
 		UE_LOG(LogTemp, Warning, TEXT("LongSphereTraceHit"));
+		comboImpactPoint = farSphereMultipleHitResults[0].ImpactPoint;
+		comboImpactNormal = farSphereMultipleHitResults[0].ImpactNormal;
 		return enemyFromFarTrace;
 	}
 
@@ -303,33 +322,33 @@ void ULegacyPlayerMagicComponent::CheckSpellState(int32& quadrantNumber)
 void ULegacyPlayerMagicComponent::CheckSpellActivation()
 {
 	//if in region and acceleration is high enough
-	if (me->isInMagicRegion && (me->rightCurrentAccelerationMagnitude > accelerationHighThreshold) && me->rightCurrentVelocityMagnitude > velocityThreshold) {
+	//if (me->isInMagicRegion && (me->rightCurrentAccelerationMagnitude > accelerationHighThreshold) && me->rightCurrentVelocityMagnitude > velocityThreshold) {
+	if (me->isInMagicRegion && me->rightCurrentAccelerationDifferenceMagnitude > accelerationDiffernceThreshold) {
 
 		//turn on light
 		//bug: might need to make a user parameters to just switch it off
 		wandLightNiagaraComponent->SetVisibility(true);
 		isWandActive = true;
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Activated Velocity %f"), me->rightCurrentVelocityMagnitude);
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Activated Acceleration %f"), me->rightCurrentAccelerationMagnitude);
+		//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Activated Velocity %f"), me->rightCurrentVelocityMagnitude);
+		//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Activated Acceleration %f"), me->rightCurrentAccelerationMagnitude);
+		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Activated Acceleration Difference %f"), me->rightCurrentAccelerationDifferenceMagnitude);
 	}
-	if (me->isInMagicRegion && (me->rightCurrentAccelerationMagnitude < accelerationHighThreshold)) {
+	//if (me->isInMagicRegion && (me->rightCurrentAccelerationMagnitude < accelerationHighThreshold)) {
+	else if (me->isInMagicRegion && (me->rightCurrentAccelerationDifferenceMagnitude < accelerationDiffernceThreshold)) {
+		isWandActive = false;
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - In region - small Velocity %f"), me->rightCurrentVelocityMagnitude);
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - In region - small Acceleration %f"), me->rightCurrentAccelerationMagnitude);
+		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - In region - small Acceleration Difference%f"), me->rightCurrentAccelerationDifferenceMagnitude);
 	}
 	//if in region and acceleration is too low
 	else if (!me->isInMagicRegion) {
 		//UE_LOG(LogTemp, Warning, TEXT("Spell Reset"));
 		wandLightNiagaraComponent->SetVisibility(false);
 		isWandActive = false;
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Deactivated Velocity %f"), me->rightCurrentVelocityMagnitude);
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Deactivated Acceleration %f"), me->rightCurrentAccelerationMagnitude);
+		UE_LOG(LogTemp, Error, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Deactivated"));
 	}
 }
 
-void ULegacyPlayerMagicComponent::UpdateSpellActivation()
-{
-
-}
 
 
 
@@ -643,7 +662,6 @@ void ULegacyPlayerMagicComponent::DetectTarget()
 
 	//do a sphere trace
 	bool isHit = UKismetSystemLibrary::SphereTraceSingle(this, traceStartLocation, traceEndLocation, detectionRadius, UEngineTypes::ConvertToTraceType(traceChannel), true, actorsToIgnore, EDrawDebugTrace::ForOneFrame, hitResult, true);
-	bool isHit = false;
 
 	//if it hits something
 	if (isHit) {
@@ -685,6 +703,8 @@ void ULegacyPlayerMagicComponent::CancelSpellTimer(float spellTime)
 		spellState = SpellState::Cancel;
 	}
 }
+
+
 
 
 void ULegacyPlayerMagicComponent::DereferenceVariables()

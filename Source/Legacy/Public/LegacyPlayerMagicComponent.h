@@ -70,15 +70,21 @@ public:
 	void CheckSpellState(int32& quadrantNumber);
 
 	void CheckSpellActivation();
-	void UpdateSpellActivation();
 
-	class AEnemy* WideSphereTrace();
-
-	AEnemy* wideSphereTraceHitEnemy;
-	AEnemy* previousWideSphereTraceHitEnemy;
+	void CheckSpellComboActivation();
+#pragma region Wide Sphere Trace
 	//for debugging
 	int32 comboCountOnEnemy;
 
+	FVector comboImpactPoint;
+	FVector comboImpactNormal;
+
+	class AEnemy* WideSphereTrace();
+
+	UPROPERTY()
+	AEnemy* wideSphereTraceHitEnemy;
+	UPROPERTY()
+	AEnemy* previousWideSphereTraceHitEnemy;
 
 	UPROPERTY(EditAnywhere)
 	float farSphereTraceDetectionRadius = 100;
@@ -88,15 +94,17 @@ public:
 	float farSphereTraceDistance = 100000;
 	UPROPERTY(EditAnywhere)
 	float nearSphereTraceDistance = 300;
+#pragma endregion 
+
+	bool isWandActive;
 
 	UPROPERTY(EditAnywhere)
-	float accelerationHighThreshold = 7300;
+	float accelerationThreshold = 7300;
 	UPROPERTY(EditAnywhere)
 	float velocityThreshold = 140;			//vel = 198, accel -148000
 	UPROPERTY(EditAnywhere)
-	float accelerationLowThreshold = 500;		
-	UPROPERTY(EditAnywhere)
-	float wandActivationThreshold = 10;
+	float accelerationDiffernceThreshold = 8000;
+
 
 	SpellState spellState;
 
@@ -156,7 +164,6 @@ public:
 	float errorTolerance = 2;
 #pragma endregion
 
-	bool isWandActive;
 
 #pragma region Accio
 	FVector accioHoverLocation;
@@ -176,8 +183,17 @@ public:
 	class UNiagaraComponent* wandLightNiagaraComponent;
 
 	void UpdateWandLight();
+
+	//Attack
+	UPROPERTY(EditAnywhere)
+	class UNiagaraSystem* spellComboNiagaraSystem;
+	UPROPERTY(EditAnywhere)
+	class UNiagaraComponent* spellComboNiagaraComponent;
+
+	void SpawnSpellComboNiagaraEffect();
 #pragma endregion 
 
+#pragma region Cancel
 	void DereferenceVariables();
 
 	void CancelSpellTimer(float spellTime);
@@ -194,6 +210,7 @@ public:
 	float ultimateCancelTime = 2;
 
 	float currentTime;
+#pragma endregion 
 
 };
 
