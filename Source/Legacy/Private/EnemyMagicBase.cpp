@@ -5,6 +5,7 @@
 #include "NiagaraComponent.h"
 #include <Components/BoxComponent.h>
 #include "LegacyPlayer.h"
+#include "Components/AudioComponent.h"
 
 // Sets default values
 AEnemyMagicBase::AEnemyMagicBase()
@@ -22,6 +23,8 @@ AEnemyMagicBase::AEnemyMagicBase()
 	subFXComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Sub FX"));
 	subFXComp->SetupAttachment(RootComponent);
 
+	magicSoundComp = CreateDefaultSubobject<UAudioComponent>(TEXT("Magic Sound"));
+	magicSoundComp->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -53,6 +56,7 @@ void AEnemyMagicBase::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	if (pl)
 	{
 		pl->TakeDamageFromEnemy(1);
+		UE_LOG(LogTemp, Error, TEXT("Magic Damage to Player"));
 	}
 
 	Destroy();

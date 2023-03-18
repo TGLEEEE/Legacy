@@ -29,6 +29,8 @@ public:
 	class UNiagaraComponent* subFXComp;
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* boxComp;
+	UPROPERTY(EditAnywhere)
+	class UAudioComponent* magicSoundComp;
 	UPROPERTY()
 	class ALegacyPlayer* player;
 

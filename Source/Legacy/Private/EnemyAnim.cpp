@@ -5,6 +5,7 @@
 
 #include "Enemy.h"
 #include "EnemyWizard.h"
+#include "Kismet/GameplayStatics.h"
 
 void UEnemyAnim::NativeBeginPlay()
 {
@@ -22,5 +23,10 @@ void UEnemyAnim::AnimNotify_AttackMagic()
 {
 	auto wizard = Cast<AEnemyWizard>(me);
 	wizard->WizardAttack();
+}
+
+void UEnemyAnim::AnimNotify_AttackSoundPlay()
+{
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), paladinAttackSound, me->GetActorLocation(), 0.8f, 1.f, 0.3f);
 }
 

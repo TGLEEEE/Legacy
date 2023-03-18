@@ -52,7 +52,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	float stopChaseDistance = 4000.f;
 	UPROPERTY(EditAnywhere)
-	float attackDelay = 2.5f;
+	float attackDelay = 3.f;
 	UPROPERTY(EditAnywhere)
 	bool bIsInTheAir;
 	UPROPERTY()
@@ -61,7 +61,7 @@ public:
 	FVector idleRandomLoc;
 	FVector originLoc;
 	float idleTimer;
-	float attackTimer = 2.f;
+	float attackTimer = 0.5f;
 	float dieTimer;
 	
 	bool bIsReturning;
