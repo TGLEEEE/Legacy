@@ -261,7 +261,8 @@ void ALegacyPlayer::Tick(float DeltaTime)
 	if (!UHeadMountedDisplayFunctionLibrary::IsHeadMountedDisplayEnabled()) {
 		rightHand->SetRelativeRotation(cameraComp->GetRelativeRotation());
 	}
-	
+
+	UnPossessOnDie();
 }
 
 
@@ -353,9 +354,25 @@ void ALegacyPlayer::TakeDamageFromEnemy(int32 damagePoints)
 	currentHealth -= damagePoints;
 
 
-	heartLightIntensity /= 2;
 	//update health light intensity
+	heartLightIntensity /= 2;
 	heartPendantLight->SetIntensity(heartLightIntensity);
 
+	//haptic feedback
 	playerController->PlayHapticEffect(hFC_TakeDamage, EControllerHand::Left);
+}
+
+void ALegacyPlayer::UnPossessOnDie()
+{
+	if(currentHealth <= 0){
+		//Set heart light to 0
+		heartPendantLight->SetIntensity(0);
+
+		//Play haptic effect
+		playerController->PlayHapticEffect(hFC_Dead, EControllerHand::Left);
+		playerController->PlayHapticEffect(hFC_Dead, EControllerHand::Right);
+
+		//unposses player controller
+		playerController->UnPossess();
+	}
 }

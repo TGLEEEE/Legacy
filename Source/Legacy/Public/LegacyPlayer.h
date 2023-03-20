@@ -181,8 +181,14 @@ public:
 	UPROPERTY()
 	APlayerController* playerController;
 
+#pragma region Health
+
+	void UnPossessOnDie();
+
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Health")
 	class UHapticFeedbackEffect_Curve* hFC_TakeDamage;
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Health")
+	class UHapticFeedbackEffect_Curve* hFC_Dead;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Settings | Health")
 	int32 maxHealth = 10;
@@ -200,8 +206,8 @@ public:
 	float maxHeartLightIntensity = 5000;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Settings | Health")
 	float heartLightIntensity;
+#pragma endregion
 
-private:
 	
 };
 
