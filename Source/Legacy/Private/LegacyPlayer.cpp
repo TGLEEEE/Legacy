@@ -9,7 +9,6 @@
 #include "Camera/CameraComponent.h"
 #include "LegacyPlayerMoveComponent.h"
 #include "LegacyPlayerMagicComponent.h"
-
 //update
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "LegacyGameMode.h"
@@ -21,6 +20,9 @@
 #include "Components/SphereComponent.h"
 #include "Haptics/HapticFeedbackEffect_Curve.h"
 #include "Components/PointLightComponent.h"
+
+#include "UObject/ConstructorHelpers.h"
+#include "Components/WidgetComponent.h"
 
 
 // Sets default values
@@ -160,6 +162,55 @@ ALegacyPlayer::ALegacyPlayer()
 	heartPendantLight->SetAttenuationRadius(5.2);
 #pragma endregion
 
+#pragma region Spell Selection
+	spellSelectionActorComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("Spell Selection Actor Component"));
+	spellSelectionActorComponent->SetupAttachment(rightHandMesh);
+	//spellSelectionActorComponent->SetRelativeLocation(FVector((-5.680494, -2.242872, -0.233635)));
+	//spellSelectionActorComponent->SetRelativeRotation(FRotator((0, -93, 90)));
+	spellSelectionActorComponent->SetRelativeLocation(FVector((0)));
+	spellSelectionActorComponent->SetRelativeRotation(FRotator((0)));
+
+	accioWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Accio Widget Component"));
+	accioWidgetComponent->SetupAttachment(spellSelectionActorComponent);
+	//accioWidgetComponent->SetRelativeLocation(FVector((0, 0, 11.448490)));
+	//accioWidgetComponent->SetRelativeScale3D(FVector((0.025)));
+	accioWidgetComponent->SetRelativeLocation(FVector((0)));
+	accioWidgetComponent->SetRelativeRotation(FRotator((0)));
+
+	leviosoWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Levioso Widget Component"));
+	leviosoWidgetComponent->SetupAttachment(spellSelectionActorComponent);
+	//leviosoWidgetComponent->SetRelativeLocation(FVector((0, -6.611824, 5.251676)));
+	//leviosoWidgetComponent->SetRelativeScale3D(FVector((0.025)));
+	leviosoWidgetComponent->SetRelativeLocation(FVector((0)));
+	leviosoWidgetComponent->SetRelativeRotation(FRotator((0)));
+
+	depulsoWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Depulso Widget Component"));
+	depulsoWidgetComponent->SetupAttachment(spellSelectionActorComponent);
+	//depulsoWidgetComponent->SetRelativeLocation(FVector((0, 0, -0.679671)));
+	//depulsoWidgetComponent->SetRelativeScale3D(FVector((0.025)));
+	depulsoWidgetComponent->SetRelativeLocation(FVector((0)));
+	depulsoWidgetComponent->SetRelativeRotation(FRotator((0)));
+
+	avadaKedavraWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Avada Kedavra Widget Component"));
+	avadaKedavraWidgetComponent->SetupAttachment(spellSelectionActorComponent);
+	//avadaKedavraWidgetComponent->SetRelativeLocation(FVector((0, 6.364819, 5.322636)));
+	//avadaKedavraWidgetComponent->SetRelativeScale3D(FVector((0.025)));
+	avadaKedavraWidgetComponent->SetRelativeLocation(FVector((0)));
+	avadaKedavraWidgetComponent->SetRelativeRotation(FRotator((0)));
+
+	//arrow component for target location
+	accioArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("Accio Icon Arrow Component"));
+	accioArrowComponent->SetupAttachment(spellSelectionActorComponent);
+	leviosoArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("Levioso Icon Arrow Component"));
+	leviosoArrowComponent->SetupAttachment(spellSelectionActorComponent);
+	depulsoArrowComponent= CreateDefaultSubobject<UArrowComponent>(TEXT("Depulso Icon Arrow Component"));
+	depulsoArrowComponent->SetupAttachment(spellSelectionActorComponent);
+	avadaKedavraArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("Avada Kedavra Icon Arrow Component"));
+	avadaKedavraArrowComponent->SetupAttachment(spellSelectionActorComponent);
+
+#pragma endregion
+
+		
 	//
 	cameraComp->bUsePawnControlRotation = false;
 

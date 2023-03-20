@@ -208,6 +208,30 @@ public:
 	float heartLightIntensity;
 #pragma endregion
 
+
+#pragma region Spell Selection
+	UPROPERTY(EditAnywhere)
+	class UChildActorComponent* spellSelectionActorComponent;	
+	UPROPERTY(EditAnywhere)
+	class UWidgetComponent* accioWidgetComponent;
+	UPROPERTY(EditAnywhere)
+	class UWidgetComponent* leviosoWidgetComponent;
+	UPROPERTY(EditAnywhere)
+	class UWidgetComponent* depulsoWidgetComponent;
+	UPROPERTY(EditAnywhere)
+	class UWidgetComponent* avadaKedavraWidgetComponent;
+
+	UPROPERTY(EditAnywhere)
+	class UArrowComponent* accioArrowComponent;
+	UPROPERTY(EditAnywhere)
+	class UArrowComponent* leviosoArrowComponent;
+	UPROPERTY(EditAnywhere)
+	class UArrowComponent* depulsoArrowComponent;
+	UPROPERTY(EditAnywhere)
+	class UArrowComponent* avadaKedavraArrowComponent;
+
+
+#pragma endregion
 	
 };
 
