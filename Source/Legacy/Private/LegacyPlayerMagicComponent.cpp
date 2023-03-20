@@ -158,7 +158,12 @@ void ULegacyPlayerMagicComponent::CheckSpellComboActivation()
 
 	//if hit enemy and there is no previous hit result
 	if (wideSphereTraceResult && !previousWideSphereTraceHitEnemy) {
+		//Spawning Combo Niagara impact effect
 		SpawnSpellComboNiagaraEffect();
+
+		//apply damage to enemy
+		wideSphereTraceHitEnemy->enemyState->OnDamageProcess(1);
+
 		comboCountOnEnemy++;
 	}
 	else if(wideSphereTraceResult && previousWideSphereTraceHitEnemy){
