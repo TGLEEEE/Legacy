@@ -194,7 +194,7 @@ void UEnemyFSM::TickDamage()
 			{
 				SetState(EEnemyState::IDLE);
 				bDamageAnimDoOnce = false;
-			}), 0.8f, false);
+			}), 1.2f, false);
 	}
 }
 
