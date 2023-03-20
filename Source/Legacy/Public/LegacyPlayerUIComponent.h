@@ -23,13 +23,11 @@ public:
 private:
 
 #pragma region Input Actions
-#pragma region Deprecated
 	//joystick button pressed and released
-	/*UFUNCTION()
+	UFUNCTION()
 	void OnActionUIActivation();
 	UFUNCTION()
-	void OnActionUIDeActivation();*/
-#pragma endregion
+	void OnActionUIDeActivation();
 	
 	//joystick swivel
 	UFUNCTION()
@@ -73,5 +71,28 @@ private:
 	bool isInNewQuadrant;
 
 	bool hasBumped = false;
-#pragma endregion 
+#pragma endregion
+
+#pragma region Spell Selection Animation
+	//void SpellSelectionAnimation(class UWidgetComponent* spellWidget, FVector spellArrowComponentLocation);
+
+	//float currentTime;
+
+	//UPROPERTY(EditAnywhere)
+	//float animationTime = 1;
+
+
+	//UPROPERTY()
+	//class UUserWidget* leviosoWidget;
+	//UPROPERTY()
+	//class UUserWidget* accioWidget;
+	//UPROPERTY()
+	//class UUserWidget* depulsoWidget;
+	//UPROPERTY()
+	//class UUserWidget* avadaKedavraWidget;
+
+	//UPROPERTY(EditAnywhere, Category = "UI Settings|Score Animation", meta = (BindWidgetAnim), Transient)
+	//class UWidgetAnimation* widgetAnimation;
+#pragma endregion
+
 };
