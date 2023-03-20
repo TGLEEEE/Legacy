@@ -145,8 +145,8 @@ void ALegacyGameMode::SpawnEnemyWizard(int spawnCount)
 
 void ALegacyGameMode::WaveStageManager(int wave)
 {
-	SpawnEnemyWizard(wave * 2 - 1);
-	SpawnEnemyPaladin(wave);
+	SpawnEnemyWizard(wave * 2 - 2);
+	SpawnEnemyPaladin(wave * 2);
 }
 
 void ALegacyGameMode::UpdateEnemyCountTotal()

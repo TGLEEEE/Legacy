@@ -4,6 +4,7 @@
 #include "TimerWidget.h"
 
 #include "LegacyGameMode.h"
+#include "LegacyPlayer.h"
 #include "Components/TextBlock.h"
 
 void UTimerWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -38,6 +39,10 @@ void UTimerWidget::NativeConstruct()
 		{
 			UpdateTimerWidget();
 		}), 0.2f, true);
+	// 플레이어 체력 읽어오기 위해 캐스팅
+	player = Cast<ALegacyPlayer>(GetWorld()->GetFirstPlayerController());
+	// 플레이어 죽으면 게임오버 출력되게 애님플레이
+
 }
 
 void UTimerWidget::UpdateTimerWidget()
