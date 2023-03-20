@@ -42,6 +42,7 @@ public:
 
 	bool bDoOnce;
 	bool bClearOnce;
+	bool bDieOnce;
 
 	void UpdateTimerWidget();
 	FTimerHandle hdForTimerWidget;

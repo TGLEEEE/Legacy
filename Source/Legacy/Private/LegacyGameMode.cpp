@@ -119,6 +119,11 @@ void ALegacyGameMode::SpawnEnemyWizard(int spawnCount)
 	currentCountForSpawnWizard = 0;
 	tempCountForSpawnWizard = spawnCount;
 
+	if (spawnCount == 0)
+	{
+		return;
+	}
+
 	// 모든 작업을 약간의 딜레이를 가지고 spawncount번 반복한다
 	GetWorldTimerManager().SetTimer(spawnWizardHandle, FTimerDelegate::CreateLambda([&]()
 		{
