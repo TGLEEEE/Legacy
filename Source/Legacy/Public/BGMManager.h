@@ -27,6 +27,8 @@ public:
 	class UAudioComponent* bgmComp;
 	UPROPERTY(EditAnywhere)
 	class UAudioComponent* endingBGMComp;
+	UPROPERTY(EditAnywhere)
+	class UAudioComponent* ambientSoundComp;
 	UPROPERTY()
 	class ALegacyGameMode* gm;
 	bool bPlayOnce;

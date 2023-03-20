@@ -111,7 +111,7 @@ void ALegacyGameMode::SpawnEnemyPaladin(int spawnCount)
 			{
 				GetWorldTimerManager().ClearTimer(spawnPaladinHandle);
 			}
-	}), 2.f, true, 1.f);
+	}), 0.5f, true, 1.f);
 }
 
 void ALegacyGameMode::SpawnEnemyWizard(int spawnCount)
@@ -140,7 +140,7 @@ void ALegacyGameMode::SpawnEnemyWizard(int spawnCount)
 			{
 				GetWorldTimerManager().ClearTimer(spawnWizardHandle);
 			}
-		}), 2.f, true, 1.5f);
+		}), 0.5f, true);
 }
 
 void ALegacyGameMode::WaveStageManager(int wave)
