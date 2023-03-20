@@ -56,9 +56,8 @@ void AEnemyMagicBase::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	if (pl)
 	{
 		pl->TakeDamageFromEnemy(1);
-		UE_LOG(LogTemp, Error, TEXT("Magic Damage to Player"));
+		//UE_LOG(LogTemp, Error, TEXT("Magic Damage to Player"));
 	}
-
 	Destroy();
 }
 

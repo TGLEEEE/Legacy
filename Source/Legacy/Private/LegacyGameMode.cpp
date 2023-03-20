@@ -56,11 +56,13 @@ void ALegacyGameMode::Tick(float DeltaSeconds)
 
 	if (currentWave > 3 && !bIsInWave)
 	{
+		/*
 		FTimerHandle hd;
 		GetWorldTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]()
 			{
 				UGameplayStatics::SetGamePaused(GetWorld(), true);
 			}), 20.f, false);
+			*/
 	}
 
 	// 스폰된 Enemay 카운트 함수
