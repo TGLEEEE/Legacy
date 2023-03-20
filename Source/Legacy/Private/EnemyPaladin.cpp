@@ -3,6 +3,8 @@
 
 #include "EnemyPaladin.h"
 #include "Components/CapsuleComponent.h"
+#include "EnemyFSM.h"
+#include "Kismet/GameplayStatics.h"
 
 AEnemyPaladin::AEnemyPaladin()
 {
@@ -30,4 +32,13 @@ void AEnemyPaladin::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void AEnemyPaladin::Tick(float DeltaTime)
+{
+	if (enemyFSM->bIsDead && !bPlayDeadOnce)
+	{
+		bPlayDeadOnce = true;
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeadSound, GetActorLocation());
+	}
 }

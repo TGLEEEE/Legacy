@@ -17,5 +17,9 @@ class LEGACY_API AEnemyPaladin : public AEnemy
 public:
 	AEnemyPaladin();
 	void virtual BeginPlay() override;
+	void virtual Tick(float DeltaTime) override;
 
+	UPROPERTY(EditAnywhere)
+	class USoundBase* DeadSound;
+	bool bPlayDeadOnce;
 };

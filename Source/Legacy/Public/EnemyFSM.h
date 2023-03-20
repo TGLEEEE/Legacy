@@ -69,6 +69,7 @@ public:
 	bool bIsMoving;
 	bool bDamageAnimDoOnce;
 	bool bDieCollisionOnce;
+	bool bIsDead;
 
 	void TickIdle();
 	void TickChase();
