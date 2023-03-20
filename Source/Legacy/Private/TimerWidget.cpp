@@ -6,6 +6,7 @@
 #include "LegacyGameMode.h"
 #include "LegacyPlayer.h"
 #include "Components/TextBlock.h"
+#include "Kismet/GameplayStatics.h"
 
 void UTimerWidget::NativeConstruct()
 {
@@ -47,8 +48,12 @@ void UTimerWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	{
 		bDieOnce = true;
 		PlayAnimation(dieAnim);
-		// 플레이어 죽었을때 함수 호출
-		
+		// 플레이어 죽었을때 게임 정지
+		FTimerHandle hd;
+		GetWorld()->GetTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]()
+			{
+				UGameplayStatics::SetGamePaused(GetWorld(), true);
+			}), 2.f, false);
 	}
 }
 
