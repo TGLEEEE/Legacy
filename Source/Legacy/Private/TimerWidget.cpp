@@ -6,6 +6,21 @@
 #include "LegacyGameMode.h"
 #include "LegacyPlayer.h"
 #include "Components/TextBlock.h"
+#include "Kismet/GameplayStatics.h"
+
+void UTimerWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+	// 게임모드 캐스팅
+	gm = Cast<ALegacyGameMode>(GetWorld()->GetAuthGameMode());
+	// 0.2초마다 업데이트 되게 타이머 세팅
+	GetWorld()->GetTimerManager().SetTimer(hdForTimerWidget, FTimerDelegate::CreateLambda([&]()
+		{
+			UpdateTimerWidget();
+		}), 0.2f, true);
+	// 플레이어 체력 읽어오기 위해 캐스팅
+	player = Cast<ALegacyPlayer>(GetWorld()->GetFirstPlayerController()->GetCharacter());
+}
 
 void UTimerWidget::NativeConstruct()
 {
@@ -47,8 +62,13 @@ void UTimerWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	{
 		bDieOnce = true;
 		PlayAnimation(dieAnim);
-		// 플레이어 죽었을때 함수 호출
-		
+
+		// 플레이어 죽었을때 게임 정지
+		FTimerHandle hd;
+		GetWorld()->GetTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]()
+			{
+				UGameplayStatics::SetGamePaused(GetWorld(), true);
+			}), 2.f, false);
 	}
 }
 

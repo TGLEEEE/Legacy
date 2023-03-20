@@ -36,7 +36,7 @@ public:
 	class AEnemy* me;
 
 	UPROPERTY(EditAnywhere)
-	int hp = 1;
+	int hp = 5;
 	UPROPERTY(EditAnywhere)
 	float mass = 100;
 	UPROPERTY(EditAnywhere)
