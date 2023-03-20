@@ -10,6 +10,9 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Haptics/HapticFeedbackEffect_Curve.h"
 
+#include "LegacyPlayerMagicComponent.h"
+#include "Niagara/Public/NiagaraComponent.h"
+
 
 void ULegacyPlayerUIComponent::BeginPlay()
 {
@@ -174,6 +177,10 @@ void ULegacyPlayerUIComponent::CheckUIQuadrant(float& angle)
 	//check quadrant number with angle
 	if ((angle > 0 && angle <= 45) || (angle > -45 && angle <= 0)){
 		quadrantNumber = 1;							//QUADRANT 1
+		if (me->magicComponent->wandLightNiagaraComponent){
+			me->magicComponent->wandLightNiagaraComponent->SetNiagaraVariableLinearColor(FString("Color"), FLinearColor::Yellow);
+		}
+		//spell selection UI
 		me->leviosoWidgetComponent->SetVisibility(true);
 		me->accioWidgetComponent->SetVisibility(false);
 		me->depulsoWidgetComponent->SetVisibility(false);
@@ -181,6 +188,11 @@ void ULegacyPlayerUIComponent::CheckUIQuadrant(float& angle)
 	}
 	else if (angle > 45 && angle <= 135) {
 		quadrantNumber = 2;								//QUADRANT 2
+		//set wand light
+		if (me->magicComponent->wandLightNiagaraComponent){
+			me->magicComponent->wandLightNiagaraComponent->SetNiagaraVariableLinearColor(FString("Color"), FLinearColor::Red);
+		}
+		//spell selection UI
 		me->leviosoWidgetComponent->SetVisibility(false);
 		me->accioWidgetComponent->SetVisibility(true);
 		me->depulsoWidgetComponent->SetVisibility(false);
@@ -188,6 +200,11 @@ void ULegacyPlayerUIComponent::CheckUIQuadrant(float& angle)
 	}	
 	else if((angle > 135 && angle <= 180) || (angle > -180 && angle <= -135)){
 		quadrantNumber = 3;								//QUADRANT 3
+		//set wand light
+		if (me->magicComponent->wandLightNiagaraComponent){
+			me->magicComponent->wandLightNiagaraComponent->SetNiagaraVariableLinearColor(FString("Color"), FLinearColor::Blue);
+		}
+		//spell selection UI
 		me->leviosoWidgetComponent->SetVisibility(false);
 		me->accioWidgetComponent->SetVisibility(false);
 		me->depulsoWidgetComponent->SetVisibility(true);
@@ -195,6 +212,11 @@ void ULegacyPlayerUIComponent::CheckUIQuadrant(float& angle)
 	}
 	else if (angle > -135 && angle <= -45) {
 		quadrantNumber = 4;								//QUADRANT 4
+		//set wand light
+		if (me->magicComponent->wandLightNiagaraComponent){
+			me->magicComponent->wandLightNiagaraComponent->SetNiagaraVariableLinearColor(FString("Color"), FLinearColor::Green);
+		}
+		//spell selection UI
 		me->leviosoWidgetComponent->SetVisibility(false);
 		me->accioWidgetComponent->SetVisibility(false);
 		me->depulsoWidgetComponent->SetVisibility(false);
