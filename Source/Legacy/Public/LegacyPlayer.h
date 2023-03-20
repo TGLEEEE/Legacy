@@ -189,6 +189,18 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Settings | Health")
 	int32 currentHealth;
+
+	UPROPERTY(EditAnywhere)
+	class UStaticMeshComponent* heartPendant;
+
+	UPROPERTY(EditAnywhere)
+	class UPointLightComponent* heartPendantLight;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Settings | Health")
+	float maxHeartLightIntensity = 5000;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Settings | Health")
+	float heartLightIntensity;
+
 private:
 	
 };

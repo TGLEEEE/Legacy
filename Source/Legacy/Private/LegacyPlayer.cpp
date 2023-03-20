@@ -20,6 +20,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Haptics/HapticFeedbackEffect_Curve.h"
+#include "Components/PointLightComponent.h"
 
 
 // Sets default values
@@ -137,6 +138,28 @@ ALegacyPlayer::ALegacyPlayer()
 	magicRegionColliderComponent->SetGenerateOverlapEvents(true);
 #pragma endregion 
 
+#pragma region HP 3D UI
+	heartPendant = CreateDefaultSubobject<UStaticMeshComponent>("Heart Pendant Static Mesh");
+	heartPendant->SetupAttachment(leftHandMesh);
+	heartPendant->SetSimulatePhysics(false);
+
+	heartPendantLight = CreateDefaultSubobject<UPointLightComponent>("Heart Pendant Point Light Component");
+	heartPendantLight->SetupAttachment(heartPendant);
+
+	ConstructorHelpers::FObjectFinder<UStaticMesh> tempHeartPendant(TEXT("/Script/Engine.StaticMesh'/Game/Legacy/YWP/UI/Health/Heart/source/heart_face_low.heart_face_low'"));
+	//if found
+	if (tempHeartPendant.Succeeded()) {
+		heartPendant->SetStaticMesh(tempHeartPendant.Object);
+	}
+
+	heartPendant->SetRelativeLocation(FVector((4.6, 6, -2)));
+	heartPendant->SetRelativeRotation(FRotator((-50.7, -427.2, 248.6)));
+	heartPendant->SetRelativeScale3D(FVector((0.7, 0.7, 0.7)));
+
+	heartPendantLight->SetRelativeLocation(FVector(0.686219, -7, 7.639785));
+	heartPendantLight->SetAttenuationRadius(5.2);
+#pragma endregion
+
 	//
 	cameraComp->bUsePawnControlRotation = false;
 
@@ -191,10 +214,11 @@ void ALegacyPlayer::BeginPlay()
 	} 
 #pragma endregion
 
-	//bug: might be unnecessary
-	//timer to get controller data
+	//timer to get controller data; so that it doesn't run every tick
 	GetWorld()->GetTimerManager().SetTimer(controllerDataTimer, this, &ALegacyPlayer::GetControllerData, controllerTickSeconds,true);
 
+	heartLightIntensity = maxHeartLightIntensity;
+	heartPendantLight->SetIntensity(heartLightIntensity);
 }
 
 #pragma region Overlap
@@ -325,6 +349,13 @@ FVector ALegacyPlayer::CalculateControllerAngularAcceleration(FVector& currentAn
 
 void ALegacyPlayer::TakeDamageFromEnemy(int32 damagePoints)
 {
+	//update current health
 	currentHealth -= damagePoints;
+
+
+	heartLightIntensity /= 2;
+	//update health light intensity
+	heartPendantLight->SetIntensity(heartLightIntensity);
+
 	playerController->PlayHapticEffect(hFC_TakeDamage, EControllerHand::Left);
 }
