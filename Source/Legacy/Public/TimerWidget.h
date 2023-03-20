@@ -31,10 +31,14 @@ public:
 	class UTextBlock* WaveTextbox;
 	UPROPERTY(BlueprintReadOnly)
 	class ALegacyGameMode* gm;
+	UPROPERTY()
+	class ALegacyPlayer* player;
 	UPROPERTY(BlueprintReadOnly, Transient, meta = (BindWidgetAnim))
 	class UWidgetAnimation* waveAnim;
 	UPROPERTY(BlueprintReadOnly, Transient, meta = (BindWidgetAnim))
 	class UWidgetAnimation* clearAnim;
+	UPROPERTY(BlueprintReadOnly, Transient, meta = (BindWidgetAnim))
+	class UWidgetAnimation* dieAnim;
 
 	bool bDoOnce;
 	bool bClearOnce;

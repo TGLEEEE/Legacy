@@ -26,11 +26,15 @@ public:
 	bool bIsInTheAir;
 	UPROPERTY()
 	class AEnemy* me;
+	UPROPERTY(EditAnywhere)
+	class USoundBase* paladinAttackSound;
 
 	UFUNCTION()
 	void AnimNotify_AttackEnd();
 	UFUNCTION()
 	void AnimNotify_AttackMagic();
+	UFUNCTION()
+	void AnimNotify_AttackSoundPlay();
 
 	UPROPERTY(EditAnywhere)
 	class UAnimMontage* montage_Paladin;

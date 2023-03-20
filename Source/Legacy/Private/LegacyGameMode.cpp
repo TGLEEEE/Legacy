@@ -56,11 +56,13 @@ void ALegacyGameMode::Tick(float DeltaSeconds)
 
 	if (currentWave > 3 && !bIsInWave)
 	{
+		/*
 		FTimerHandle hd;
 		GetWorldTimerManager().SetTimer(hd, FTimerDelegate::CreateLambda([&]()
 			{
 				UGameplayStatics::SetGamePaused(GetWorld(), true);
 			}), 20.f, false);
+		*/
 	}
 
 	// 스폰된 Enemay 카운트 함수
@@ -109,7 +111,7 @@ void ALegacyGameMode::SpawnEnemyPaladin(int spawnCount)
 			{
 				GetWorldTimerManager().ClearTimer(spawnPaladinHandle);
 			}
-	}), 2.f, true, 1.f);
+	}), 0.5f, true, 1.f);
 }
 
 void ALegacyGameMode::SpawnEnemyWizard(int spawnCount)
@@ -138,13 +140,13 @@ void ALegacyGameMode::SpawnEnemyWizard(int spawnCount)
 			{
 				GetWorldTimerManager().ClearTimer(spawnWizardHandle);
 			}
-		}), 2.f, true, 1.5f);
+		}), 0.5f, true);
 }
 
 void ALegacyGameMode::WaveStageManager(int wave)
 {
-	SpawnEnemyWizard(wave * 2 - 1);
-	SpawnEnemyPaladin(wave);
+	SpawnEnemyWizard(wave * 2 - 2);
+	SpawnEnemyPaladin(wave * 2);
 }
 
 void ALegacyGameMode::UpdateEnemyCountTotal()
