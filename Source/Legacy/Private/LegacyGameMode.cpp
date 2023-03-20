@@ -62,7 +62,7 @@ void ALegacyGameMode::Tick(float DeltaSeconds)
 			{
 				UGameplayStatics::SetGamePaused(GetWorld(), true);
 			}), 20.f, false);
-			*/
+		*/
 	}
 
 	// 스폰된 Enemay 카운트 함수

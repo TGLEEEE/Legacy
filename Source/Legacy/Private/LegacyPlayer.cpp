@@ -17,6 +17,7 @@
 #include "Components/ArrowComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "NiagaraComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 
 
@@ -26,13 +27,14 @@ ALegacyPlayer::ALegacyPlayer()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+#pragma region Key Components
 	moveComponent = CreateDefaultSubobject<ULegacyPlayerMoveComponent>(TEXT("Move Component"));
 	magicComponent = CreateDefaultSubobject<ULegacyPlayerMagicComponent>(TEXT("Magic Component"));
 	uIComponent = CreateDefaultSubobject<ULegacyPlayerUIComponent>(TEXT("UI Component"));
 	physicsHandleComp = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("Physics Handle Component"));
 	leftSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Left Sphere Component"));
 	rightSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Right Sphere Component"));
-
+#pragma endregion 
 
 #pragma region VR
 	cameraComp = CreateDefaultSubobject<UCameraComponent>("Camera Component");
@@ -77,21 +79,35 @@ ALegacyPlayer::ALegacyPlayer()
 
 	teleportCurveComp = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Teleport Curve Component"));
 #pragma endregion 
-	
+
+#pragma region Wand
 	wandStaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Wand Static Mesh"));
 	wandStaticMeshComponent->SetupAttachment(rightHandMesh);
 	wandStaticMeshComponent->SetRelativeLocation(FVector(8.429074, 16.892678, -2.629340));
 	wandStaticMeshComponent->SetRelativeRotation(FRotator(0, 56.993283, 0));
 	wandStaticMeshComponent->SetRelativeScale3D(FVector(0.06f));
-	//Temporary
+	//update
+	wandStaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	wandStaticMeshComponent->SetCollisionObjectType(ECC_GameTraceChannel5);
+	wandStaticMeshComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+	wandStaticMeshComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel6, ECR_Overlap);
+	wandStaticMeshComponent->SetGenerateOverlapEvents(true);
+
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempWandMesh(TEXT("/Script/Engine.StaticMesh'/Game/Legacy/YWP/Assets/source/ElderWand.ElderWand'"));
 
 	//if found
 	if (tempWandMesh.Succeeded()) {
 		wandStaticMeshComponent->SetStaticMesh(tempWandMesh.Object);
 	}
-	//wandStaticMeshComponent->SetRelativeScale3D(FVector(0.611458, 0.025521, 0.040060));
+#pragma endregion
 
+#pragma region Wand Light
+	wandLightArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("Wand Light Arrow Component"));
+	wandLightArrowComponent->SetupAttachment(wandStaticMeshComponent);
+	wandLightArrowComponent->SetRelativeLocation(FVector(500,0, 0));
+#pragma endregion
+
+#pragma region Hover Regions
 	accioHoverRegionArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("Accio Arrow Component"));
 	accioHoverRegionArrowComponent->SetupAttachment(cameraComp);
 	accioHoverRegionArrowComponent->SetRelativeLocation(FVector(10, 10, 10));
@@ -99,16 +115,32 @@ ALegacyPlayer::ALegacyPlayer()
 	grabHoverRegionArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("Grab Arrow Component"));
 	grabHoverRegionArrowComponent->SetupAttachment(wandStaticMeshComponent);
 	grabHoverRegionArrowComponent->SetRelativeLocation(FVector(300, 0, 0));
+#pragma endregion
 
+#pragma region Sphere Components
 	leftSphereComponent->SetupAttachment(leftHand);
-	leftSphereComponent->SetSimulatePhysics(true);
-	rightSphereComponent->SetupAttachment(rightHand);
 	leftSphereComponent->SetSimulatePhysics(false);
+	rightSphereComponent->SetupAttachment(rightHand);
+	rightSphereComponent->SetSimulatePhysics(false);
+#pragma endregion 
 
+#pragma region Magic Region Collider
+	magicRegionColliderComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Magic Region Collider Component"));
+	magicRegionColliderComponent->SetupAttachment(cameraComp);
+	magicRegionColliderComponent->SetRelativeLocation(FVector(95, 0, -28));
+	magicRegionColliderComponent->SetRelativeScale3D(FVector(1, 2.5	, 3));
+
+	magicRegionColliderComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	magicRegionColliderComponent->SetCollisionProfileName(TEXT("MagicRegionColliderPreset"));
+	magicRegionColliderComponent->SetCollisionObjectType(ECC_GameTraceChannel6);
+	magicRegionColliderComponent->SetGenerateOverlapEvents(true);
+#pragma endregion 
+
+	//
 	cameraComp->bUsePawnControlRotation = false;
 
+	//initialize health
 	currentHealth = maxHealth;
-
 }
 
 
@@ -116,6 +148,10 @@ ALegacyPlayer::ALegacyPlayer()
 void ALegacyPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//bind collision methods
+	magicRegionColliderComponent->OnComponentBeginOverlap.AddDynamic(this, &ALegacyPlayer::OnMagicRegionBeginOverlap);
+	magicRegionColliderComponent->OnComponentEndOverlap.AddDynamic(this, &ALegacyPlayer::OnMagicRegionEndOverlap);
 
 #pragma region Enhanced Input
 	APlayerController* playerController = Cast<APlayerController>(GetController());
@@ -133,13 +169,13 @@ void ALegacyPlayer::BeginPlay()
 	}
 #pragma endregion
 
-#pragma region Checking Platform
+#pragma region Checking Platform - Set Camera Control
 	legacyGameMode = Cast<ALegacyGameMode>(GetWorld()->GetAuthGameMode());
 	if(legacyGameMode){
 		//PC
 		if (!legacyGameMode->isHMDActivated) {
 			//place hand where you can see them
-			rightHand->SetRelativeLocation(FVector(50, 30,80));
+			rightHand->SetRelativeLocation(FVector(50, 30, 80));
 			rightHand->SetRelativeRotation(FRotator(90, 50, 40));
 			//turn on use pawn control rotation
 			//cameraComp->bUsePawnControlRotation = true;						//this to turn on PawnControlRotation - Mouse Not Looking Up; seems like the computer doesnt VRPC as HMD Connected
@@ -154,10 +190,33 @@ void ALegacyPlayer::BeginPlay()
 	} 
 #pragma endregion
 
+	//bug: might be unnecessary
 	//timer to get controller data
 	GetWorld()->GetTimerManager().SetTimer(controllerDataTimer, this, &ALegacyPlayer::GetControllerData, controllerTickSeconds,true);
 
 }
+
+#pragma region Overlap
+void ALegacyPlayer::OnMagicRegionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
+	hitComponent = Cast<UStaticMeshComponent>(OtherComp);
+
+	if (hitComponent == wandStaticMeshComponent) {
+		isInMagicRegion = true;
+	}
+}
+
+void ALegacyPlayer::OnMagicRegionEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	hitComponent = Cast<UStaticMeshComponent>(OtherComp);
+
+	if (hitComponent == wandStaticMeshComponent) {
+
+		isInMagicRegion = false;
+	}
+}
+#pragma endregion 
+
+
 
 // Called to bind functionality to input
 void ALegacyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -181,35 +240,53 @@ void ALegacyPlayer::Tick(float DeltaTime)
 }
 
 
-
+#pragma region Controller Data
 void ALegacyPlayer::GetControllerData(){
-	FVector leftCurrentPosition = leftSphereComponent->GetComponentLocation();
-	FVector rightCurrentPosition = rightSphereComponent->GetComponentLocation();
-	FVector leftCurrentVelocity = leftSphereComponent->GetPhysicsLinearVelocity();
+	//FVector leftCurrentPosition = leftSphereComponent->GetComponentLocation();
+	//FVector rightCurrentPosition = rightSphereComponent->GetComponentLocation();
+	//FVector leftCurrentVelocity = leftSphereComponent->GetPhysicsLinearVelocity();
+	//FVector leftCurrentAcceleration = CalculateControllerLinearAcceleration(leftCurrentVelocity);
 	FVector rightCurrentVelocity = rightSphereComponent->GetPhysicsLinearVelocity();
-	FVector leftCurrentAcceleration = CalculateControllerAcceleration(leftCurrentVelocity);
-	FVector rightCurrentAcceleration = CalculateControllerAcceleration(rightCurrentVelocity);
+	FVector rightCurrentAcceleration = CalculateControllerLinearAcceleration(rightCurrentVelocity);
+	FVector rightCurrentAccelerationDifference = CalculateLinearAccelerationDifference(rightCurrentAcceleration);
 
-	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Current Position %s"), *leftCurrentPosition.ToString());
-	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Current Position %s"), *rightCurrentPosition.ToString());
+	//FVector leftCurrentAngularVelocity = leftSphereComponent->GetPhysicsAngularVelocityInDegrees();
+	//FVector leftCurrentAngularAcceleration = CalculateControllerAngularAcceleration(leftCurrentAngularVelocity);
+	FVector rightCurrentAngularVelocity = rightSphereComponent->GetPhysicsAngularVelocityInDegrees();
+	FVector rightCurrentAngularAcceleration = CalculateControllerAngularAcceleration(rightCurrentAngularVelocity);
 
-	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Current Velocity %s"), *leftCurrentVelocity.ToString());
-	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Current Velocity %s"), *rightCurrentVelocity.ToString());
+	//float leftCurrentVelocityMagnitude = leftCurrentVelocity.Size();
+	//float leftCurrentAccelerationMagnitude = leftCurrentAcceleration.Size();
 
-	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Left Current Acceleration %s"), *leftCurrentAcceleration.ToString());
-	UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::Tick - Right Current Acceleration %s"), *rightCurrentAcceleration.ToString());
+	//linear velocity and acceleration in float
+	rightCurrentVelocityMagnitude = rightCurrentVelocity.Size();
+	rightCurrentAccelerationMagnitude = rightCurrentAcceleration.Size();
+	rightCurrentAccelerationDifferenceMagnitude = rightCurrentAccelerationDifference.Size();
+	//angular velocity and acceleration in float
+	rightCurrentAngularVelocityMagnitude = rightCurrentAngularVelocity.Size();
+	rightCurrentAngularAccelerationMagnitude = rightCurrentAngularAcceleration.Size();
 
-	
+
+#pragma region Debug
+	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::GetControllerData - Left Current Velocity %f"), leftCurrentVelocityMagnitude);
+	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::GetControllerData - Right Current Velocity Magnitude %f"), rightCurrentVelocityMagnitude);
+	//UE_LOG(LogTemp, Warning, TEXT("ALegacyPlayer::GetControllerData - Left Current Acceleration %f"), leftCurrentAccelerationMagnitude);
+	//UE_LOG(LogTemp, Warning, TEXT("ALegacyPlayer::GetControllerData - Right Current Acceleration Magnitude %f"), rightCurrentAccelerationMagnitude);
+	UE_LOG(LogTemp, Error, TEXT("ALegacyPlayer::GetControllerData - Right Current Acceleration Difference Magnitude %.0f"), rightCurrentAccelerationDifferenceMagnitude);
+	//UE_LOG(LogTemp, Error, TEXT("ALegacyPlayer::GetControllerData - Right Current Angular Velocity Magnitude %f"), rightCurrentAngularVelocityMagnitude);
+	//UE_LOG(LogTemp, Error, TEXT("ALegacyPlayer::GetControllerData - Right Current Angular Acceleration Magnitude %f"), rightCurrentAccelerationMagnitude);
+
+#pragma endregion
 }
 
 
-
-FVector ALegacyPlayer::CalculateControllerAcceleration(FVector& currentVelocity)
+//calculates linear acceleration from current and previous velocity
+FVector ALegacyPlayer::CalculateControllerLinearAcceleration(FVector& currentVelocity)
 {
 	FVector controllerAcceleration;
 
+	//calculate linear acceleration
 	controllerAcceleration = (currentVelocity - previousVelocity) / GetWorld()->DeltaTimeSeconds;
-
 
 	//update previous velocity
 	previousVelocity = currentVelocity;
@@ -217,9 +294,35 @@ FVector ALegacyPlayer::CalculateControllerAcceleration(FVector& currentVelocity)
 	return controllerAcceleration;
 }
 
+FVector ALegacyPlayer::CalculateLinearAccelerationDifference(FVector& currentAcceleration)
+{
+	FVector accelerationDifference;
+
+	//calculate linear acceleration
+	accelerationDifference = currentAcceleration - previousAcceleration;
+
+	//update previous velocity
+	previousAcceleration = currentAcceleration;
+
+	return accelerationDifference;
+}
+
+//calculates angular acceleration from current and previous velocity
+FVector ALegacyPlayer::CalculateControllerAngularAcceleration(FVector& currentAngularVelocity)
+{
+	FVector angularControllerAcceleration;
+
+	//calculate angular acceleration
+	angularControllerAcceleration = (currentAngularVelocity - previousAngularAcceleration) / GetWorld()->DeltaTimeSeconds;
+
+	//update previous angular velocity
+	previousAngularVelocity = currentAngularVelocity;
+
+	return angularControllerAcceleration;
+}
+#pragma endregion
 
 void ALegacyPlayer::TakeDamageFromEnemy(int32 damagePoints)
 {
 	currentHealth -= damagePoints;
-
 }

@@ -44,10 +44,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
 	class UInputAction* iA_CastSpell;
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
-	class UInputAction* iA_SpellCombo;
-	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
-	class UInputAction* iA_SpellCancel;
-	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
 	class UInputAction* iA_Grab;
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
 	class UInputAction* iA_Spell1;
@@ -55,10 +51,18 @@ public:
 	class UInputAction* iA_Spell2;
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
 	class UInputAction* iA_Spell3;
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
+	class UInputAction* iA_Spell4;
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
+	class UInputAction* iA_SpellUltimate;
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
+	class UInputAction* iA_SpellCombo;
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Magic")
+	class UInputAction* iA_SpellCancel;
 
 	//update
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Menu")
-	class UInputAction* iA_UIActivation;
+	class UInputAction* iA_UIActivation;	//might not need
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Inputs | Menu")
 	class UInputAction* iA_UISelection;
 
@@ -94,6 +98,10 @@ public:
 	class UStaticMeshComponent* wandStaticMeshComponent;
 
 	UPROPERTY(EditAnywhere)
+	class UArrowComponent* wandLightArrowComponent;
+
+
+	UPROPERTY(EditAnywhere)
 	class UArrowComponent* accioHoverRegionArrowComponent;
 	UPROPERTY(EditAnywhere)
 	class UArrowComponent* grabHoverRegionArrowComponent;
@@ -106,11 +114,22 @@ public:
 	UPROPERTY(EditAnywhere)
 	class USphereComponent* rightSphereComponent;
 
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* magicRegionColliderComponent;
 
 	FSetupPlayerInputDelegate setupPlayerInputDelegate;
+#pragma endregion 
 
+#pragma region Overlap
+	UFUNCTION()
+	void OnMagicRegionBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void OnMagicRegionEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-#pragma endregion Components
+	class UStaticMeshComponent* hitComponent;
+
+	bool isInMagicRegion;
+#pragma endregion 
 
 #pragma region Warp Teleport
 	UPROPERTY(EditAnywhere)
@@ -127,14 +146,32 @@ public:
 
 	FVector previousPosition = FVector::Zero();
 	FVector previousVelocity = FVector::Zero();
+	FVector previousAcceleration = FVector::Zero();
+
+	FVector previousAngularVelocity = FVector::Zero();
+	FVector previousAngularAcceleration = FVector::Zero();
+
+
+	float rightCurrentVelocityMagnitude;
+	float rightCurrentAccelerationMagnitude;
+	float rightCurrentAccelerationDifferenceMagnitude;
+
+
+	float rightCurrentAngularVelocityMagnitude;
+	float rightCurrentAngularAccelerationMagnitude;
+
 	float previousTime = 0.f;
 
-	FVector CalculateControllerAcceleration(FVector& currentVelocity);
+	void GetControllerData();
+
+	FVector CalculateControllerLinearAcceleration(FVector& currentVelocity);
+	FVector CalculateLinearAccelerationDifference(FVector& currentAcceleration);
+	FVector CalculateControllerAngularAcceleration(FVector& currentAngularVelocity);
 
 	FTimerHandle controllerDataTimer;
-	float controllerTickSeconds = 0.25f;
 
-	void GetControllerData();
+	UPROPERTY(EditAnywhere)
+	float controllerTickSeconds = 0.1f;
 #pragma endregion 
 
 	UPROPERTY()

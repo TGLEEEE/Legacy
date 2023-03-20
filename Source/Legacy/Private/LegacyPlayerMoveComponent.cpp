@@ -44,6 +44,7 @@ void ULegacyPlayerMoveComponent::TickComponent(float DeltaTime, ELevelTick TickT
 		DrawCurvedTeleport();
 
 		//draw curves
+		//bug
 		if (me->teleportCurveComp) {
 			UNiagaraDataInterfaceArrayFunctionLibrary::SetNiagaraArrayVector(me->teleportCurveComp, FName("User.PointArray"), curveVectorPoints);
 		}
