@@ -19,6 +19,7 @@
 #include "NiagaraComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
+#include "Haptics/HapticFeedbackEffect_Curve.h"
 
 
 // Sets default values
@@ -154,7 +155,7 @@ void ALegacyPlayer::BeginPlay()
 	magicRegionColliderComponent->OnComponentEndOverlap.AddDynamic(this, &ALegacyPlayer::OnMagicRegionEndOverlap);
 
 #pragma region Enhanced Input
-	APlayerController* playerController = Cast<APlayerController>(GetController());
+	playerController = Cast<APlayerController>(GetController());
 	if (playerController) {
 		UEnhancedInputLocalPlayerSubsystem* inputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer());
 		if (inputSubsystem) {
@@ -325,4 +326,5 @@ FVector ALegacyPlayer::CalculateControllerAngularAcceleration(FVector& currentAn
 void ALegacyPlayer::TakeDamageFromEnemy(int32 damagePoints)
 {
 	currentHealth -= damagePoints;
+	playerController->PlayHapticEffect(hFC_TakeDamage, EControllerHand::Left);
 }

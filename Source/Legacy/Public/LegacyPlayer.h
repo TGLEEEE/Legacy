@@ -177,12 +177,20 @@ public:
 	UPROPERTY()
 	class ALegacyGameMode* legacyGameMode;
 
-private:
-	UPROPERTY(EditAnywhere, Category = "Player Settings | Health", meta = (AllowPrivateAccess = true))
+
+	UPROPERTY()
+	APlayerController* playerController;
+
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Health")
+	class UHapticFeedbackEffect_Curve* hFC_TakeDamage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Settings | Health")
 	int32 maxHealth = 10;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Player Settings | Health")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Settings | Health")
 	int32 currentHealth;
+private:
+	
 };
 
 
