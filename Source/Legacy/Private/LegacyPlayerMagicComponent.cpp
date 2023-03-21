@@ -158,7 +158,18 @@ void ULegacyPlayerMagicComponent::CheckSpellComboActivation()
 
 	//if hit enemy and there is no previous hit result
 	if (wideSphereTraceResult && !previousWideSphereTraceHitEnemy) {
+		//Spawning Combo Niagara impact effect
 		SpawnSpellComboNiagaraEffect();
+
+		wideSphereTraceHitEnemy = wideSphereTraceResult;
+
+		//potential bug; keeps returning nullptr
+		//apply damage to enemy
+		if(wideSphereTraceHitEnemy){
+			wideSphereTraceHitEnemy->enemyState->OnDamageProcess(1);
+			UE_LOG(LogTemp, Warning, TEXT("wideSphereTraceHitEnemy->enemyState->OnDamageProcess(1)"));
+		}
+
 		comboCountOnEnemy++;
 	}
 	else if(wideSphereTraceResult && previousWideSphereTraceHitEnemy){
@@ -232,8 +243,7 @@ void ULegacyPlayerMagicComponent::CheckSpellActivation()
 	//if (me->isInMagicRegion && me->rightCurrentAccelerationDifferenceMagnitude > accelerationDiffernceThreshold) {
 
 		//turn on light
-		//bug: might need to make a user parameters to just switch it off
-		wandLightNiagaraComponent->SetVisibility(true);
+		//wandLightNiagaraComponent->SetVisibility(true);
 		isWandActive = true;
 		//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Activated Velocity %f"), me->rightCurrentVelocityMagnitude);
 		//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Activated Acceleration %f"), me->rightCurrentAccelerationMagnitude);
@@ -249,7 +259,7 @@ void ULegacyPlayerMagicComponent::CheckSpellActivation()
 	//if in region and acceleration is too low
 	else if (!me->isInMagicRegion) {
 		//UE_LOG(LogTemp, Warning, TEXT("Spell Reset"));
-		wandLightNiagaraComponent->SetVisibility(false);
+		//wandLightNiagaraComponent->SetVisibility(false);
 		isWandActive = false;
 		UE_LOG(LogTemp, Error, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Deactivated"));
 	}
@@ -368,15 +378,20 @@ void ULegacyPlayerMagicComponent::UpdateWandLight()
 
 void ULegacyPlayerMagicComponent::CastLevioso()
 {
+
+
 	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastLevioso"));
 
+	//unflag other spell casts; this in in case it transitioned from another spell
 	isAccio = false;
 	isDepulso = false;
 
+	//set physics handle settings
 	me->physicsHandleComp->SetLinearDamping(5);
 	me->physicsHandleComp->SetLinearStiffness(50);
 	me->physicsHandleComp->SetInterpolationSpeed(60);
 
+	//if detected a component from DetectTarget but haven't assigned grabbedComponent yet
 	if (detectedComponent && !grabbedComponent){
 		//make detected component the grabbed component
 		grabbedComponent = detectedComponent;
@@ -384,6 +399,7 @@ void ULegacyPlayerMagicComponent::CastLevioso()
 		//cache object's initial height
 		objectInitialHeight = grabbedComponent->GetComponentLocation();				//should be at wand's offset?
 
+		//potential bug: is this needed? or is it already turned on in the enemy scripts
 		grabbedComponent->SetSimulatePhysics(true);
 		//grab the component with physics handle
 		me->physicsHandleComp->GrabComponentAtLocation(grabbedComponent, NAME_None, grabbedComponent->GetComponentLocation());
@@ -507,6 +523,7 @@ void ULegacyPlayerMagicComponent::CastGrabbedSpellCombo()
 	}
 }
 
+//Not Really a Bug: Don't need??
 void ULegacyPlayerMagicComponent::CastSpellCombo()
 {
 	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastSpellCombo"));
@@ -523,6 +540,7 @@ void ULegacyPlayerMagicComponent::CastDepulso()
 
 	isLevioso = false;
 	isAccio = false;
+
 
 	if (detectedComponent) {
 		enemy = Cast<AEnemy>(detectedComponent->GetOwner());
@@ -554,6 +572,7 @@ void ULegacyPlayerMagicComponent::CastDepulso()
 void ULegacyPlayerMagicComponent::CastAvadaKedavra()
 {
 	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAvadaKedavra"));
+
 
 	if(!avadaKedavraNiagaraComponent){
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAvadaKedavra - !isAvadaKedavra"));
@@ -598,6 +617,11 @@ void ULegacyPlayerMagicComponent::CastGrab()
 	isLevioso = false;
 	isAccio = false;
 	isDepulso = false;
+
+	//change wand light
+	if (wandLightNiagaraComponent){
+		wandLightNiagaraComponent->SetNiagaraVariableLinearColor(FString("Color"), FLinearColor::White);
+	}
 
 
 	me->physicsHandleComp->SetLinearDamping(5);

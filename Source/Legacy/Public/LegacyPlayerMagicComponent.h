@@ -164,12 +164,10 @@ public:
 	float errorTolerance = 2;
 #pragma endregion
 
-
 #pragma region Accio
 	FVector accioHoverLocation;
 
 #pragma endregion
-
 
 #pragma region Spell VFX
 	UPROPERTY(EditAnywhere)

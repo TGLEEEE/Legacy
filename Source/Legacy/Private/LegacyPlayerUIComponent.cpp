@@ -5,8 +5,13 @@
 
 #include "EnhancedInputComponent.h"
 #include "LegacyPlayer.h"
+#include "Components/ArrowComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Haptics/HapticFeedbackEffect_Curve.h"
+
+#include "LegacyPlayerMagicComponent.h"
+#include "Niagara/Public/NiagaraComponent.h"
 
 
 void ULegacyPlayerUIComponent::BeginPlay()
@@ -17,6 +22,13 @@ void ULegacyPlayerUIComponent::BeginPlay()
 	if(!playerController){
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerUIComponent::BeginPlay - Player Controller not found - This can affect haptic feedbacks."));
 	}
+
+
+	//reset widget visibility
+	me->leviosoWidgetComponent->SetVisibility(false);
+	me->accioWidgetComponent->SetVisibility(false);
+	me->depulsoWidgetComponent->SetVisibility(false);
+	me->avadaKedavraWidgetComponent->SetVisibility(false);
 }
 
 
@@ -27,18 +39,16 @@ void ULegacyPlayerUIComponent::SetupPlayerInput(UInputComponent* PlayerInputComp
 	auto inputSystem = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 	if(inputSystem){
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerUIComponent::SetupPlayerInput - Binding Keys"));
-#pragma region Deprecated
-		/*inputSystem->BindAction(me->iA_UIActivation, ETriggerEvent::Triggered, this, &ULegacyPlayerUIComponent::OnActionUIActivation);
-		inputSystem->BindAction(me->iA_UIActivation, ETriggerEvent::Completed, this, &ULegacyPlayerUIComponent::OnActionUIDeActivation);*/
-#pragma endregion
+		inputSystem->BindAction(me->iA_UIActivation, ETriggerEvent::Triggered, this, &ULegacyPlayerUIComponent::OnActionUIActivation);
+		inputSystem->BindAction(me->iA_UIActivation, ETriggerEvent::Completed, this, &ULegacyPlayerUIComponent::OnActionUIDeActivation);
+
 		inputSystem->BindAction(me->iA_UISelection, ETriggerEvent::Triggered, this, &ULegacyPlayerUIComponent::OnActionUIWheelSelection);
 	}
 }
 
 #pragma region Inputs
 
-#pragma region Deprecated
-/*void ULegacyPlayerUIComponent::OnActionUIActivation()
+void ULegacyPlayerUIComponent::OnActionUIActivation()
 {
 	isUIActivated = true;
 	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerUIComponent::OnActionUIActivation - isUIActivated"));
@@ -48,8 +58,7 @@ void ULegacyPlayerUIComponent::OnActionUIDeActivation()
 {
 	isUIActivated = false;
 	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerUIComponent::OnActionUIDeActivation - !isUIActivated"));
-}*/
-#pragma endregion
+}
 
 void ULegacyPlayerUIComponent::OnActionUIWheelSelection(const FInputActionValue& values)
 {
@@ -68,7 +77,6 @@ void ULegacyPlayerUIComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
 	CheckUIState();
-	
 	CheckActiveDeadzoneBump();
 }
 
@@ -101,6 +109,7 @@ void ULegacyPlayerUIComponent::CheckActiveDeadzoneBump()
 	}
 }
 
+
 /**
  * Description: Inside TICK()
  * This method takes in the position of the joystick and assigns the quadrant.
@@ -111,11 +120,21 @@ void ULegacyPlayerUIComponent::CheckActiveDeadzoneBump()
  */
 void ULegacyPlayerUIComponent::CheckUIState()
 {
-	#pragma region Deprecated - Activate UI with Input Action
 	
-	//not bug: just wrist hurting, turn off for now
-	/*if (!isUIActivated) { return; }*/
-	#pragma endregion
+	if (!isUIActivated && !CheckMagnitude(joystickXComponent) && !CheckMagnitude(joystickYComponent)){
+		me->leviosoWidgetComponent->SetVisibility(false);
+		me->accioWidgetComponent->SetVisibility(false);
+		me->depulsoWidgetComponent->SetVisibility(false);
+		me->avadaKedavraWidgetComponent->SetVisibility(false);
+		return;
+	}
+	else if(isUIActivated && !CheckMagnitude(joystickXComponent) && !CheckMagnitude(joystickYComponent)){
+		me->leviosoWidgetComponent->SetVisibility(true);
+		me->accioWidgetComponent->SetVisibility(true);
+		me->depulsoWidgetComponent->SetVisibility(true);
+		me->avadaKedavraWidgetComponent->SetVisibility(true);
+		return;
+	}
 
 	#pragma region Debug JoyStick Angles
 	////print joystick values and angles
@@ -158,15 +177,50 @@ void ULegacyPlayerUIComponent::CheckUIQuadrant(float& angle)
 	//check quadrant number with angle
 	if ((angle > 0 && angle <= 45) || (angle > -45 && angle <= 0)){
 		quadrantNumber = 1;							//QUADRANT 1
+		if (me->magicComponent->wandLightNiagaraComponent){
+			me->magicComponent->wandLightNiagaraComponent->SetNiagaraVariableLinearColor(FString("Color"), FLinearColor::Yellow);
+		}
+		//spell selection UI
+		me->leviosoWidgetComponent->SetVisibility(true);
+		me->accioWidgetComponent->SetVisibility(false);
+		me->depulsoWidgetComponent->SetVisibility(false);
+		me->avadaKedavraWidgetComponent->SetVisibility(false);
 	}
 	else if (angle > 45 && angle <= 135) {
 		quadrantNumber = 2;								//QUADRANT 2
+		//set wand light
+		if (me->magicComponent->wandLightNiagaraComponent){
+			me->magicComponent->wandLightNiagaraComponent->SetNiagaraVariableLinearColor(FString("Color"), FLinearColor::Red);
+		}
+		//spell selection UI
+		me->leviosoWidgetComponent->SetVisibility(false);
+		me->accioWidgetComponent->SetVisibility(true);
+		me->depulsoWidgetComponent->SetVisibility(false);
+		me->avadaKedavraWidgetComponent->SetVisibility(false);
 	}	
 	else if((angle > 135 && angle <= 180) || (angle > -180 && angle <= -135)){
 		quadrantNumber = 3;								//QUADRANT 3
+		//set wand light
+		if (me->magicComponent->wandLightNiagaraComponent){
+			me->magicComponent->wandLightNiagaraComponent->SetNiagaraVariableLinearColor(FString("Color"), FLinearColor::Blue);
+		}
+		//spell selection UI
+		me->leviosoWidgetComponent->SetVisibility(false);
+		me->accioWidgetComponent->SetVisibility(false);
+		me->depulsoWidgetComponent->SetVisibility(true);
+		me->avadaKedavraWidgetComponent->SetVisibility(false);
 	}
 	else if (angle > -135 && angle <= -45) {
 		quadrantNumber = 4;								//QUADRANT 4
+		//set wand light
+		if (me->magicComponent->wandLightNiagaraComponent){
+			me->magicComponent->wandLightNiagaraComponent->SetNiagaraVariableLinearColor(FString("Color"), FLinearColor::Green);
+		}
+		//spell selection UI
+		me->leviosoWidgetComponent->SetVisibility(false);
+		me->accioWidgetComponent->SetVisibility(false);
+		me->depulsoWidgetComponent->SetVisibility(false);
+		me->avadaKedavraWidgetComponent->SetVisibility(true);
 	}
 
 	//bug: try this out - if it doesnt work just delete it

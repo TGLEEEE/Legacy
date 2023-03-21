@@ -181,15 +181,57 @@ public:
 	UPROPERTY()
 	APlayerController* playerController;
 
+#pragma region Health
+
+	void UnPossessOnDie();
+
 	UPROPERTY(EditAnywhere, Category = "Player Settings | Health")
 	class UHapticFeedbackEffect_Curve* hFC_TakeDamage;
+	UPROPERTY(EditAnywhere, Category = "Player Settings | Health")
+	class UHapticFeedbackEffect_Curve* hFC_Dead;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Settings | Health")
 	int32 maxHealth = 10;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Settings | Health")
 	int32 currentHealth;
-private:
+
+	UPROPERTY(EditAnywhere)
+	class UStaticMeshComponent* heartPendant;
+
+	UPROPERTY(EditAnywhere)
+	class UPointLightComponent* heartPendantLight;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Settings | Health")
+	float maxHeartLightIntensity = 5000;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Settings | Health")
+	float heartLightIntensity;
+#pragma endregion
+
+
+#pragma region Spell Selection
+	UPROPERTY(EditAnywhere)
+	class UChildActorComponent* spellSelectionActorComponent;	
+	UPROPERTY(EditAnywhere)
+	class UWidgetComponent* accioWidgetComponent;
+	UPROPERTY(EditAnywhere)
+	class UWidgetComponent* leviosoWidgetComponent;
+	UPROPERTY(EditAnywhere)
+	class UWidgetComponent* depulsoWidgetComponent;
+	UPROPERTY(EditAnywhere)
+	class UWidgetComponent* avadaKedavraWidgetComponent;
+
+	UPROPERTY(EditAnywhere)
+	class UArrowComponent* accioArrowComponent;
+	UPROPERTY(EditAnywhere)
+	class UArrowComponent* leviosoArrowComponent;
+	UPROPERTY(EditAnywhere)
+	class UArrowComponent* depulsoArrowComponent;
+	UPROPERTY(EditAnywhere)
+	class UArrowComponent* avadaKedavraArrowComponent;
+
+
+#pragma endregion
 	
 };
 
