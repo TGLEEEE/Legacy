@@ -181,7 +181,7 @@ void ULegacyPlayerMagicComponent::CheckSpellComboActivation()
 
 void ULegacyPlayerMagicComponent::SpawnSpellComboNiagaraEffect()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAvadaKedavra - !isAvadaKedavra"));
+//	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAvadaKedavra - !isAvadaKedavra"));
 
 	//potential bug; neet to spawn and attach, not just location? Also, need to destroy and not loop
 	spellComboNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), spellComboNiagaraSystem, comboImpactPoint,
@@ -216,7 +216,7 @@ class AEnemy* ULegacyPlayerMagicComponent::WideSphereTrace()
 	if (isShortSphereTraceHit){
 		AEnemy* enemyFromNearTrace = Cast<AEnemy>(hitResult.GetActor());
 		if(enemyFromNearTrace){
-			UE_LOG(LogTemp, Warning, TEXT("ShortSphereTraceHit"));
+	//		UE_LOG(LogTemp, Warning, TEXT("ShortSphereTraceHit"));
 			comboImpactPoint = hitResult.ImpactPoint;
 			comboImpactNormal = hitResult.ImpactNormal;
 			return enemyFromNearTrace;
@@ -225,7 +225,7 @@ class AEnemy* ULegacyPlayerMagicComponent::WideSphereTrace()
 
 	else if (!isShortSphereTraceHit && isLongSphereTrace1Hit) {
 		AEnemy* enemyFromFarTrace = Cast<AEnemy>(farSphereMultipleHitResults[0].GetActor());
-		UE_LOG(LogTemp, Warning, TEXT("LongSphereTraceHit"));
+	//	UE_LOG(LogTemp, Warning, TEXT("LongSphereTraceHit"));
 		comboImpactPoint = farSphereMultipleHitResults[0].ImpactPoint;
 		comboImpactNormal = farSphereMultipleHitResults[0].ImpactNormal;
 		return enemyFromFarTrace;
@@ -246,21 +246,21 @@ void ULegacyPlayerMagicComponent::CheckSpellActivation()
 		isWandActive = true;
 		//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Activated Velocity %f"), me->rightCurrentVelocityMagnitude);
 		//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Activated Acceleration %f"), me->rightCurrentAccelerationMagnitude);
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Activated Acceleration Difference %f"), me->rightCurrentAccelerationDifferenceMagnitude);
+		//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Activated Acceleration Difference %f"), me->rightCurrentAccelerationDifferenceMagnitude);
 	}
 	else if (me->isInMagicRegion && (me->rightCurrentAccelerationMagnitude < accelerationThreshold)) {
 	//else if (me->isInMagicRegion && (me->rightCurrentAccelerationDifferenceMagnitude < accelerationDiffernceThreshold)) {
 		isWandActive = false;
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - In region - small Velocity %f"), me->rightCurrentVelocityMagnitude);
+		/*UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - In region - small Velocity %f"), me->rightCurrentVelocityMagnitude);
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - In region - small Acceleration %f"), me->rightCurrentAccelerationMagnitude);
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - In region - small Acceleration Difference%f"), me->rightCurrentAccelerationDifferenceMagnitude);
+		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - In region - small Acceleration Difference%f"), me->rightCurrentAccelerationDifferenceMagnitude);*/
 	}
 	//if in region and acceleration is too low
 	else if (!me->isInMagicRegion) {
 		//UE_LOG(LogTemp, Warning, TEXT("Spell Reset"));
 		//wandLightNiagaraComponent->SetVisibility(false);
 		isWandActive = false;
-		UE_LOG(LogTemp, Error, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Deactivated"));
+		//UE_LOG(LogTemp, Error, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Deactivated"));
 	}
 
 	if (wandLightNiagaraComponent && wandTrailsNiagaraComponent){
@@ -395,7 +395,7 @@ void ULegacyPlayerMagicComponent::UpdateWandEffects()
 
 void ULegacyPlayerMagicComponent::CastLevioso()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastLevioso"));
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastLevioso"));
 
 	//unflag other spell casts; this in in case it transitioned from another spell
 	isAccio = false;
@@ -423,7 +423,7 @@ void ULegacyPlayerMagicComponent::CastLevioso()
 		enemy = Cast<AEnemy>(detectedComponent->GetOwner());
 		if(enemy){
 			enemy->enemyState->bIsGrabbed = true;
-			UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastLevioso - enemy grabbed"));
+		//	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastLevioso - enemy grabbed"));
 		}
 
 		detectedComponent = nullptr;
@@ -433,8 +433,9 @@ void ULegacyPlayerMagicComponent::CastLevioso()
 		//set timer and check if levioso spell has expired; if so go to cancel state
 		CancelSpellTimer(leviosoCancelTime);
 
+		//Grab
 		me->physicsHandleComp->SetTargetLocation(currentLocation);
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastLevioso - enemy set to levioso location"));
+		//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastLevioso - enemy set to levioso location"));
 	}
 	//if cast Levioso but it didn't have any target, go to Cancel state
 	else if(!grabbedComponent){
@@ -454,7 +455,7 @@ void ULegacyPlayerMagicComponent::CastLevioso()
 
 void ULegacyPlayerMagicComponent::CastAccio()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAccio"));
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAccio"));
 
 	isLevioso = false;
 	isDepulso = false;
@@ -478,7 +479,7 @@ void ULegacyPlayerMagicComponent::CastAccio()
 		enemy = Cast<AEnemy>(detectedComponent->GetOwner());
 		if (enemy) {
 			enemy->enemyState->bIsGrabbed = true;
-			UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAccio - Enemy Grabbed"));
+			//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAccio - Enemy Grabbed"));
 		}
 
 		//cache the accioHoverRegion
@@ -489,7 +490,7 @@ void ULegacyPlayerMagicComponent::CastAccio()
 	else if (grabbedComponent) {
 		//set timer and check if accio spell has expired; if so go to cancel state
 		CancelSpellTimer(accioCancelTime);
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAccio - set enemy in accio location"));
+		//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAccio - set enemy in accio location"));
 		me->physicsHandleComp->SetTargetLocation(accioHoverLocation);
 
 		//constantly move grab object to the Accio Hover 
@@ -541,7 +542,7 @@ void ULegacyPlayerMagicComponent::CastGrabbedSpellCombo()
 //Not Really a Bug: Don't need??
 void ULegacyPlayerMagicComponent::CastSpellCombo()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastSpellCombo"));
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastSpellCombo"));
 }
 
 void ULegacyPlayerMagicComponent::CastUltimate()
@@ -551,7 +552,7 @@ void ULegacyPlayerMagicComponent::CastUltimate()
 
 void ULegacyPlayerMagicComponent::CastDepulso()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastDepulso"));
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastDepulso"));
 
 	isLevioso = false;
 	isAccio = false;
@@ -569,15 +570,17 @@ void ULegacyPlayerMagicComponent::CastDepulso()
 
 		enemy->GetCapsuleComponent()->SetSimulatePhysics(true);
 
+		GetWorld()->SpawnActor<AActor>(depulsoExplosionFactory, enemy->GetCapsuleComponent()->GetComponentLocation(), FRotator::ZeroRotator);
+
 		FVector throwDirection = me->wandStaticMeshComponent->GetForwardVector();
 		throwDirection.Normalize();
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastDepulso - Throw"));
+		//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastDepulso - Throw"));
 		enemy->enemyState->Throw(throwDirection * 300000, 10);
 		enemy->enemyState->bIsGrabbed = false;
 
 		detectedComponent = nullptr;
 
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastDepulso - Go to Cancel"));
+		//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastDepulso - Go to Cancel"));
 	}
 
 	isDepulso = false;
@@ -586,54 +589,60 @@ void ULegacyPlayerMagicComponent::CastDepulso()
 
 void ULegacyPlayerMagicComponent::CastAvadaKedavra()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAvadaKedavra"));
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAvadaKedavra"));
 
 
 	if(!avadaKedavraNiagaraComponent){
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAvadaKedavra - !isAvadaKedavra"));
+		//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAvadaKedavra - !isAvadaKedavra"));
 		avadaKedavraNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(avadaKedavraNiagaraSystem, me->wandStaticMeshComponent, NAME_None, FVector(0), FRotator(0), 
 			EAttachLocation::KeepRelativeOffset, true, true, ENCPoolMethod::None, true);
 	}
 
-	//need to do line trace
-	FVector startPosition = me->wandStaticMeshComponent->GetComponentLocation();
-	FVector endPosition;
-	FVector impactNormal;
-	FHitResult hitResult;
-	FCollisionQueryParams params;
-	params.AddIgnoredActor(me);
+	////need to do line trace
+	//FVector startPosition = me->wandLightArrowComponent->GetComponentLocation();
+	//FVector endPosition;
+	//FVector impactNormal;
+	//FHitResult hitResult;
+	//FCollisionQueryParams params;
+	//params.AddIgnoredActor(me);
 
-	bool isHit = GetWorld()->LineTraceSingleByChannel(hitResult, startPosition, startPosition + me->wandStaticMeshComponent->GetForwardVector() * 1000000, ECollisionChannel::ECC_Visibility, params);
+	//bool isHit = GetWorld()->LineTraceSingleByChannel(hitResult, startPosition, startPosition + me->wandLightArrowComponent->GetComponentLocation() * 1000000, ECollisionChannel::ECC_Visibility, params);
+
+	AEnemy* wideSphereTraceResult = WideSphereTrace();
 
 	//if hits a surface, then control the startpoint and endpoint of the beam
-	if (isHit) {
+	if (wideSphereTraceResult) {
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAvadaKedavra - isHit"));
-		endPosition = hitResult.ImpactPoint;
-		impactNormal = hitResult.ImpactNormal;					//not used
-		if(avadaKedavraNiagaraComponent){
-			avadaKedavraNiagaraComponent->SetNiagaraVariableVec3(FString("beamStartPoint"), startPosition);
-			avadaKedavraNiagaraComponent->SetNiagaraVariableVec3(FString("beamEndPoint"), endPosition);
-			avadaKedavraNiagaraComponent->SetNiagaraVariableVec3(FString("impactNormal"), impactNormal);
-		}
 
-		enemy = Cast<AEnemy>(hitResult.GetActor());
-
+		//endPosition = hitResult.ImpactPoint;
+		enemy = Cast<AEnemy>(wideSphereTraceResult);
 		if(enemy){
+			UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAvadaKedavra - enemy"))
+			FVector startPosition = me->wandLightArrowComponent->GetComponentLocation();
+			FVector endPosition = enemy->GetCapsuleComponent()->GetComponentLocation();
+			//impactNormal = hitResult.ImpactNormal;					//not used
+			if(avadaKedavraNiagaraComponent){
+				//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAvadaKedavra - avadaKedavraNiagaraComponent"))
+				avadaKedavraNiagaraComponent->SetNiagaraVariableVec3(FString("beamStartPoint"), startPosition);
+				avadaKedavraNiagaraComponent->SetNiagaraVariableVec3(FString("beamEndPoint"), endPosition);
+				//avadaKedavraNiagaraComponent->SetNiagaraVariableVec3(FString("impactNormal"), impactNormal);
+			}
+
 			enemy->enemyState->OnDamageProcess(100);
 		}
 	}
 
 	//if niagara is done and there is still , then go to cancel
 	if((avadaKedavraNiagaraComponent) && avadaKedavraNiagaraComponent->IsComplete()){
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAvadaKedavra - Niagara Complete"));
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAvadaKedavra - Go to Cancel"));
+	//	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAvadaKedavra - Niagara Complete"));
+	//	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastAvadaKedavra - Go to Cancel"));
 		spellState = SpellState::Cancel;
 	}
 }
 
 void ULegacyPlayerMagicComponent::CastGrab()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastGrab"));
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastGrab"));
 
 	isLevioso = false;
 	isAccio = false;
@@ -683,7 +692,7 @@ void ULegacyPlayerMagicComponent::CastGrab()
 			enemy->enemyState->bIsGrabbed = false;
 			enemy->GetCapsuleComponent()->SetSimulatePhysics(true);
 		}
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastGrab - Go to Cancel"));
+	//	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastGrab - Go to Cancel"));
 		spellState = SpellState::Cancel;
 	}
 }
@@ -740,11 +749,11 @@ void ULegacyPlayerMagicComponent::CancelSpellTimer(float spellTime)
 {
 	currentTime += GetWorld()->DeltaTimeSeconds;
 
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CancelSpellTimer - currentTime %f: "), currentTime);
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CancelSpellTimer - currentTime %f: "), currentTime);
 
 	if(currentTime > spellTime){
 		currentTime = 0;
-		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CancelSpellTimer - Go to Cancel"));
+	//	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CancelSpellTimer - Go to Cancel"));
 		spellState = SpellState::Cancel;
 	}
 }
@@ -754,7 +763,7 @@ void ULegacyPlayerMagicComponent::CancelSpellTimer(float spellTime)
 
 void ULegacyPlayerMagicComponent::DereferenceVariables()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::DereferenceVariables"));
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::DereferenceVariables"));
 	isSpellCast = false;						//don't need this
 	isAccio = false;
 	isLevioso = false;
@@ -764,6 +773,7 @@ void ULegacyPlayerMagicComponent::DereferenceVariables()
 	isSpellCombo = false;
 	isSpellCancel = false;
 
+
 	//AvadaKedavra
 	avadaKedavraNiagaraComponent = nullptr;
 
@@ -771,6 +781,8 @@ void ULegacyPlayerMagicComponent::DereferenceVariables()
 	comboCount = 0;
 
 	me->uIComponent->quadrantNumber = 0;
+
+
 
 	if (!grabbedComponent) { return; }
 
@@ -790,7 +802,7 @@ void ULegacyPlayerMagicComponent::DereferenceVariables()
 
 void ULegacyPlayerMagicComponent::SpellCancel()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::SpellCancel"));
+//	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::SpellCancel"));
 
 	DereferenceVariables();
 	spellState = SpellState::Rest;
