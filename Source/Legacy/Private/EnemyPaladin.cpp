@@ -8,6 +8,8 @@
 #include "LegacyPlayer.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "EnemyFSM.h"
+#include "Kismet/GameplayStatics.h"
 
 AEnemyPaladin::AEnemyPaladin()
 {
@@ -54,6 +56,11 @@ void AEnemyPaladin::Tick(float DeltaTime)
 		SwordCollisionManager();
 	}
 	
+	if (enemyFSM->bIsDead && !bPlayDeadOnce)
+	{
+		bPlayDeadOnce = true;
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeadSound, GetActorLocation());
+	}
 }
 
 void AEnemyPaladin::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

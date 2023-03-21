@@ -20,8 +20,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere)
+	class USoundBase* DeadSound;
+	UPROPERTY(EditAnywhere)
 	class UBoxComponent* swordComp;
 
+	bool bPlayDeadOnce;
 	bool bDoDamageOnce;
 
 	UFUNCTION()

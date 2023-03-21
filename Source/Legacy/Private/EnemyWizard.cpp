@@ -5,6 +5,7 @@
 #include "Components/CapsuleComponent.h"
 #include "EnemyFSM.h"
 #include <Components/StaticMeshComponent.h>
+#include "Kismet/GameplayStatics.h"
 
 AEnemyWizard::AEnemyWizard()
 {
@@ -45,6 +46,27 @@ void AEnemyWizard::BeginPlay()
 	Super::BeginPlay();
 	enemyFSM->attackableDistance = wizardAttackRange;
 	enemyFSM->attackDelay = wizardAttackDelay;
+}
+
+void AEnemyWizard::Tick(float DeltaTime)
+{
+	if (enemyFSM->bIsDead && !bPlayDeadOnce)
+	{
+		bPlayDeadOnce = true;
+		int rate = FMath::RandRange(1, 3);
+		if (rate == 1)
+		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeadSound1, GetActorLocation());
+		}
+		else if (rate == 2)
+		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeadSound2, GetActorLocation());
+		}
+		else
+		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeadSound3, GetActorLocation());
+		}
+	}
 }
 
 void AEnemyWizard::WizardAttack()
