@@ -204,13 +204,13 @@ class AEnemy* ULegacyPlayerMagicComponent::WideSphereTrace()
 	FVector traceShortEndLocation = traceShortStartLocation + me->wandStaticMeshComponent->GetForwardVector() * nearSphereTraceDistance;
 	//short and thin single sphere trace
 	FHitResult hitResult;
-	bool isShortSphereTraceHit = UKismetSystemLibrary::SphereTraceSingle(this, traceShortStartLocation, traceShortEndLocation, nearSphereTraceDetectionRadius, UEngineTypes::ConvertToTraceType(traceChannel), true, actorsToIgnore, EDrawDebugTrace::ForOneFrame, hitResult, true);
+	bool isShortSphereTraceHit = UKismetSystemLibrary::SphereTraceSingle(this, traceShortStartLocation, traceShortEndLocation, nearSphereTraceDetectionRadius, UEngineTypes::ConvertToTraceType(traceChannel), true, actorsToIgnore, EDrawDebugTrace::None, hitResult, true);
 
 	//far and thick multi sphere trace
 	FVector traceFarStartLocation = traceShortEndLocation + me->wandLightArrowComponent->GetForwardVector() * farSphereTraceDetectionRadius;				//add with detection radius so that the trace doesn't start from the back of the camera
 	FVector traceFarEndLocation = traceFarStartLocation + me->wandStaticMeshComponent->GetForwardVector() * farSphereTraceDistance;
 	TArray<FHitResult> farSphereMultipleHitResults;
-	bool isLongSphereTrace1Hit = UKismetSystemLibrary::SphereTraceMulti(this, traceFarStartLocation, traceFarEndLocation, farSphereTraceDetectionRadius, UEngineTypes::ConvertToTraceType(traceChannel), true, actorsToIgnore, EDrawDebugTrace::ForOneFrame, farSphereMultipleHitResults, true);
+	bool isLongSphereTrace1Hit = UKismetSystemLibrary::SphereTraceMulti(this, traceFarStartLocation, traceFarEndLocation, farSphereTraceDetectionRadius, UEngineTypes::ConvertToTraceType(traceChannel), true, actorsToIgnore, EDrawDebugTrace::None, farSphereMultipleHitResults, true);
 
 	//if short 
 	if (isShortSphereTraceHit){
@@ -261,6 +261,17 @@ void ULegacyPlayerMagicComponent::CheckSpellActivation()
 		//wandLightNiagaraComponent->SetVisibility(false);
 		isWandActive = false;
 		UE_LOG(LogTemp, Error, TEXT("ULegacyPlayerMagicComponent::CheckSpellActivation - Spell Deactivated"));
+	}
+
+	if (wandLightNiagaraComponent && wandTrailsNiagaraComponent){
+		if (me->rightCurrentAccelerationMagnitude > accelerationThreshold && me->rightCurrentVelocityMagnitude > velocityThreshold) {
+			wandLightNiagaraComponent->SetVisibility(true);
+			wandTrailsNiagaraComponent->SetVisibility(true);
+		}
+		else{
+			wandLightNiagaraComponent->SetVisibility(false);
+			wandTrailsNiagaraComponent->SetVisibility(false);
+		}
 	}
 }
 
@@ -384,8 +395,6 @@ void ULegacyPlayerMagicComponent::UpdateWandEffects()
 
 void ULegacyPlayerMagicComponent::CastLevioso()
 {
-
-
 	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastLevioso"));
 
 	//unflag other spell casts; this in in case it transitioned from another spell
@@ -563,7 +572,7 @@ void ULegacyPlayerMagicComponent::CastDepulso()
 		FVector throwDirection = me->wandStaticMeshComponent->GetForwardVector();
 		throwDirection.Normalize();
 		UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerMagicComponent::CastDepulso - Throw"));
-		enemy->enemyState->Throw(throwDirection * 300000, 1);
+		enemy->enemyState->Throw(throwDirection * 300000, 10);
 		enemy->enemyState->bIsGrabbed = false;
 
 		detectedComponent = nullptr;
@@ -605,6 +614,12 @@ void ULegacyPlayerMagicComponent::CastAvadaKedavra()
 			avadaKedavraNiagaraComponent->SetNiagaraVariableVec3(FString("beamStartPoint"), startPosition);
 			avadaKedavraNiagaraComponent->SetNiagaraVariableVec3(FString("beamEndPoint"), endPosition);
 			avadaKedavraNiagaraComponent->SetNiagaraVariableVec3(FString("impactNormal"), impactNormal);
+		}
+
+		enemy = Cast<AEnemy>(hitResult.GetActor());
+
+		if(enemy){
+			enemy->enemyState->OnDamageProcess(100);
 		}
 	}
 
@@ -691,7 +706,7 @@ void ULegacyPlayerMagicComponent::DetectTarget()
 	FHitResult hitResult;
 
 	//do a sphere trace
-	bool isHit = UKismetSystemLibrary::SphereTraceSingle(this, traceStartLocation, traceEndLocation, detectionRadius, UEngineTypes::ConvertToTraceType(traceChannel), true, actorsToIgnore, EDrawDebugTrace::ForOneFrame, hitResult, true);
+	bool isHit = UKismetSystemLibrary::SphereTraceSingle(this, traceStartLocation, traceEndLocation, detectionRadius, UEngineTypes::ConvertToTraceType(traceChannel), true, actorsToIgnore, EDrawDebugTrace::None, hitResult, true);
 
 	//if it hits something
 	if (isHit) {

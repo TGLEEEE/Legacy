@@ -191,7 +191,7 @@ public:
 	class UHapticFeedbackEffect_Curve* hFC_Dead;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Settings | Health")
-	int32 maxHealth = 10;
+	int32 maxHealth = 50;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Player Settings | Health")
 	int32 currentHealth;
