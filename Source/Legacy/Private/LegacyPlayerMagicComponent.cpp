@@ -161,9 +161,14 @@ void ULegacyPlayerMagicComponent::CheckSpellComboActivation()
 		//Spawning Combo Niagara impact effect
 		SpawnSpellComboNiagaraEffect();
 
+		wideSphereTraceHitEnemy = wideSphereTraceResult;
+
 		//potential bug; keeps returning nullptr
 		//apply damage to enemy
-		//wideSphereTraceHitEnemy->enemyState->OnDamageProcess(1);
+		if(wideSphereTraceHitEnemy){
+			wideSphereTraceHitEnemy->enemyState->OnDamageProcess(1);
+			UE_LOG(LogTemp, Warning, TEXT("wideSphereTraceHitEnemy->enemyState->OnDamageProcess(1)"));
+		}
 
 		comboCountOnEnemy++;
 	}
