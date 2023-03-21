@@ -313,7 +313,7 @@ void ALegacyPlayer::Tick(float DeltaTime)
 		rightHand->SetRelativeRotation(cameraComp->GetRelativeRotation());
 	}
 
-	UnPossessOnDie();
+	//UnPossessOnDie();
 }
 
 
