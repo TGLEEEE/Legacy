@@ -93,6 +93,8 @@ private:
 
 	//UPROPERTY(EditAnywhere, Category = "UI Settings|Score Animation", meta = (BindWidgetAnim), Transient)
 	//class UWidgetAnimation* widgetAnimation;
+
+
 #pragma endregion
 
 };

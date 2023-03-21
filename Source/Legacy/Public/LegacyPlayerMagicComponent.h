@@ -176,7 +176,7 @@ public:
 	class UNiagaraComponent* avadaKedavraNiagaraComponent;
 
 
-	//wand light
+	//Wand Light
 	UPROPERTY(EditAnywhere)
 	class UNiagaraSystem* wandLightNiagaraSystem;
 	UPROPERTY(EditAnywhere)
@@ -190,13 +190,21 @@ public:
 	void UpdateWandEffects();
 
 
-	//Attack
+	//Combo
 	UPROPERTY(EditAnywhere)
 	class UNiagaraSystem* spellComboNiagaraSystem;
 	UPROPERTY(EditAnywhere)
 	class UNiagaraComponent* spellComboNiagaraComponent;
 
 	void SpawnSpellComboNiagaraEffect();
+
+
+	//Depulso
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> depulsoExplosionFactory;
+
+
+	
 #pragma endregion 
 
 #pragma region Cancel
