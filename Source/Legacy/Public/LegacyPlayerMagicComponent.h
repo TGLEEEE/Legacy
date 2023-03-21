@@ -73,8 +73,8 @@ public:
 
 	void CheckSpellComboActivation();
 #pragma region Wide Sphere Trace
-	//for debugging
-	int32 comboCountOnEnemy;
+	////for debugging
+	//int32 comboCountOnEnemy;
 
 	FVector comboImpactPoint;
 	FVector comboImpactNormal;
@@ -175,12 +175,20 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UNiagaraComponent* avadaKedavraNiagaraComponent;
 
+
+	//wand light
 	UPROPERTY(EditAnywhere)
 	class UNiagaraSystem* wandLightNiagaraSystem;
 	UPROPERTY(EditAnywhere)
 	class UNiagaraComponent* wandLightNiagaraComponent;
+	//wand trails
+	UPROPERTY(EditAnywhere)
+	class UNiagaraSystem* wandTrailsNiagaraSystem;
+	UPROPERTY(EditAnywhere)
+	class UNiagaraComponent* wandTrailsNiagaraComponent;
 
-	void UpdateWandLight();
+	void UpdateWandEffects();
+
 
 	//Attack
 	UPROPERTY(EditAnywhere)

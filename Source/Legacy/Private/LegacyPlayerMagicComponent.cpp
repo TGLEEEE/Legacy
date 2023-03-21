@@ -143,7 +143,7 @@ void ULegacyPlayerMagicComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	DetectTarget();
 
 	UpdateSpellState();
-	UpdateWandLight();
+	UpdateWandEffects();
 
 	CheckSpellActivation();
 	CheckSpellComboActivation();
@@ -163,15 +163,14 @@ void ULegacyPlayerMagicComponent::CheckSpellComboActivation()
 
 		wideSphereTraceHitEnemy = wideSphereTraceResult;
 
-		//potential bug; keeps returning nullptr
 		//apply damage to enemy
 		if(wideSphereTraceHitEnemy){
 			wideSphereTraceHitEnemy->enemyState->OnDamageProcess(1);
-			UE_LOG(LogTemp, Warning, TEXT("wideSphereTraceHitEnemy->enemyState->OnDamageProcess(1)"));
 		}
 
-		comboCountOnEnemy++;
+		//comboCountOnEnemy++;					//for debugging
 	}
+	//if there is a result, but it's still hitting, don't count as hit
 	else if(wideSphereTraceResult && previousWideSphereTraceHitEnemy){
 		return;
 	}
@@ -362,7 +361,7 @@ void ULegacyPlayerMagicComponent::CheckSpellState(int32& quadrantNumber)
 
 
 
-void ULegacyPlayerMagicComponent::UpdateWandLight()
+void ULegacyPlayerMagicComponent::UpdateWandEffects()
 {
 	//if there is no Wand Light Niagara Component
 	if (!wandLightNiagaraComponent) {
@@ -372,8 +371,15 @@ void ULegacyPlayerMagicComponent::UpdateWandLight()
 		return;				//don't run the code below, or else nullptr
 	}
 
+	if(!wandTrailsNiagaraComponent){
+		wandTrailsNiagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(wandTrailsNiagaraSystem, me->wandLightArrowComponent, NAME_None, FVector(0), FRotator(0),
+			EAttachLocation::KeepRelativeOffset, true, true, ENCPoolMethod::None, true);
+		return;
+	}
+
 	//update the position of the Niagara Wand Light
 	wandLightNiagaraComponent->SetNiagaraVariableVec3(FString("EffectPosition"), me->wandLightArrowComponent->GetComponentLocation());
+	wandTrailsNiagaraComponent->SetNiagaraVariableVec3(FString("Position"), me->wandLightArrowComponent->GetComponentLocation());
 }
 
 void ULegacyPlayerMagicComponent::CastLevioso()
