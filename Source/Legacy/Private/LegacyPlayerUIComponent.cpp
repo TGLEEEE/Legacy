@@ -51,13 +51,13 @@ void ULegacyPlayerUIComponent::SetupPlayerInput(UInputComponent* PlayerInputComp
 void ULegacyPlayerUIComponent::OnActionUIActivation()
 {
 	isUIActivated = true;
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerUIComponent::OnActionUIActivation - isUIActivated"));
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerUIComponent::OnActionUIActivation - isUIActivated"));
 }
 
 void ULegacyPlayerUIComponent::OnActionUIDeActivation()
 {
 	isUIActivated = false;
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerUIComponent::OnActionUIDeActivation - !isUIActivated"));
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerUIComponent::OnActionUIDeActivation - !isUIActivated"));
 }
 
 void ULegacyPlayerUIComponent::OnActionUIWheelSelection(const FInputActionValue& values)
@@ -122,6 +122,7 @@ void ULegacyPlayerUIComponent::CheckUIState()
 {
 	
 	if (!isUIActivated && !CheckMagnitude(joystickXComponent) && !CheckMagnitude(joystickYComponent)){
+
 		me->leviosoWidgetComponent->SetVisibility(false);
 		me->accioWidgetComponent->SetVisibility(false);
 		me->depulsoWidgetComponent->SetVisibility(false);
@@ -155,7 +156,7 @@ void ULegacyPlayerUIComponent::CheckUIState()
 	//if both of the joystick magnitude are small, then don't run
 	CheckUIQuadrant(joystickAngle);
 
-	UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerUIComponent::CheckUIState - quadrantNumber %d"), quadrantNumber);
+	//UE_LOG(LogTemp, Warning, TEXT("ULegacyPlayerUIComponent::CheckUIState - quadrantNumber %d"), quadrantNumber);
 }
 
 

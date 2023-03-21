@@ -349,7 +349,7 @@ void ALegacyPlayer::GetControllerData(){
 	//UE_LOG(LogTemp, Warning, TEXT("ALegacyGameMode::GetControllerData - Right Current Velocity Magnitude %f"), rightCurrentVelocityMagnitude);
 	//UE_LOG(LogTemp, Warning, TEXT("ALegacyPlayer::GetControllerData - Left Current Acceleration %f"), leftCurrentAccelerationMagnitude);
 	//UE_LOG(LogTemp, Warning, TEXT("ALegacyPlayer::GetControllerData - Right Current Acceleration Magnitude %f"), rightCurrentAccelerationMagnitude);
-	UE_LOG(LogTemp, Error, TEXT("ALegacyPlayer::GetControllerData - Right Current Acceleration Difference Magnitude %.0f"), rightCurrentAccelerationDifferenceMagnitude);
+	//UE_LOG(LogTemp, Error, TEXT("ALegacyPlayer::GetControllerData - Right Current Acceleration Difference Magnitude %.0f"), rightCurrentAccelerationDifferenceMagnitude);
 	//UE_LOG(LogTemp, Error, TEXT("ALegacyPlayer::GetControllerData - Right Current Angular Velocity Magnitude %f"), rightCurrentAngularVelocityMagnitude);
 	//UE_LOG(LogTemp, Error, TEXT("ALegacyPlayer::GetControllerData - Right Current Angular Acceleration Magnitude %f"), rightCurrentAccelerationMagnitude);
 
